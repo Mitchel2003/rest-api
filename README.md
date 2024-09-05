@@ -1,11 +1,186 @@
-### 1. **Asegurarse de que las cookies no son `HttpOnly`**
-- Las cookies configuradas con la opción `HttpOnly` **no** pueden ser accesibles mediante JavaScript en el frontend. Si estás utilizando cookies para manejar el token de autenticación y las marcas como `HttpOnly`, estas no estarán disponibles para su lectura en `document.cookie` o `js-cookie`.
-- Si **no necesitas** que las cookies sean accesibles en el frontend, puedes seguir usando `HttpOnly` y enviar las cookies automáticamente en cada solicitud HTTP al backend (usando en las peticiones `fetch` o `axios`).
+¡Qué entusiasmo! React Query es una excelente elección para gestionar el estado de datos asíncronos, optimizar solicitudes de backend y mejorar la reactividad de tu aplicación. Vamos a entrar en detalles sobre cómo puedes implementarlo de manera profesional.
 
-### 2. **Asegurarse de que las cookies están configuradas correctamente con CORS**
+### ¿Qué es React Query?
+React Query es una biblioteca que facilita el manejo de solicitudes de datos y caching en aplicaciones React. Su mayor fortaleza es cómo maneja el "caching" de datos y las solicitudes repetidas, lo que evita hacer llamadas redundantes al backend. También optimiza automáticamente el rendimiento al invalidar datos solo cuando es necesario.
 
+### Ventajas de React Query
+- **Manejo de caché eficiente**: Almacena automáticamente las respuestas y las reutiliza cuando es posible.
+- **Actualizaciones automáticas**: Puedes mantener actualizada la UI automáticamente cuando los datos cambian en el servidor.
+- **Minimización del uso de `useEffect`**: Reduce la necesidad de manejar manualmente los efectos secundarios en componentes.
+- **Sincronización en segundo plano**: Refresca los datos en segundo plano sin interrumpir la UI.
+- **Reintentos automáticos**: En caso de error, puede reintentar la solicitud sin necesidad de escribir lógica adicional.
+
+### Cómo hacer un request con React Query
+
+Aquí tienes un ejemplo que puedes ajustar a tu implementación de `getTasks`:
+
+```tsx
+import { useQuery } from 'react-query';
+import TaskCard from './TaskCard';
+import { getTasks } from '../api/tasks'; // asumiendo que tienes un servicio de API
+
+function Tasks() {
+  const { data: tasks, error, isLoading, isError } = useQuery('tasks', getTasks);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching tasks: {error.message}</div>;
+
+  return (
+    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+      {tasks.map(task => <TaskCard key={task.id} task={task} />)}
+    </div>
+  );
+}
+```
+
+### Desglose de la sintaxis
+
+1. **`useQuery`**: Esta función toma dos parámetros clave: 
+   - **Una clave única** (`'tasks'` en este caso), que identifica el "query" (consulta).
+   - **Una función de solicitud** (`getTasks`), que define cómo obtener los datos desde tu backend.
+
+2. **Estados del "query"**:
+   - **`isLoading`**: Indica si la consulta aún está en progreso.
+   - **`isError`**: Indica si hubo un error en la solicitud.
+   - **`data`**: Contiene los datos de la consulta cuando esta se completa correctamente.
+
+3. **`getTasks`**: Esta función podría lucir así, dependiendo de cómo manejes las solicitudes a la base de datos:
+
+```ts
+import axios from 'axios';
+
+export const getTasks = async () => {
+  const response = await axios.get('/api/tasks');
+  return response.data;
+};
+```
+Este `getTasks` hace una solicitud HTTP utilizando Axios para obtener los datos. React Query almacenará esos datos en caché y los reutilizará si es necesario.
+
+### Revalidación automática y "stale" data
+
+React Query maneja los datos en diferentes fases:
+- **Fresh (frescos)**: Datos recién cargados.
+- **Stale (caducos)**: Datos que pueden estar desactualizados, pero siguen en caché.
+- **Refetching (actualizando)**: Los datos son nuevamente solicitados.
+
+Por ejemplo, cuando vuelves a la página de tareas, si los datos aún son "fresh", no se vuelve a hacer una solicitud HTTP, pero si son "stale", React Query hará una nueva solicitud en segundo plano.
+
+### Configuraciones avanzadas con `useQuery`
+
+Puedes personalizar la forma en que las solicitudes se manejan. Algunas opciones avanzadas:
+
+```tsx
+useQuery('tasks', getTasks, {
+  staleTime: 5000,  // Tiempo antes de que los datos se consideren "caducos"
+  cacheTime: 10000,  // Tiempo que los datos se guardan en caché
+  refetchOnWindowFocus: true,  // Refresca los datos cuando la ventana gana el foco
+  retry: 2,  // Reintenta la solicitud dos veces si falla
+});
+```
+
+### ¿Qué sigue?
+
+1. **Optimiza tus solicitudes**: Puedes usar React Query para otras llamadas como `createTask` o `deleteTask`. Esto reduce la lógica manual de sincronización de estado entre el frontend y backend.
+   
+2. **`Mutations`**: React Query también tiene soporte para "mutations" (crear, actualizar, eliminar). Esto facilita enviar cambios al backend y actualizar la UI de manera eficiente.
+
+```tsx
+import { useMutation, useQueryClient } from 'react-query';
+
+function TaskForm() {
+  const queryClient = useQueryClient();
+  
+  const mutation = useMutation(createTask, {
+    onSuccess: () => {
+      // Invalida y refetch tasks cuando la tarea es creada
+      queryClient.invalidateQueries('tasks');
+    },
+  });
+
+  const onSubmit = (values) => {
+    mutation.mutate(values);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Form fields */}
+      <button type="submit">Create Task</button>
+    </form>
+  );
+}
+```
+
+En este ejemplo, cuando creas una nueva tarea, React Query refresca la lista automáticamente al invalidar la consulta `'tasks'`, lo que elimina la necesidad de manejarlo manualmente.
+
+### Últimos consejos para dominar React Query
+- **Lee la documentación oficial**: Es muy completa y contiene muchos ejemplos avanzados que te pueden ayudar a perfeccionar tu uso.
+- **Optimiza tu backend**: React Query puede hacer muchas solicitudes en paralelo, así que asegúrate de que tu backend esté optimizado para manejar ese tráfico.
+- **Combina con herramientas como Zustand o Redux**: Puedes usar React Query junto con bibliotecas de manejo de estado global para aplicaciones más complejas.
+
+Con React Query puedes crear un flujo de datos increíblemente profesional y eficiente, ¡que sin duda impresionará a tu CEO!
+
+
+
+
+
+
+
+
+
+
+El comportamiento que describes parece estar relacionado con la gestión del estado y la sincronización de la navegación en una aplicación React en un entorno de despliegue (Vercel). Aquí hay algunas posibles causas y soluciones para abordar este problema:
+
+### 1. **Problema de Cache del Navegador**
+   En entornos de producción como Vercel, puede que el navegador esté almacenando en caché ciertos recursos, lo que impide que el `useEffect` y las solicitudes a la base de datos se disparen correctamente. Esto puede pasar cuando React detecta que no hay cambios en los componentes o rutas.
+
+   **Solución**: Puedes intentar deshabilitar o controlar la caché del navegador en el servidor de Vercel o en la configuración de tus encabezados HTTP. Añadir lo siguiente en tu backend podría ayudar a forzar la recarga:
+   
+   ```js
+   res.setHeader('Cache-Control', 'no-store');
+   ```
+
+   Esto garantiza que no se almacene en caché la respuesta y obliga a hacer una nueva petición.
+
+### 2. **Configuración del `useEffect` y Dependencias**
+   Aunque mencionas que el `useEffect` funciona correctamente en localhost, el comportamiento en producción puede diferir si la sincronización de dependencias no es correcta o si React no detecta cambios en el estado.
+
+   **Solución**: Para asegurarte de que el `useEffect` se dispare de manera confiable después de la actualización, puedes intentar cambiar la dependencia de tu `useEffect` para que se dispare cuando el estado de las tareas cambie:
+
+   ```js
+   useEffect(() => {
+     getTasks();
+   }, [location, token]); // Añadir la localización actual como dependencia
+   ```
+
+   Al incluir la dependencia `location`, React re-renderizará el componente cada vez que cambie la URL, lo que debería garantizar que el `useEffect` se ejecute.
+
+### 3. **Problema con `navigate` o Redirección en Vercel**
+   Dado que mencionas que el problema ocurre después de una redirección, es posible que la función `navigate` esté afectando al comportamiento del componente. En entornos de despliegue, la navegación puede funcionar de manera diferente si no está bien sincronizada con el estado global.
+
+   **Solución**: Puedes intentar utilizar el hook `useLocation` de `react-router-dom` para detectar el cambio de ruta y forzar la recarga de las tareas:
+
+   ```js
+   import { useLocation } from "react-router-dom";
+   
+   function Tasks() {
+     const location = useLocation();
+
+     useEffect(() => {
+       getTasks();
+     }, [location]); // Vuelve a ejecutar getTasks cuando cambia la ubicación
+   }
+   ```
+
+   Esto debería garantizar que el componente vuelva a hacer la petición cuando detecte que la ruta ha cambiado tras una redirección.
+
+### 4. **Considerar un Estado Global más Robusto (React Query)**
+   
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+## Resolver Cookies
+**Asegurarse de que las cookies están configuradas correctamente con CORS**
 Si el frontend y el backend están en dominios diferentes, debes asegurarte de que tanto el servidor como el frontend permiten el uso compartido de cookies a través de solicitudes CORS:
-
 - **Backend (Express):** Deberías tener algo como esto en tu configuración de CORS:
   
   ```javascript
@@ -13,77 +188,13 @@ Si el frontend y el backend están en dominios diferentes, debes asegurarte de q
     origin: process.env.FRONTEND_URL, // La URL del frontend
     credentials: true // Permitir cookies
   }));
-  ```
-
-- **Frontend (Axios o Fetch):** Asegúrate de que estás enviando las credenciales con cada petición. Por ejemplo, en `fetch`:
-
-  ```javascript
-  fetch('http://backend-url/api/tasks', {
-    method: 'GET',
-    credentials: 'include' // Esto asegura que las cookies se envíen
-  });
-  ```
-
-  Y con `axios`:
-
-  ```javascript
-  axios.get('http://backend-url/api/tasks', {
-    withCredentials: true // Habilita el envío de cookies
-  });
-  ```
-
-### 3. **Revisar las propiedades `SameSite` y `Secure` de las cookies**
-
-Si las cookies están configuradas con la propiedad `SameSite` incorrectamente, o si estás en un entorno `http` y la cookie tiene la propiedad `Secure`, entonces el navegador puede bloquear las cookies.
-
-- **En producción**, si el frontend y el backend están en diferentes dominios, asegúrate de usar `SameSite=None` y `Secure=true`. Esto debe configurarse en tu servidor backend.
   
-  ```javascript
-  res.cookie('token', token, {
-    httpOnly: false, // Si necesitas acceder a la cookie desde el frontend
-    secure: process.env.NODE_ENV === 'production', // 'true' si usas HTTPS
-    sameSite: 'None', // Para que las cookies funcionen en diferentes dominios
+  res.cookie('token', token, { //config between production and development
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None',
   });
   ```
-
-- **En desarrollo**, podrías deshabilitar temporalmente `Secure` y usar `SameSite=Lax`.
-
-### 4. **Probar las cabeceras de la respuesta del servidor**
-
-Verifica en las herramientas de desarrollo de tu navegador (sección "Network" o "Red") que las cookies estén siendo enviadas correctamente desde el backend. Debes buscar en la respuesta HTTP de la solicitud de inicio de sesión para asegurarte de que la cookie del token se está enviando en las cabeceras de respuesta. La cabecera debe verse algo como esto:
-
-```
-Set-Cookie: token=eyJhbGciOiJIUzI1NiIsInR...; Path=/; HttpOnly; Secure; SameSite=None
-```
-
-Si no ves esta cabecera o si las propiedades de la cookie son incorrectas, puede que ahí esté el problema.
-
-### 5. **Depuración adicional**
-
-1. **Verificar la existencia de cookies desde `document.cookie` directamente**:
-   - Asegúrate de que las cookies se estén estableciendo correctamente inspeccionando directamente `document.cookie` en la consola del navegador:
-     ```javascript
-     console.log(document.cookie);
-     ```
-   
-2. **Revisar las políticas del navegador:**
-   - Asegúrate de que el navegador no esté bloqueando cookies de terceros debido a configuraciones de privacidad.
-   - Algunas extensiones de navegador pueden estar bloqueando cookies, asegúrate de probar en un navegador limpio.
-
----
-
-### Alternativa sin cookies `HttpOnly` (utilizando Local Storage)
-
-Si las cookies están siendo un problema por el acceso, puedes considerar almacenar el token en **LocalStorage** o **SessionStorage**, aunque esta no es la forma más segura comparado con `HttpOnly` cookies (ya que las cookies con `HttpOnly` no pueden ser accedidas por scripts, protegiendo un poco más el token). Sin embargo, es una opción en términos de manejo simple:
-
-```javascript
-localStorage.setItem('token', token); // Guarda el token
-const token = localStorage.getItem('token'); // Obtiene el token
-```
-
-### Conclusión:
-Es importante verificar cómo las cookies están siendo configuradas en el backend y asegurarse de que se estén manejando correctamente las configuraciones de CORS, `SameSite`, y `Secure`. Si las cookies deben ser accesibles en el frontend, no deben ser `HttpOnly`.
-
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###

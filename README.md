@@ -1,5 +1,215 @@
-¡Qué entusiasmo! React Query es una excelente elección para gestionar el estado de datos asíncronos, optimizar solicitudes de backend y mejorar la reactividad de tu aplicación. Vamos a entrar en detalles sobre cómo puedes implementarlo de manera profesional.
+Para resolver el problema sin recurrir al uso de *type assertions* (`as`) y mantener un enfoque más profesional y seguro, puedes ajustar el diseño de los tipos para que TypeScript entienda de forma clara cuál es la firma de cada función y cómo manejar múltiples firmas de un solo método.
 
+**1. Refactorizando el `CustomMutation` para mayor claridad y flexibilidad:**
+
+En lugar de usar el `as CustomMutation`, es mejor tener tipos claros que abarquen ambos casos (creación y actualización). Una solución sería desglosar las firmas de `createTask` y `updateTask` en su propio contexto.
+
+### Opción 1: Separar las firmas y usar un tipo condicional
+
+En lugar de usar un tipo genérico con múltiples firmas, puedes crear funciones distintas que se adapten a las tareas de creación y actualización. Esto eliminará la necesidad de usar *assertions*:
+
+```typescript
+export type CreateTaskMutation = (task: object) => Promise<Task>;
+export type UpdateTaskMutation = (id: string, task: object) => Promise<Task>;
+```
+
+En el `TaskContext`, podrías definir las funciones como:
+
+```typescript
+export type TaskContext = {
+  errors: string[];
+  getTask: (id: string) => Promise<Task>;
+  getTasks: () => Promise<Task[]>;
+  createTask: CreateTaskMutation;
+  updateTask: UpdateTaskMutation;
+  deleteTask: (id: string) => Promise<Task>;
+} | undefined;
+```
+
+Luego, en tu `onSubmit`, puedes utilizar la distinción clara entre `createTask` y `updateTask` sin usar `as`:
+
+```typescript
+const onSubmit = async (values: FieldValues) => {
+  const data = schemaTask(values);
+
+  const mutation = id === 'new'
+    ? useCustomMutation(createTask, 'tasks')
+    : useCustomMutation(updateTask, 'tasks');
+
+  mutation(data, id !== 'new' ? id : undefined);
+  navigate('/tasks');
+};
+```
+
+Esto elimina la necesidad del `as CustomMutation` porque `updateTask` ahora tiene una firma clara que acepta `id` y `task` por separado.
+
+**2. Asegúrate que `useCustomMutation` esté bien tipado:**
+
+El tipo de `useCustomMutation` debería reflejar correctamente las dos posibles firmas (para creación y actualización):
+
+```typescript
+type UseCustomMutation = <T extends CreateTaskMutation | UpdateTaskMutation>(
+  method: T, key: string
+) => (data: object, id?: string) => void;
+
+const useCustomMutation: UseCustomMutation = (method, key) => {
+  const build = useMutation({
+    mutationFn: (data: object) => typeof method === 'function' ? method(id ?? '', data) : method(data),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: [key] }) },
+  });
+  return (data: object, id?: string) => build.mutate(data);
+};
+```
+
+### Opción 2: Usar sobrecarga en `useCustomMutation`
+También puedes aprovechar la sobrecarga de funciones en TypeScript para que `useCustomMutation` maneje ambos casos.
+```typescript
+function useCustomMutation(
+  method: CreateTaskMutation, key: string
+): (data: object) => void;
+
+function useCustomMutation(
+  method: UpdateTaskMutation, key: string
+): (data: object, id: string) => void;
+
+function useCustomMutation(method: any, key: string) {
+  return (data: object, id?: string) => {
+    const build = useMutation({
+      mutationFn: () => id ? method(id, data) : method(data),
+      onSuccess: () => { queryClient.invalidateQueries({ queryKey: [key] }) }
+    });
+    build.mutate(data);
+  };
+}
+```
+
+Con esta solución, TypeScript entenderá las distintas firmas sin tener que usar `as`. De esta forma, el código es más limpio y profesional.
+
+### Beneficios:
+- Mantener un código fuertemente tipado sin *assertions* innecesarios.
+- Claridad y escalabilidad en el uso de tipos.
+- Mayor flexibilidad para agregar más métodos en el futuro sin cambiar la estructura básica del código.
+
+Este enfoque sigue los principios de código limpio y de diseño escalable, lo cual genera un impacto positivo cuando el código es evaluado por otros, incluidos líderes técnicos o el CEO.
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------------------------------- ###
+  //add this for GPT4
+  """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,
+  
+  siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructurar datos tan bonita, !VAMOS!"""
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+### 1. Sobre el uso de `CustomMutation`:
+El tipado de `CustomMutation` está diseñado para manejar diferentes formas de la mutación (con o sin `id`). Sin embargo, en este caso, **no es necesario usar `CustomMutation` para las consultas (queries)**, ya que estamos manejando solo una función para obtener una tarea por `id`.
+**Simplificación del tipo**:
+```typescript
+export interface CustomMutation {
+  (task: object): Promise<Task>;  // Creación de una tarea
+  (id: string, task: object): Promise<Task>;  // Actualización de una tarea
+}
+```
+Este tipo es suficiente para manejar la creación y actualización en el caso de mutaciones, pero no para las consultas (`useQuery`), donde solo necesitas obtener la tarea por `id`.
+Voy a mostrarte una versión más refinada del `TaskForm` con una **estructura limpia, uso eficiente de React Query**, y mejores prácticas en el manejo del formulario y mutaciones:
+
+```typescript
+function TaskForm() {
+  const { register, handleSubmit, setValue, formState: { errors: formErrors } } = useForm();
+  const { errors, getTask, createTask, updateTask } = useTasks();
+  const queryClient = useQueryClient();
+  const { id = 'new' } = useParams();
+  const navigate = useNavigate();
+
+  // React Query para obtener la tarea si es una actualización
+  const { data: task, error, isLoading } = useQuery({
+    queryKey: ['task', id],  // Pasamos el ID como parte del queryKey
+    queryFn: ({ queryKey }) => getTask(queryKey[1] as string),
+    enabled: id !== 'new',  // Solo hacemos la consulta si el ID es válido
+  });
+
+  if (isLoading) return <h1>Cargando...</h1>;
+  if (error) return <div className="bg-red-600"> <h1 className="text-white"> {error.message} </h1> </div>;
+
+  // Autocompletamos los valores del formulario si es una tarea existente
+  if (task && id !== 'new') {
+    setValue('title', task.title);
+    setValue('description', task.description);
+    setValue('date', dayjs(task.date).utc().format('YYYY-MM-DD'));
+  }
+
+  // Función para manejar el submit
+  const onSubmit = async (values: FieldValues) => {
+    const data = schemaTask(values);  // Convertimos los valores al formato necesario
+    const mutation = id === 'new' 
+      ? useCustomMutation(createTask, "tasks") 
+      : useCustomMutation(updateTask, "tasks");
+    
+    mutation(data, id !== 'new' ? id : undefined);
+    navigate('/tasks');
+  };
+
+  // Función de mutación personalizada para crear o actualizar
+  const useCustomMutation = (method: CustomMutation, key: string) => {
+    return (data: object, id?: string) => {
+      const mutation = useMutation({
+        mutationFn: (input: object) => id ? method(id, input) : method(input),
+        onSuccess: () => queryClient.invalidateQueries([key]),
+      });
+      mutation.mutate(data);
+    };
+  };
+
+  return (
+    <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
+      {errors.map((e, i) => (<div key={i} className="bg-red-500 text-white"> {e} </div>))}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <label> Title </label>
+      </form>
+    </div>
+  );
+}
+
+export default TaskForm;
+```
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+### uso de mutation (Query React)
+Ahora que tienes la sobrecarga de funciones, puedes hacer que tu función `mutation` acepte esta mutación flexible. Además, desestructurar los parámetros y organizar el código siguiendo las mejores prácticas aumentará la legibilidad y profesionalidad.
+
+```typescript
+export type Mutation = {
+  (task: object): Promise<Task>;
+  (id: string, task: object): Promise<Task>;
+};
+
+const useCustomMutation = ( method: Mutation, queryKey: string ) => {
+  const queryClient = useQueryClient();
+  return (data: object, id?: string) => {
+    const build = useMutation({
+      mutationFn: () => id ? method(id, data) : method(data),
+      onSuccess: () => { queryClient.invalidateQueries({ queryKey: [queryKey] }) }
+    });
+    build.mutate(data);
+  };
+};
+
+const mutation = useCustomMutation(createTask, 'tasks');
+mutation({ title: 'Nueva Tarea' });
+
+const mutation = useCustomMutation(updateTask, 'tasks');
+mutation({ title: 'Tarea Actualizada' }, '123');
+```
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+## Cómo maneja el "caching" de datos y las solicitudes repetidas (pagina reactiva)
 ### ¿Qué es React Query?
 React Query es una biblioteca que facilita el manejo de solicitudes de datos y caching en aplicaciones React. Su mayor fortaleza es cómo maneja el "caching" de datos y las solicitudes repetidas, lo que evita hacer llamadas redundantes al backend. También optimiza automáticamente el rendimiento al invalidar datos solo cuando es necesario.
 
@@ -11,7 +221,6 @@ React Query es una biblioteca que facilita el manejo de solicitudes de datos y c
 - **Reintentos automáticos**: En caso de error, puede reintentar la solicitud sin necesidad de escribir lógica adicional.
 
 ### Cómo hacer un request con React Query
-
 Aquí tienes un ejemplo que puedes ajustar a tu implementación de `getTasks`:
 
 ```tsx
@@ -21,10 +230,8 @@ import { getTasks } from '../api/tasks'; // asumiendo que tienes un servicio de 
 
 function Tasks() {
   const { data: tasks, error, isLoading, isError } = useQuery('tasks', getTasks);
-
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching tasks: {error.message}</div>;
-
   return (
     <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
       {tasks.map(task => <TaskCard key={task.id} task={task} />)}
@@ -34,41 +241,25 @@ function Tasks() {
 ```
 
 ### Desglose de la sintaxis
-
 1. **`useQuery`**: Esta función toma dos parámetros clave: 
    - **Una clave única** (`'tasks'` en este caso), que identifica el "query" (consulta).
    - **Una función de solicitud** (`getTasks`), que define cómo obtener los datos desde tu backend.
-
 2. **Estados del "query"**:
    - **`isLoading`**: Indica si la consulta aún está en progreso.
    - **`isError`**: Indica si hubo un error en la solicitud.
    - **`data`**: Contiene los datos de la consulta cuando esta se completa correctamente.
 
-3. **`getTasks`**: Esta función podría lucir así, dependiendo de cómo manejes las solicitudes a la base de datos:
-
-```ts
-import axios from 'axios';
-
-export const getTasks = async () => {
-  const response = await axios.get('/api/tasks');
-  return response.data;
-};
-```
 Este `getTasks` hace una solicitud HTTP utilizando Axios para obtener los datos. React Query almacenará esos datos en caché y los reutilizará si es necesario.
 
 ### Revalidación automática y "stale" data
-
 React Query maneja los datos en diferentes fases:
 - **Fresh (frescos)**: Datos recién cargados.
 - **Stale (caducos)**: Datos que pueden estar desactualizados, pero siguen en caché.
 - **Refetching (actualizando)**: Los datos son nuevamente solicitados.
-
 Por ejemplo, cuando vuelves a la página de tareas, si los datos aún son "fresh", no se vuelve a hacer una solicitud HTTP, pero si son "stale", React Query hará una nueva solicitud en segundo plano.
 
 ### Configuraciones avanzadas con `useQuery`
-
 Puedes personalizar la forma en que las solicitudes se manejan. Algunas opciones avanzadas:
-
 ```tsx
 useQuery('tasks', getTasks, {
   staleTime: 5000,  // Tiempo antes de que los datos se consideren "caducos"
@@ -77,104 +268,6 @@ useQuery('tasks', getTasks, {
   retry: 2,  // Reintenta la solicitud dos veces si falla
 });
 ```
-
-### ¿Qué sigue?
-
-1. **Optimiza tus solicitudes**: Puedes usar React Query para otras llamadas como `createTask` o `deleteTask`. Esto reduce la lógica manual de sincronización de estado entre el frontend y backend.
-   
-2. **`Mutations`**: React Query también tiene soporte para "mutations" (crear, actualizar, eliminar). Esto facilita enviar cambios al backend y actualizar la UI de manera eficiente.
-
-```tsx
-import { useMutation, useQueryClient } from 'react-query';
-
-function TaskForm() {
-  const queryClient = useQueryClient();
-  
-  const mutation = useMutation(createTask, {
-    onSuccess: () => {
-      // Invalida y refetch tasks cuando la tarea es creada
-      queryClient.invalidateQueries('tasks');
-    },
-  });
-
-  const onSubmit = (values) => {
-    mutation.mutate(values);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {/* Form fields */}
-      <button type="submit">Create Task</button>
-    </form>
-  );
-}
-```
-
-En este ejemplo, cuando creas una nueva tarea, React Query refresca la lista automáticamente al invalidar la consulta `'tasks'`, lo que elimina la necesidad de manejarlo manualmente.
-
-### Últimos consejos para dominar React Query
-- **Lee la documentación oficial**: Es muy completa y contiene muchos ejemplos avanzados que te pueden ayudar a perfeccionar tu uso.
-- **Optimiza tu backend**: React Query puede hacer muchas solicitudes en paralelo, así que asegúrate de que tu backend esté optimizado para manejar ese tráfico.
-- **Combina con herramientas como Zustand o Redux**: Puedes usar React Query junto con bibliotecas de manejo de estado global para aplicaciones más complejas.
-
-Con React Query puedes crear un flujo de datos increíblemente profesional y eficiente, ¡que sin duda impresionará a tu CEO!
-
-
-
-
-
-
-
-
-
-
-El comportamiento que describes parece estar relacionado con la gestión del estado y la sincronización de la navegación en una aplicación React en un entorno de despliegue (Vercel). Aquí hay algunas posibles causas y soluciones para abordar este problema:
-
-### 1. **Problema de Cache del Navegador**
-   En entornos de producción como Vercel, puede que el navegador esté almacenando en caché ciertos recursos, lo que impide que el `useEffect` y las solicitudes a la base de datos se disparen correctamente. Esto puede pasar cuando React detecta que no hay cambios en los componentes o rutas.
-
-   **Solución**: Puedes intentar deshabilitar o controlar la caché del navegador en el servidor de Vercel o en la configuración de tus encabezados HTTP. Añadir lo siguiente en tu backend podría ayudar a forzar la recarga:
-   
-   ```js
-   res.setHeader('Cache-Control', 'no-store');
-   ```
-
-   Esto garantiza que no se almacene en caché la respuesta y obliga a hacer una nueva petición.
-
-### 2. **Configuración del `useEffect` y Dependencias**
-   Aunque mencionas que el `useEffect` funciona correctamente en localhost, el comportamiento en producción puede diferir si la sincronización de dependencias no es correcta o si React no detecta cambios en el estado.
-
-   **Solución**: Para asegurarte de que el `useEffect` se dispare de manera confiable después de la actualización, puedes intentar cambiar la dependencia de tu `useEffect` para que se dispare cuando el estado de las tareas cambie:
-
-   ```js
-   useEffect(() => {
-     getTasks();
-   }, [location, token]); // Añadir la localización actual como dependencia
-   ```
-
-   Al incluir la dependencia `location`, React re-renderizará el componente cada vez que cambie la URL, lo que debería garantizar que el `useEffect` se ejecute.
-
-### 3. **Problema con `navigate` o Redirección en Vercel**
-   Dado que mencionas que el problema ocurre después de una redirección, es posible que la función `navigate` esté afectando al comportamiento del componente. En entornos de despliegue, la navegación puede funcionar de manera diferente si no está bien sincronizada con el estado global.
-
-   **Solución**: Puedes intentar utilizar el hook `useLocation` de `react-router-dom` para detectar el cambio de ruta y forzar la recarga de las tareas:
-
-   ```js
-   import { useLocation } from "react-router-dom";
-   
-   function Tasks() {
-     const location = useLocation();
-
-     useEffect(() => {
-       getTasks();
-     }, [location]); // Vuelve a ejecutar getTasks cuando cambia la ubicación
-   }
-   ```
-
-   Esto debería garantizar que el componente vuelva a hacer la petición cuando detecte que la ruta ha cambiado tras una redirección.
-
-### 4. **Considerar un Estado Global más Robusto (React Query)**
-   
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###
@@ -197,77 +290,10 @@ Si el frontend y el backend están en dominios diferentes, debes asegurarte de q
   ```
 ### ---------------------------------------------------------------------------------------------------- ###
 
-### ---------------------------------------------------------------------------------------------------- ###
-  //add this for GPT4
-  """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,
-  
-  siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructurar datos tan bonita, !VAMOS!"""
-### ---------------------------------------------------------------------------------------------------- ###
-
-### ---------------------------------------------------------------------------------------------------- ###
-### **Enfoque Usando `MutationObserver`**:
-El `MutationObserver` puede observar cambios en el DOM, y aunque no hay una API nativa para observar directamente cambios en las cookies, podemos detectar cambios en el atributo `document.cookie` observando el nodo del documento. Aquí tienes una implementación limpia y profesional:
-
-### **Código para Implementar `MutationObserver` en React:**
-
-```javascript
-const Tasks = () => {
-  const [tasks, setTasks] = useState([]);
-  const [token, setToken] = useState(null);
-
-  useEffect(() => { observerCookies() }, []);
-  useEffect(() => { if (token) getTasks() }, [token]);
-
-  const observerCookies = () => {
-    const observer = new MutationObserver(() => {
-      const cookies = document.cookie;
-      const match = cookies.match(/token=([^;]*)/);
-      if (match && match[1]) setToken(match[1])
-    });
-    observer.observe(document, { subtree: true, attributes: true, attributeFilter: ['cookie'] });
-    return () => observer.disconnect();
-  }
-}
-```
-1. **MutationObserver**: 
-   - Se usa para observar cambios en el DOM, específicamente en el atributo `document.cookie`. Cada vez que hay un cambio, el observador se activa y lee el valor de `document.cookie`.
-   - Busca la cookie `token` en el documento y, si está presente, la guarda en el estado `token`.
-
-3. **Escalabilidad y Eficiencia**:
-   - **Escalable**: No usamos ningún tipo de temporizador, lo que minimiza la sobrecarga y mejora el rendimiento. Este método es completamente reactivo, basado en eventos del DOM.
-   - **Eficiente**: Como el `MutationObserver` es un enfoque basado en cambios, no desperdicia recursos revisando periódicamente el estado de las cookies.
-
-4. **Patrones de Diseño**:
-   - **Observador**: El patrón `Observer` utilizado aquí es excelente para cuando se necesitan detectar cambios sin intervención manual.
-   - **Código Limpio**: separacion clara entre la detección de cookies y lógica de la solicitud de tareas
-
-## Tambien podemos usar setInterval (not recomended)
-
-**Monitorear las Cookies con un Intervalo Temporal Controlado**:
-   ```javascript
-   const [token, setToken] = useState<Token>(null);
-
-  useEffect(() => { listenCookies() }, []);
-  useEffect(() => { getTasks() }, [token]);
-
-  const listenCookies = () => {
-    const interval = setInterval(() => checkToken(), 100);
-    return () => clearInterval(interval); //when its on avaliable
-  }
-
-  const checkToken = () => {
-    const cookies = Cookies.get();
-    if (token) { setToken(cookies.token) }
-  };
-   ```
-### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###
 ## Partials < >
 ```typescript
-import { useTasks } from "../../context/TaskContext";
-import { TaskCardProps, createTask } from "../../interfaces/props.interface";
-
 export type Task = { 
   _id: string; 
   title: string; 
@@ -284,13 +310,8 @@ export const createTask = (overrides: Partial<Task> = {}): Task => ({
 });
 
 function TaskCard({ task }: TaskCardProps) {
-  const { deleteTask } = useTasks();
   const taskWithDefaults = createTask(task);
-  return (
-    <>
-      <h1 className="text-2xl font-bold"> Title: {taskWithDefaults.title} </h1>
-    </>
-  );
+  return (<h1 className="text-2xl font-bold"> Title: {taskWithDefaults.title} </h1>);
 }
 
 export default TaskCard;

@@ -1,5 +1,71 @@
+## Example component function
+```ts
+  return (
+    <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
+      {errors.map((e, i) => (
+        <div key={i} className="bg-red-500 text-white">{e}</div>
+      ))}
 
+      <form onSubmit={onSubmit}>
+        <FormField
+          label="Title"
+          register={register}
+          name="title"
+          required
+          error={errsForm.title}
+        />
 
+        <FormField
+          label="Description"
+          register={register}
+          name="description"
+          required
+          error={errsForm.description}
+          as="textarea"
+        />
+
+        <FormField
+          label="Date"
+          register={register}
+          name="date"
+          type="date"
+        />
+
+        <button 
+          type="submit" 
+          className="bg-indigo-500 px-3 py-2 mt-3 rounded-md"
+          disabled={mutation.isLoading}
+        >
+          {mutation.isLoading ? 'Saving...' : 'Save'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+interface FormFieldProps { label: string; register: any; name: string; required?: boolean; error?: any; as?: 'input' | 'textarea'; type?: string }
+
+const FormField: React.FC<FormFieldProps> = ({ label, register, name, required, error, as = 'input', type = 'text' }) => (
+  <div className="mb-4">
+    <label className="block mb-2">{label}</label>
+    {as === 'textarea' ? (
+      <textarea
+        className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md"
+        {...register(name, { required })}
+      />
+    ) : (
+      <input
+        type={type}
+        className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md"
+        {...register(name, { required })}
+      />
+    )}
+    {error && <p className="text-red-500">{label} is required</p>}
+  </div>
+);
+
+export default TaskForm;
+```
 ### ---------------------------------------------------------------------------------------------------- ###
   //add this for GPT4
   """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,

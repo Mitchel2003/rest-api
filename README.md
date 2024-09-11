@@ -1,3 +1,97 @@
+
+
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+## selección específica en TypeScript
+   ```typescript
+    export const useFavoriteTask = create<FavoriteTaskState>((set) => ({
+      favoriteTaskIds: [],
+      addFavoriteTask: (id: string) => set((state) => ({
+        favoriteTaskIds: [...state.favoriteTaskIds, id]
+      })),
+      removeFavoriteTask: (id: string) => set((state) => ({
+        favoriteTaskIds: state.favoriteTaskIds.filter((e) => e !== id)
+      }))
+    }));
+
+    // Seleccion especifica
+    const addTaskStore = useFavoriteTask(state => state.addFavoriteTask);    
+
+    //O desestructuracion predeterminada
+    const { addFavoriteTask: addTaskStore, removeFavoriteTask: removeTaskStore } = useFavoriteTask();
+   ```
+
+Análisis:
+1. Rendimiento: La primera forma es ligeramente más eficiente en términos de rendimiento. Zustand solo volverá a renderizar el componente si las propiedades específicas que seleccionaste cambian. Con la desestructuración completa, el componente podría re-renderizarse si cualquier parte del estado cambia, aunque no uses todas las propiedades.
+2. Tipado: Ambas formas mantienen el tipado correcto en TypeScript, así que no hay preocupaciones en ese aspecto.
+3. Claridad: La primera forma es más explícita sobre qué partes del estado se están utilizando, lo que puede hacer que el código sea más fácil de entender y mantener.
+4. Errores en ejecución: No deberías experimentar errores en ejecución con ninguna de las dos formas, siempre y cuando uses las funciones correctamente (pasando el ID como lo estás haciendo).
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+## Zustand -> Handle local state
+```typescript
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
+import { devtools, persist } from 'zustand/middleware';
+
+// Definición de tipos
+interface Repo { id: number; name: string }
+interface FavoriteReposState {
+  favoriteRepos: Repo[];
+  addFavoriteRepo: (repo: Repo) => void;
+  removeFavoriteRepo: (repoId: number) => void;
+  clearFavoriteRepos: () => void;
+}
+
+// Creación del store
+export const useFavoriteReposStore = create<FavoriteReposState>()(
+  devtools(
+    persist(
+      immer((set) => ({
+        favoriteRepos: [],
+        addFavoriteRepo: (repo) =>
+          set((state) => {
+            if (!state.favoriteRepos.some((r) => r.id === repo.id)) {
+              state.favoriteRepos.push(repo);
+            }
+          }),
+        removeFavoriteRepo: (repoId) =>
+          set((state) => {
+            state.favoriteRepos = state.favoriteRepos.filter((r) => r.id !== repoId);
+          }),
+        clearFavoriteRepos: () =>
+          set((state) => {
+            state.favoriteRepos = [];
+          }),
+      })),
+      {
+        name: 'favorite-repos-storage',
+        getStorage: () => localStorage,
+      }
+    )
+  )
+);
+
+// Selector de ejemplo
+  export const selectFavoriteReposCount = (state: FavoriteReposState) => state.favoriteRepos.length;
+
+  const favoriteRepos = useFavoriteReposStore((state) => state.favoriteRepos);
+  const addFavoriteRepo = useFavoriteReposStore((state) => state.addFavoriteRepo);
+  const favoriteCount = useFavoriteReposStore(selectFavoriteReposCount);
+```
+1. **Uso de middlewares**:
+   - `immer`: Permite escribir código "mutable" que se convierte en actualizaciones inmutables, lo que hace que el código sea más legible y menos propenso a errores.
+   - `devtools`: Habilita la integración con Redux DevTools para una mejor depuración.
+   - `persist`: Permite persistir el estado en el almacenamiento local del navegador.
+2. **Acciones más robustas**: Hemos definido acciones para añadir, eliminar y limpiar repositorios favoritos, con lógica para evitar duplicados.
+3. **Selector**: Hemos agregado un selector de ejemplo que demuestra cómo se pueden derivar datos del estado.
+4. **Uso de immer**: Permite "mutar" el estado directamente dentro de las acciones, lo que hace que el código sea más intuitivo y fácil de leer.
+5. **Persistencia**: El estado se guarda automáticamente en el almacenamiento local, lo que mejora la experiencia del usuario entre sesiones.
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
 ## Example component function
 ```ts
   return (
@@ -71,80 +165,6 @@ export default TaskForm;
   """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,
   
   siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructurar datos tan bonita, !VAMOS!"""
-### ---------------------------------------------------------------------------------------------------- ###
-
-### ---------------------------------------------------------------------------------------------------- ###
-### 1. Sobre el uso de `CustomMutation`:
-El tipado de `CustomMutation` está diseñado para manejar diferentes formas de la mutación (con o sin `id`). Sin embargo, en este caso, **no es necesario usar `CustomMutation` para las consultas (queries)**, ya que estamos manejando solo una función para obtener una tarea por `id`.
-**Simplificación del tipo**:
-```typescript
-export interface CustomMutation {
-  (task: object): Promise<Task>;  // Creación de una tarea
-  (id: string, task: object): Promise<Task>;  // Actualización de una tarea
-}
-```
-Este tipo es suficiente para manejar la creación y actualización en el caso de mutaciones, pero no para las consultas (`useQuery`), donde solo necesitas obtener la tarea por `id`.
-Voy a mostrarte una versión más refinada del `TaskForm` con una **estructura limpia, uso eficiente de React Query**, y mejores prácticas en el manejo del formulario y mutaciones:
-
-```typescript
-function TaskForm() {
-  const { register, handleSubmit, setValue, formState: { errors: formErrors } } = useForm();
-  const { errors, getTask, createTask, updateTask } = useTasks();
-  const queryClient = useQueryClient();
-  const { id = 'new' } = useParams();
-  const navigate = useNavigate();
-
-  // React Query para obtener la tarea si es una actualización
-  const { data: task, error, isLoading } = useQuery({
-    queryKey: ['task', id],  // Pasamos el ID como parte del queryKey
-    queryFn: ({ queryKey }) => getTask(queryKey[1] as string),
-    enabled: id !== 'new',  // Solo hacemos la consulta si el ID es válido
-  });
-
-  if (isLoading) return <h1>Cargando...</h1>;
-  if (error) return <div className="bg-red-600"> <h1 className="text-white"> {error.message} </h1> </div>;
-
-  // Autocompletamos los valores del formulario si es una tarea existente
-  if (task && id !== 'new') {
-    setValue('title', task.title);
-    setValue('description', task.description);
-    setValue('date', dayjs(task.date).utc().format('YYYY-MM-DD'));
-  }
-
-  // Función para manejar el submit
-  const onSubmit = async (values: FieldValues) => {
-    const data = schemaTask(values);  // Convertimos los valores al formato necesario
-    const mutation = id === 'new' 
-      ? useCustomMutation(createTask, "tasks") 
-      : useCustomMutation(updateTask, "tasks");
-    
-    mutation(data, id !== 'new' ? id : undefined);
-    navigate('/tasks');
-  };
-
-  // Función de mutación personalizada para crear o actualizar
-  const useCustomMutation = (method: CustomMutation, key: string) => {
-    return (data: object, id?: string) => {
-      const mutation = useMutation({
-        mutationFn: (input: object) => id ? method(id, input) : method(input),
-        onSuccess: () => queryClient.invalidateQueries([key]),
-      });
-      mutation.mutate(data);
-    };
-  };
-
-  return (
-    <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
-      {errors.map((e, i) => (<div key={i} className="bg-red-500 text-white"> {e} </div>))}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label> Title </label>
-      </form>
-    </div>
-  );
-}
-
-export default TaskForm;
-```
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###

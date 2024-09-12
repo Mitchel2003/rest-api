@@ -1,5 +1,165 @@
+## Typado avanzed in TypeScript
+```typescript
+import { useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
+import { useTasks } from "../context/TaskContext";
+
+// Definimos tipos para nuestras mutaciones
+type MutationTypes = 'createOrUpdate' | 'delete';
+
+// Definimos la estructura de los parámetros para cada tipo de mutación
+type MutationParams<T extends MutationTypes> = 
+  T extends 'createOrUpdate' ? { id: string; data: object } :
+  T extends 'delete' ? { id: string } :
+  never;
+
+// Definimos el tipo de retorno para cada mutación
+type MutationReturn<T extends MutationTypes> = 
+  T extends 'createOrUpdate' ? Task :
+  T extends 'delete' ? void :
+  never;
+
+export function useCustomMutation<T extends MutationTypes>(type: T): UseMutationResult<MutationReturn<T>, Error, MutationParams<T>> {
+  const { createTask, updateTask, deleteTask } = useTasks();
+  const queryClient = useQueryClient();
+
+  const mutationFn = (params: MutationParams<T>): Promise<MutationReturn<T>> => {
+    switch (type) {
+      case 'createOrUpdate':
+        const { id, data } = params as MutationParams<'createOrUpdate'>;
+        return (id !== 'new' ? updateTask(id, data) : createTask(data)) as Promise<MutationReturn<T>>;
+      case 'delete':
+        const { id: deleteId } = params as MutationParams<'delete'>;
+        return deleteTask(deleteId) as Promise<MutationReturn<T>>;
+      default:
+        throw new Error(`Unsupported mutation type: ${type}`);
+    }
+  };
+
+  return useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+}
+```
+
+Ahora, puedes usar este hook de la siguiente manera:
+
+```typescript
+// Para crear o actualizar una tarea
+const createOrUpdateMutation = useCustomMutation('createOrUpdate');
+
+// Para eliminar una tarea
+const deleteMutation = useCustomMutation('delete');
+
+// Uso en un componente
+const handleSubmit = (data: object) => {
+  createOrUpdateMutation.mutate({ id, data });
+};
+
+const handleDelete = (id: string) => {
+  deleteMutation.mutate({ id });
+};
+```
+
+Esta implementación tiene varias ventajas:
+
+1. **Tipado fuerte**: TypeScript inferirá correctamente los tipos de parámetros y retorno para cada tipo de mutación.
+2. **Flexibilidad**: Puedes agregar fácilmente nuevos tipos de mutaciones extendiendo los tipos `MutationTypes`, `MutationParams`, y `MutationReturn`.
+3. **DRY (Don't Repeat Yourself)**: La lógica de invalidación de consultas está centralizada.
+4. **Separación de preocupaciones**: Cada mutación tiene su propia lógica clara y separada.
+5. **Fácil de usar**: Los consumidores del hook solo necesitan especificar el tipo de mutación que desean usar.
+
+### ---------------------------------------------------------------------------------------------------- ###
+  //add this for GPT4
+  """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,
+  
+  siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructurar datos tan bonita, !VAMOS!"""
+### ---------------------------------------------------------------------------------------------------- ###
 
 
+Gracias por proporcionar el código detallado. Después de revisar, puedo identificar el problema principal y algunas áreas de mejora. Vamos a abordarlos uno por uno:
+
+1. El error principal:
+El error "Invalid hook call" se está produciendo porque estás llamando a un hook (useMutationCreateOrUpdate) dentro de la función `onSubmit`, que es un callback y no un componente de React o un hook personalizado. Los hooks solo pueden ser llamados en el nivel superior de un componente de React o dentro de otros hooks personalizados.
+
+2. Solución al problema principal:
+Debes mover la llamada a `useMutationCreateOrUpdate` al nivel superior de tu componente TaskForm. Luego, puedes usar la mutación retornada dentro de tu función `onSubmit`. Aquí tienes cómo podrías restructurar esa parte:
+
+```typescript
+function TaskForm() {
+  // ... otros hooks y código ...
+
+  const mutation = useMutationCreateOrUpdate(id);
+
+  const onSubmit = handleSubmit((values) => {
+    mutation.mutate(schemaTask(values));
+  });
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      navigate('/tasks');
+    }
+  }, [mutation.isSuccess, navigate]);
+
+  // ... resto del componente ...
+}
+```
+
+3. Observaciones adicionales y mejoras:
+
+a. En tu archivo useTasks.ts, estás desestructurando `useTasks()` fuera de cualquier componente o hook. Esto también viola las reglas de los hooks. Deberías mover esa desestructuración dentro de cada función donde la necesites. Por ejemplo:
+
+```typescript
+export const useFetchTask = (id: string) => {
+  const { getTask } = useTasks();
+  return useQuery({
+    queryKey: ['task', id],
+    queryFn: () => getTask(id),
+    enabled: id !== 'new'
+  });
+}
+```
+
+b. En tu componente TaskForm, podrías simplificar la lógica de carga y error utilizando el estado de la mutación:
+
+```typescript
+function TaskForm() {
+  // ... otros hooks y código ...
+
+  const mutation = useMutationCreateOrUpdate(id);
+  const { data: task, error, isLoading } = useFetchTask(id);
+
+  const onSubmit = handleSubmit((values) => {
+    mutation.mutate(schemaTask(values));
+  });
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      navigate('/tasks');
+    }
+  }, [mutation.isSuccess, navigate]);
+
+  if (isLoading || mutation.isLoading) return <h1 className="font-bold text-2xl">Cargando...</h1>;
+  if (error || mutation.error) return <div className="bg-red-600"><h1 className="text-white">{(error || mutation.error).message}</h1></div>;
+
+  // ... resto del componente ...
+}
+```
+
+c. En cuanto a tu pregunta sobre por qué no es viable tener funciones en módulos distintos y llamarlos de manera ordenada: Es totalmente viable y, de hecho, es una buena práctica para mantener tu código organizado. El problema no está en la organización de tus funciones, sino en cómo y dónde estás llamando a los hooks.
+
+d. Considera usar un formulario controlado en lugar de react-hook-form si no necesitas todas sus características. Esto podría simplificar tu código aún más.
+
+e. Para manejar errores de manera más consistente, podrías crear un componente de error reutilizable.
+
+Implementando estos cambios, deberías resolver el error principal y mejorar la estructura general de tu aplicación. Recuerda siempre seguir las reglas de los hooks de React:
+
+1. Solo llama a los hooks en el nivel superior de tu componente.
+2. Solo llama a los hooks desde componentes de React o hooks personalizados.
+
+Siguiendo estas reglas y las sugerencias anteriores, tu código debería funcionar correctamente y ser más mantenible.
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###
@@ -160,11 +320,6 @@ const FormField: React.FC<FormFieldProps> = ({ label, register, name, required, 
 
 export default TaskForm;
 ```
-### ---------------------------------------------------------------------------------------------------- ###
-  //add this for GPT4
-  """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,
-  
-  siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructurar datos tan bonita, !VAMOS!"""
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###

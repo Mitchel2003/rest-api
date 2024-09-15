@@ -1,7 +1,7 @@
 {
   "name": "mern_crud",
   "version": "1.0.0",
-  "description": "App web autentication",
+  "description": "API app react",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",

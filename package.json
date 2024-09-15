@@ -1,7 +1,7 @@
 {
   "name": "mern_crud",
   "version": "1.0.0",
-  "description": "API app react",
+  "description": "App react - API",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",

@@ -4,6 +4,7 @@ import { Document } from "mongoose";
 import { verifyAccessToken, generateAccessToken } from "../libs/jwt.handle";
 import { Result, send } from "../interfaces/response.interface";
 import ExtendsRequest from "../interfaces/request.interface";
+import generateVerificationToken from "../libs/math.handle";
 import { encrypt, verified } from "../libs/bcrypt.handle";
 import User from "../models/user.model";
 
@@ -73,7 +74,15 @@ async function isAccountFound({ body }: Request, res: Response) {
 async function createUserEncrypt(req: Request) {
   const { username, email, password } = req.body;
   const passHash = await encrypt(password, 10);
-  const user = new User({ username, email, password: passHash });
+  const verificationToken = generateVerificationToken();
+  const verificationExpiresAt = Date.now() + 24 * 60 * 60 * 1000 //24 hours 
+  const user = new User({
+    username,
+    email,
+    password: passHash,
+    verificationToken,
+    verificationExpiresAt
+  });
   return await user.save();
 }
 /*---------------------------------------------------------------------------------------------------------*/

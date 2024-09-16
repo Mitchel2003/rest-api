@@ -22,11 +22,11 @@ export async function generateAccessToken(payload: object): Promise<string> {
  * @returns {CredentialsJWT} we get a object with properties like "id" or "exp" correspond to token of user logged
  */
 export async function verifyAccessToken(token: string): Promise<CredentialsJWT> {
-  if (!token) return { error: 'Token not found, auth denied' };
+  if (!token) return { error: 'Token no encontrado, autenticación denegada' };
 
   try {
     const access = jwt.verify(token, TOKEN_SECRET) as CredentialsJWT;
-    if (!access.id) return { error: 'Invalid token' };
+    if (!access.id) return { error: 'Token inválido' };
     return access
-  } catch (e) { return { error: 'Expired token' } }
+  } catch (e) { return { error: 'Token expirado' } }
 }

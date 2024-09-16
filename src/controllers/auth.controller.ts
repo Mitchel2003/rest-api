@@ -1,3 +1,4 @@
+/** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
 import { Request, Response } from "express";
 import { Document } from "mongoose";
 
@@ -8,6 +9,12 @@ import generateVerificationToken from "../libs/math.handle";
 import { encrypt, verified } from "../libs/bcrypt.handle";
 import User from "../models/user.model";
 
+/**
+ * Maneja el proceso de inicio de sesión del usuario.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
+ */
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await verifyCredentials(req);
@@ -18,6 +25,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   } catch (e) { send(res, 500, `Error al intentar iniciar sesión: ${e}`) }
 };
 
+/**
+ * Maneja el proceso de registro de un nuevo usuario.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
+ */
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     await isAccountFound(req, res);
@@ -28,18 +41,36 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   } catch (e) { send(res, 500, `Error al intentar registrarse: ${e}`) }
 };
 
-export const logout = (req: Request, res: Response) => {
-  if (!req.cookies.token) return res.sendStatus(200);
+/**
+ * Maneja el proceso de cierre de sesión del usuario.
+ * @param {Request} req - Objeto de solicitud Express.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Response<any>} - Envía una respuesta de éxito.
+ */
+export const logout = (req: Request, res: Response): Response<any> => {
+  if (!req.cookies.token) return res.sendStatus(200)
   res.cookie('token', '', { expires: new Date(0) });
   return res.sendStatus(200);
 };
 
+/**
+ * Obtiene el perfil del usuario autenticado.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del usuario en user.id.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Promise<void>} - Envía los datos del perfil del usuario o un mensaje de error.
+ */
 export const profile = async (req: ExtendsRequest, res: Response): Promise<void> => {
   const document = await User.findById(req.user?.id);
   if (!document) return send(res, 401, 'Usuario no encontrado');
   send(res, 200, document);
 }
 
+/**
+ * Verifica las credenciales del usuario a partir del token en las cookies.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el token en las cookies.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Promise<void>} - Envía los datos del usuario autenticado o un mensaje de error.
+ */
 export const tokenCredentials = async ({ cookies }: Request, res: Response): Promise<void> => {
   const token = await verifyAccessToken(cookies.token);
   const userFound = await User.findById(token.id);
@@ -50,6 +81,11 @@ export const tokenCredentials = async ({ cookies }: Request, res: Response): Pro
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------tools--------------------------------------------------*/
+/**
+ * Establece las cookies de autenticación en la respuesta.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @param {string} token - Token de autenticación a establecer en las cookies.
+ */
 function setCookies(res: Response, token: string) {
   res.cookie('token', token, { // remove on production
     sameSite: 'none',
@@ -58,6 +94,11 @@ function setCookies(res: Response, token: string) {
   });
 }
 
+/**
+ * Verifica las credenciales del usuario.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
+ * @returns {Promise<Result<Document>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
+ */
 async function verifyCredentials(req: Request): Promise<Result<Document>> {
   const { email, password } = req.body;
   const userFound = await User.findOne({ email });
@@ -66,12 +107,23 @@ async function verifyCredentials(req: Request): Promise<Result<Document>> {
   return { value: userFound };
 }
 
-async function isAccountFound({ body }: Request, res: Response) {
+/**
+ * Verifica si ya existe una cuenta con el email proporcionado.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el email en el body.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Promise<void>} - Envía un mensaje de error si la cuenta ya existe.
+ */
+async function isAccountFound({ body }: Request, res: Response): Promise<void> {
   const userFound = await User.findOne({ email: body.email });
   if (userFound) return send(res, 403, 'Email en uso')
 }
 
-async function createUserEncrypt(req: Request) {
+/**
+ * Crea un nuevo usuario con la contraseña encriptada y un token de verificación.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.
+ * @returns {Promise<Document>} - Retorna el documento del usuario creado.
+ */
+async function createUserEncrypt(req: Request): Promise<Document> {
   const { username, email, password } = req.body;
   const passHash = await encrypt(password, 10);
   const verificationToken = generateVerificationToken();

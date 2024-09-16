@@ -1,24 +1,21 @@
 import { Response } from "express";
 
 /*--------------------------------------------------Response--------------------------------------------------*/
+export type Error = string
 export type SendFunction = <T>(
   res: Response,
   status: number,
   data: T
 ) => void;
 
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-}
+export type ApiResponse<T> = T | Error;
 
 export const send: SendFunction = (res, status, data) => {
-  const success = typeof data !== "string";
-  const response: ApiResponse<typeof data> = { success, data };
+  const response: ApiResponse<typeof data> = data;
   res.status(status).json(response);
 };
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------Result credentials--------------------------------------------------*/
-export type Result<T> = { value: T } | { error: string } //type Either
+export type Result<T> = { value: T } | { error: Error } //type Either
 /*---------------------------------------------------------------------------------------------------------*/

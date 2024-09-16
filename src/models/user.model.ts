@@ -2,6 +2,7 @@ import User from "../interfaces/user.interface";
 import mongoose, { Schema } from "mongoose";
 
 const userSchema: Schema<User> = new Schema({
+  //user essentials
   username: {
     type: String,
     required: true,
@@ -16,6 +17,26 @@ const userSchema: Schema<User> = new Schema({
   password: {
     type: String,
     required: true
+  },
+
+  //email verification
+  verificationToken: {
+    type: String,
+    required: true
+  },
+  verificationExpiresAt: {
+    type: Date,
+    required: true
+  },
+
+  //restore data user "password"
+  resetPasswordToken: {
+    type: String,
+    required: false
+  },
+  resetPasswordExpiresAt: {
+    type: Date,
+    required: false
   }
 }, { timestamps: true, versionKey: false })
 

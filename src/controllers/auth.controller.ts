@@ -35,7 +35,7 @@ export const logout = (req: Request, res: Response) => {
 
 export const profile = async (req: ExtendsRequest, res: Response): Promise<void> => {
   const document = await User.findById(req.user?.id);
-  if (!document) return send(res, 401, 'User not found');
+  if (!document) return send(res, 401, 'Usuario no encontrado');
   send(res, 200, document);
 }
 
@@ -67,7 +67,7 @@ async function verifyCredentials(req: Request): Promise<Result<Document>> {
 
 async function isAccountFound({ body }: Request, res: Response) {
   const userFound = await User.findOne({ email: body.email });
-  if (userFound) return res.status(403).json(['Email is used']);
+  if (userFound) return send(res, 403, 'Email en uso')
 }
 
 async function createUserEncrypt(req: Request) {

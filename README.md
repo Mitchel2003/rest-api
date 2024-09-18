@@ -1,4 +1,4 @@
-## Types avanzed in TypeScript
+## Types avanzed in TypeScript 🥵
 ```typescript
 import { useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
 import { useTasks } from "../context/TaskContext";

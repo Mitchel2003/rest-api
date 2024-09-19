@@ -119,7 +119,7 @@ async function isAccountFound({ body }: Request, res: Response): Promise<void> {
 }
 
 /**
- * Crea un nuevo usuario con la contraseña encriptada y un token de verificación.
+ * Crea un nuevo usuario con la contraseña encriptada y un token de verificación email definido.
  * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.
  * @returns {Promise<Document>} - Retorna el documento del usuario creado.
  */

@@ -17,7 +17,7 @@ export const getTask = async ({ params }: Request, res: Response): Promise<void>
     if (!task) return send(res, 404, 'Tarea no encontrada');
     send(res, 200, task);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener la tarea: ${e}`) }
-};
+}
 
 /**
  * Obtiene todas las tareas del usuario actual con paginación.
@@ -30,7 +30,7 @@ export const getTasks = async (req: ExtendsRequest, res: Response): Promise<void
     const tasks = await Task.find({ user: req.user?.id }).populate('user');
     send(res, 200, tasks);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener las tareas: ${e}`) }
-};
+}
 
 /**
  * Crea una nueva tarea para el usuario actual.
@@ -44,7 +44,7 @@ export const createTask = async (req: ExtendsRequest, res: Response): Promise<vo
     const task = await taskForm.save();
     send(res, 201, task);
   } catch (e) { send(res, 500, `Error interno del servidor al crear la tarea: ${e}`) }
-};
+}
 
 /**
  * Actualiza una tarea existente.
@@ -58,7 +58,7 @@ export const updateTask = async ({ params, body }: Request, res: Response): Prom
     if (!task) return send(res, 404, 'La tarea no ha sido actualizada');
     send(res, 200, task);
   } catch (e) { send(res, 500, `Error interno del servidor al actualizar la tarea: ${e}`) }
-};
+}
 
 /**
  * Elimina una tarea existente.
@@ -72,4 +72,4 @@ export const deleteTask = async ({ params }: Request, res: Response): Promise<vo
     if (!task) return send(res, 404, 'Tarea no encontrada');
     send(res, 200, task);
   } catch (e) { send(res, 500, `Error interno del servidor al eliminar la tarea: ${e}`) }
-};
+}

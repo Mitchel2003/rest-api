@@ -1,3 +1,7 @@
+Database: Considere crear índices en la columna "equipo_id" de "Caracteristicas_tecn" para optimizar las consultas.
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
 ```ts
 // implement on home page
 import 'react-lazy-load-image-component/src/effects/blur.css';

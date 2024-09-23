@@ -1,3 +1,9 @@
+Conection to Azure Blob Storage
+token SAS === sp=racwdl&st=2024-09-23T21:19:48Z&se=2030-09-24T05:19:48Z&spr=https&sv=2022-11-02&sr=c&sig=uwcjoEGYF8ju5Z%2B3oYCU%2B2k6K9SW46NNpbSob4O70dM%3D
+URL SAS === https://gestionsaludcloud.blob.core.windows.net/data?sp=racwdl&st=2024-09-23T21:19:48Z&se=2030-09-24T05:19:48Z&spr=https&sv=2022-11-02&sr=c&sig=uwcjoEGYF8ju5Z%2B3oYCU%2B2k6K9SW46NNpbSob4O70dM%3D
+
+
+
 Database: Considere crear índices en la columna "equipo_id" de "Caracteristicas_tecn" para optimizar las consultas.
 ### ---------------------------------------------------------------------------------------------------- ###
 

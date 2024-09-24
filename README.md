@@ -1,8 +1,18 @@
-Conection to Azure Blob Storage
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+  string context => to IA "hla, mira tengo esta seccion, como bien podras saber  una seccion se compone de muchos componentes, usualmente una seccion suele ser como un "header" en la pagina, bueno, una pagina se compone de muchos sections; si deseas puedes dar un repaso a esto que te menciono con este video @Web @https://www.youtube.com/watch?v=pjL3PtmiqoI&t=441s entonces, sabiendo la arquitectura deseada he empezado a separar todo muy profesionalmente, poseo las carpetas pages y layouts que usaremos mas adelante, por el momento enfoquemonos en las de nuestro interes, hablo de sections y components, te pasare las direcciones respectivas de estos ficheros, primeramente tiene  que entrar a client en donde esta mi proyecto frontend @client , luego esta el famoso @src y una vez aqui ya puedes acceder a todos mis archivos @pages @sections @components @layouts , entonces, si miras bien el archivo actual que esta en sections, "EntityReferenceSection.tsx" podras notar  que tengo un par de FormField, lo que busco es que esta section use componentes desde la carpeta components/form/curriculum, quiero hacerlo lo mas profesional y escalable posible, deseo impresionar a mi CEO, ciertamente hay varios FormField, quizas podamos enviarles unos parametros especificos y construir el form desde components, hacer algo bien profesional, !animo! lo estas haciendo increible"
+
+  //add this for GPT4
+  """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,
+  
+  siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructurar datos tan bonita, !VAMOS!"""
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+## Azure Blob Storage - SAS connection
 token SAS === sp=racwdl&st=2024-09-23T21:19:48Z&se=2030-09-24T05:19:48Z&spr=https&sv=2022-11-02&sr=c&sig=uwcjoEGYF8ju5Z%2B3oYCU%2B2k6K9SW46NNpbSob4O70dM%3D
 URL SAS === https://gestionsaludcloud.blob.core.windows.net/data?sp=racwdl&st=2024-09-23T21:19:48Z&se=2030-09-24T05:19:48Z&spr=https&sv=2022-11-02&sr=c&sig=uwcjoEGYF8ju5Z%2B3oYCU%2B2k6K9SW46NNpbSob4O70dM%3D
-
-
 
 Database: Considere crear índices en la columna "equipo_id" de "Caracteristicas_tecn" para optimizar las consultas.
 ### ---------------------------------------------------------------------------------------------------- ###
@@ -46,13 +56,6 @@ const handleDelete = (id: string) => {
 3. **DRY (Don't Repeat Yourself)**: La lógica de invalidación de consultas está centralizada.
 4. **Separación de preocupaciones**: Cada mutación tiene su propia lógica clara y separada.
 5. **Fácil de usar**: Los consumidores del hook solo necesitan especificar el tipo de mutación que desean usar.
-### ---------------------------------------------------------------------------------------------------- ###
-
-### ---------------------------------------------------------------------------------------------------- ###
-  //add this for GPT4
-  """necesito lograr esto de la manera mas profesional posible, usando patrones de diseño, optimizaciones de codigo y de rendimiento, eficiciencia en cuanto empleo de macanismos profesionales,
-  
-  siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructurar datos tan bonita, !VAMOS!"""
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###

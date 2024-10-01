@@ -1,16 +1,104 @@
-## Componente reutilizable
-  Entiendo su visión y el desafío que presenta. Vamos a crear una solución profesional, escalable y reutilizable para el componente IterableCardCustom que pueda manejar diferentes tipos de inputs y sea fácil de usar en DetailsEquipmentSection. Aquí está mi propuesta:
-  Primero, actualizaremos las interfaces en form.interface.ts:
-  Ahora, actualizaremos el componente IterableCardCustom:
-  Ahora, actualizaremos DetailsEquipmentSection para usar IterableCardCustom:
-  Esta implementación ofrece varias ventajas:
-  Reutilización: IterableCardCustom es ahora completamente genérico y puede ser utilizado para cualquier conjunto de campos personalizados.
-  Tipado fuerte: Hemos mejorado las interfaces para proporcionar un tipado más preciso, lo que ayuda a prevenir errores y mejora la autocompletación.
-  Flexibilidad: Puedes pasar cualquier componente de formulario como parte de los campos, lo que permite una gran flexibilidad en el diseño de los formularios.
-  Separación de responsabilidades: La lógica de manejo de campos iterables está ahora completamente separada de la lógica específica de los proveedores.
-  Escalabilidad: Esta estructura permite fácilmente añadir más tipos de proveedores o cambiar la estructura de los datos de proveedor en el futuro.
-  Mantenibilidad: El código es más limpio y fácil de entender, lo que facilita el mantenimiento y las futuras modificaciones.
-  Esta implementación demuestra un alto nivel de profesionalismo en el manejo de formularios complejos en React con TypeScript. Utiliza patrones de diseño modernos y mejores prácticas, y debería impresionar a su CEO con su atención al detalle, eficiencia y escalabilidad.
+## using IterableCustomCard
+```ts
+//uso de tipado to use this format of iterableCard
+  export interface SupplierData {//type supplier
+    name: string;
+    city: string;
+    phone: string;
+    type: 'distributor' | 'manufacturer';
+  }
+
+  export type DetailsEquipmentProps = {
+    . . .
+    suppliers: SupplierData[];
+  }
+```
+### ---------------------------------------------------------------------------------------------------- ###
+
+### ---------------------------------------------------------------------------------------------------- ###
+## Code of IterableCardField "Component not reusable"
+  the thing keep this model is because it has a useControlForm that could be use in the future
+```typescript
+  import { FormItem, FormLabel, FormControl } from "#/ui/form"
+  import { Card, CardContent } from "#/ui/card"
+  import { Button } from "#/ui/button"
+  import { Input } from "#/ui/input"
+
+  import { useFieldArray, useFormContext, Controller } from "react-hook-form"
+  import { PlusCircle, X } from "lucide-react"
+
+  export interface SimpleFieldProps { name: string; label: string; placeholder?: string }
+  export interface IterableCardProps {//type card (IterableCardField)
+    name: string;
+    title: string;
+    fields: SimpleFieldProps[];
+    addButtonText: string;
+  }
+
+  const IterableCardField = ({ name, title, fields, addButtonText }: IterableCardProps) => {
+    const { control } = useFormContext()
+
+    const { fields: items, append, remove } = useFieldArray({ control, name })
+
+    const handleAppend = () => {
+      const initialValue = {} as Record<string, string>
+      const newItem = fields.reduce((acc, field) => { acc[field.name] = ''; return acc }, initialValue)
+      append(newItem)
+    }
+    return (
+      <>
+        <div className="flex justify-between items-center">
+          <h3 className="text-2xl font-bold">{title}</h3>
+          <Button
+            size="sm"
+            type="button"
+            variant="outline"
+            className="mt-2"
+            onClick={handleAppend}
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            {addButtonText}
+          </Button>
+        </div>
+
+        {items.map((item, index) => (
+          <Card key={item.id} className="bg-white relative">
+            <Button
+              size="sm"
+              type="button"
+              variant="ghost"
+              className="absolute top-2 right-2"
+              onClick={() => remove(index)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {fields.map((field) => (
+                  <Controller
+                    key={field.name}
+                    control={control}
+                    name={`${name}.${index}.${field.name}`}
+                    render={({ field: controllerField }) => (
+                      <FormItem>
+                        <FormLabel>{field.label}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={field.placeholder} {...controllerField} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </>
+    )
+  }
+
+  export default IterableCardField
+```
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###
@@ -60,14 +148,6 @@ Este enfoque es excelente para componentes que manejan múltiples campos relacio
     Podrías considerar usar useController dentro de IterableCardField para cada campo individual, lo que podría mejorar aún más el rendimiento:
   d. Manejo de errores y validación:
     Implementa una estrategia robusta de manejo de errores y validación utilizando las capacidades de react-hook-form.
-  e. Documentación:
-    Añade comentarios JSDoc a tus componentes y funciones principales para mejorar la mantenibilidad.
-  f. Testing:
-    Implementa pruebas unitarias para tus componentes de formulario personalizados para asegurar su correcto funcionamiento.
-Conclusión:
-Tu enfoque actual es sólido y demuestra un buen entendimiento de react-hook-form. La combinación de useForm con FormProvider en las secciones principales, y el uso de useController en componentes de campo complejos, es una estrategia efectiva. Esto proporciona un buen equilibrio entre rendimiento, flexibilidad y mantenibilidad.
-Para impresionar aún más a tu CEO, podrías considerar implementar algunas de las optimizaciones mencionadas y tal vez crear una documentación detallada o una pequeña presentación sobre cómo has estructurado los formularios para máxima eficiencia y escalabilidad.
-
 ### ---------------------------------------------------------------------------------------------------- ###
 
 ### ---------------------------------------------------------------------------------------------------- ###

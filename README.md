@@ -1,17 +1,51 @@
-## using IterableCustomCard
+## typado
 ```ts
-//uso de tipado to use this format of iterableCard
-  export interface SupplierData {//type supplier
-    name: string;
-    city: string;
-    phone: string;
-    type: 'distributor' | 'manufacturer';
+  export type FormData = {
+    representative: {
+      name: string
+      city: string
+      phone: string
+    }
+    suppliers: {
+      name: string
+      city: string
+      phone: string
+      type: 'distributor' | 'manufacturer'
+    }[]
   }
 
-  export type DetailsEquipmentProps = {
-    . . .
-    suppliers: SupplierData[];
+  export type InputFieldProps = {
+    label: string
+    name: string
+    register: UseFormRegister<FormData>
+    placeholder: string
   }
+
+  export type SupplierCardProps = {
+    index: number
+    control: Control<FormData>
+    register: UseFormRegister<FormData>
+    remove: (index: number) => void
+  }
+  ```
+
+
+
+
+  ## using IterableCustomCard
+  ```ts
+  //uso de tipado to use this format of iterableCard
+    export interface SupplierData {//type supplier
+      name: string;
+      city: string;
+      phone: string;
+      type: 'distributor' | 'manufacturer';
+    }
+
+    export type DetailsEquipmentProps = {
+      . . .
+      suppliers: SupplierData[];
+    }
 ```
 ### ---------------------------------------------------------------------------------------------------- ###
 

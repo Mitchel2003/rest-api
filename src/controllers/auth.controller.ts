@@ -20,7 +20,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const user = await verifyCredentials(req);
     if ('error' in user) return send(res, 403, user.error)
     const token = await generateAccessToken({ id: user.value._id });
-    setCookies(res, token);
+    res.cookie('token', token);
     send(res, 200, user.value);
   } catch (e) { send(res, 500, `Error al intentar iniciar sesión: ${e}`) }
 };
@@ -36,7 +36,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     await isAccountFound(req, res);
     const user = await createUserEncrypt(req);
     const token = await generateAccessToken({ id: user._id });
-    setCookies(res, token);
+    res.cookie('token', token);
     send(res, 200, user);
   } catch (e) { send(res, 500, `Error al intentar registrarse: ${e}`) }
 };
@@ -81,19 +81,6 @@ export const tokenCredentials = async ({ cookies }: Request, res: Response): Pro
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------tools--------------------------------------------------*/
-/**
- * Establece las cookies de autenticación en la respuesta.
- * @param {Response} res - Objeto de respuesta Express.
- * @param {string} token - Token de autenticación a establecer en las cookies.
- */
-function setCookies(res: Response, token: string) {
-  res.cookie('token', token, { // remove on production
-    sameSite: 'none',
-    httpOnly: false,
-    secure: true
-  });
-}
-
 /**
  * Verifica las credenciales del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.

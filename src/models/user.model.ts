@@ -1,4 +1,4 @@
-import User from "../interfaces/user.interface";
+import { User } from "../interfaces/model.interface";
 import mongoose, { Schema } from "mongoose";
 
 const userSchema: Schema<User> = new Schema({

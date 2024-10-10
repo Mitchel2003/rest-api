@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 import ExtendsRequest from "../interfaces/request.interface";
 import { send } from "../interfaces/response.interface"
-import Task from "../models/task.models";
+import Task from "../models/task.model";
 
 /**
  * Obtiene una tarea específica por su ID.

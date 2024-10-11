@@ -1,9 +1,9 @@
-import { createEquipmentSchema } from "../schemas/equipment.schema";
+import { createEquipmentSchema } from "../schemas/equip.schema";
 import validateSchema from "../middlewares/validator.middleware";
 import authRequired from "../middlewares/auth.middleware";
 import { Router } from "express";
 
-import { getEquipment, getEquipments, createEquipment, updateEquipment, deleteEquipment } from "../controllers/equipment.controller";
+import { getEquipment, getEquipments, createEquipment, updateEquipment, deleteEquipment } from "../controllers/equip.controller";
 
 const router = Router();
 

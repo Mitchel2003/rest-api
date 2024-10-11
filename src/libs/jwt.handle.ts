@@ -1,12 +1,12 @@
-import CredentialsJWT from "../interfaces/jwt.interface";
+import { CredentialsJWT } from "../interfaces/props.interface";
 import jwt from "jsonwebtoken";
 import "dotenv/config"
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET as string;
 /**
- * This create a access token to auth services and protected routes
- * @param token - is the param data to encrypt in the token, can be used in other moment to auth
- * @returns {string} we get a string that correspond to hash token
+ * Esto crea un token de acceso para servicios de autenticación y rutas protegidas
+ * @param token - es el dato del parámetro para encriptar en el token, puede ser usado en otro momento para autenticación
+ * @returns {string} obtenemos una cadena que corresponde al token hash
  */
 export async function generateAccessToken(payload: object): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -17,9 +17,9 @@ export async function generateAccessToken(payload: object): Promise<string> {
   })
 }
 /**
- * This verify the credentials user { id: Schema.Types.ObjectId } in a token specific
- * @param token - is the token to verify
- * @returns {CredentialsJWT} we get a object with properties like "id" or "exp" correspond to token of user logged
+ * Esto verifica las credenciales del usuario { id: Schema.Types.ObjectId } en un token específico
+ * @param token - es el token a verificar
+ * @returns {CredentialsJWT} obtenemos un objeto con propiedades como "id" o "exp" que corresponden al token del usuario conectado
  */
 export async function verifyAccessToken(token: string): Promise<CredentialsJWT> {
   if (!token) return { error: 'Token no encontrado, autenticación denegada' };

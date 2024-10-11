@@ -127,7 +127,7 @@ async function createUserEncrypt(req: Request): Promise<Document> {
   const { username, email, password } = req.body;
   const passHash = await encrypt(password, 10);
   const verificationToken = generateVerificationToken();
-  const verificationExpiresAt = Date.now() + 24 * 60 * 60 * 1000 //24 hours 
+  const verificationExpiresAt = Date.now() + 24 * 60 * 60 * 1000 //24 hours
   const user = new User({
     username,
     email,

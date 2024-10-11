@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 import ExtendsRequest from "../interfaces/request.interface";
 import { send } from "../interfaces/response.interface"
-import Equipment from "../models/equipment.model";
+import Equipment from "../models/equip.model";
 
 /**
  * Obtiene un equipo específico por su ID.

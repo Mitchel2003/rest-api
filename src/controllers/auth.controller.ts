@@ -3,10 +3,14 @@ import { Request, Response } from "express";
 import { Document } from "mongoose";
 
 import { verifyAccessToken, generateAccessToken } from "../libs/jwt.handle";
-import { Result, send } from "../interfaces/response.interface";
-import ExtendsRequest from "../interfaces/request.interface";
 import generateVerificationToken from "../libs/math.handle";
 import { encrypt, verified } from "../libs/bcrypt.handle";
+import { sendVerificationEmail } from "../utils/emails";
+
+import { User as UserProps } from "../interfaces/model.interface";
+import { Result, send } from "../interfaces/response.interface";
+import ExtendsRequest from "../interfaces/request.interface";
+
 import User from "../models/user.model";
 
 /**
@@ -35,10 +39,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     await isAccountFound(req, res);
     const user = await createUserEncrypt(req);
+    const emailResult = await sendVerificationEmail(user);
+    
+    if ('error' in emailResult) {
+      // Aquí podrías decidir si quieres continuar con el registro o no
+      console.warn("No se pudo enviar el email de verificación:", emailResult.error);
+    }
+
     const token = await generateAccessToken({ id: user._id });
     setCookies(res, token);
     send(res, 200, user);
-  } catch (e) { send(res, 500, `Error al intentar registrarse: ${e}`) }
+  } catch (e) { 
+    send(res, 500, `Error al intentar registrarse: ${e}`) 
+  }
 };
 
 /**
@@ -121,13 +134,13 @@ async function isAccountFound({ body }: Request, res: Response): Promise<void> {
 /**
  * Crea un nuevo usuario con la contraseña encriptada y un token de verificación email definido.
  * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.
- * @returns {Promise<Document>} - Retorna el documento del usuario creado.
+ * @returns {Promise<UserProps>} - Retorna el documento del usuario creado.
  */
-async function createUserEncrypt(req: Request): Promise<Document> {
+async function createUserEncrypt(req: Request): Promise<UserProps> {
   const { username, email, password } = req.body;
   const passHash = await encrypt(password, 10);
   const verificationToken = generateVerificationToken();
-  const verificationExpiresAt = Date.now() + 24 * 60 * 60 * 1000 //24 hours
+  const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); //24 hours
   const user = new User({
     username,
     email,

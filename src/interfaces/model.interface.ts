@@ -8,6 +8,7 @@ export interface User extends Document {
   password: string;
 
   //email verification and restore credentials
+  isVerified: boolean;
   verificationToken: string;
   verificationExpiresAt: Date;
   resetPasswordToken?: string;

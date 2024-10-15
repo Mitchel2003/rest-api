@@ -10,17 +10,17 @@ import ExtendsRequest from "../interfaces/request.interface"
 
 import { Request, Response } from "express"
 import { Document } from "mongoose"
+import crypto from 'crypto';
 
 import User from "../models/user.model"
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
- * @param {Response} res - Objeto de respuesta Express.
  * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
  */
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await verifyCredentials(req);
+    const user = await validateCredentials(req);
     if ('error' in user) return send(res, 403, user.error)
     const token = await generateAccessToken({ id: user.value._id });
     setCookies(res, token);
@@ -31,7 +31,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 /**
  * Maneja el proceso de registro de un nuevo usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.
- * @param {Response} res - Objeto de respuesta Express.
  * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
  */
 export const register = async (req: Request, res: Response): Promise<void> => {//working here...
@@ -39,7 +38,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {/
     await isAccountFound(req, res);
     const user = await createUserEncrypt(req);
     const emailSend = await mailtrap.sendVerificationEmail(user.email, user.verificationToken);
-    if (!emailSend) return send(res, 500, 'Error al enviar el email de verificación');
+    if ('error' in emailSend) return send(res, 500, emailSend.error);
     const token = await generateAccessToken({ id: user._id });
     setCookies(res, token);
     send(res, 200, { user, emailSend });
@@ -49,7 +48,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {/
 /**
  * Maneja el proceso de cierre de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express.
- * @param {Response} res - Objeto de respuesta Express.
  * @returns {Response<any>} - Envía una respuesta de éxito.
  */
 export const logout = (req: Request, res: Response): Response<any> => {
@@ -61,7 +59,6 @@ export const logout = (req: Request, res: Response): Response<any> => {
 /**
  * Obtiene el perfil del usuario autenticado.
  * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del usuario en user.id.
- * @param {Response} res - Objeto de respuesta Express.
  * @returns {Promise<void>} - Envía los datos del perfil del usuario o un mensaje de error.
  */
 export const profile = async (req: ExtendsRequest, res: Response): Promise<void> => {
@@ -69,19 +66,85 @@ export const profile = async (req: ExtendsRequest, res: Response): Promise<void>
   if (!document) return send(res, 401, 'Usuario no encontrado');
   send(res, 200, document);
 }
-
+/*--------------------------------------------------Verify--------------------------------------------------*/
 /**
- * Verifica las credenciales del usuario a partir del token en las cookies.
- * @param {Request} req - Objeto de solicitud Express. Debe contener el token en las cookies.
- * @param {Response} res - Objeto de respuesta Express.
+ * Permite extraer las credenciales del token de las cookies, en caso de que token sea invalido, no se permitirá el acceso
+ * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el token en token.
  * @returns {Promise<void>} - Envía los datos del usuario autenticado o un mensaje de error.
  */
-export const tokenCredentials = async ({ cookies }: Request, res: Response): Promise<void> => {
-  const token = await verifyAccessToken(cookies.token);
-  const userFound = await User.findById(token.id);
-  if ('error' in token) return send(res, 401, token.error)
+export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<void> => {
+  const userFound = await User.findById(req.token?.id)
   if (!userFound) return send(res, 401, 'No autorizado')
   send(res, 200, userFound);
+}
+
+/**
+ * still not defined...
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el token en las cookies.
+ * @returns {Promise<void>} - Envía los datos del usuario autenticado o un mensaje de error.
+ */
+export const verifyEmail = async ({ body }: Request, res: Response): Promise<void> => {
+  try {
+    const { code } = body;
+    const user = await User.findOne({ verificationToken: code, verificationExpiresAt: { $gte: new Date() } })//$gte: greater than or equal to
+    if (!user) return send(res, 401, 'Código de verificación inválido o expirado')
+
+    //verify email
+    user.isVerified = true;
+    user.verificationToken = '';
+    user.verificationExpiresAt = new Date(0);
+    await user.save();
+    send(res, 200, 'Email verificado correctamente');
+  } catch (e) { send(res, 500, `Error al verificar el email: ${e}`) }
+}
+
+/**
+ * Maneja el proceso de restablecimiento de contraseña.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el email en el body.
+ * @returns {Promise<void>} - Envía un mensaje de éxito si el email se envía correctamente.
+ */
+export const forgotPassword = async ({ body }: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = body;
+    const user = await User.findOne({ email });
+    if (!user) return send(res, 401, 'Email no encontrado')
+
+    //generate reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetTokenExpiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000); //1 hour
+    user.resetPasswordExpiresAt = resetTokenExpiresAt;
+    user.resetPasswordToken = resetToken;
+    await user.save();
+
+    //send email with reset token
+    const emailSend = await mailtrap.sendResetPasswordEmail(user.email, resetToken);
+    if ('error' in emailSend) return send(res, 500, emailSend.error);
+    send(res, 200, 'Email enviado correctamente');
+  } catch (e) { send(res, 500, `Error al enviar el email de restablecimiento de contraseña: ${e}`) }
+}
+
+/**
+ * Nos permite actualizar la contraseña del usuario, validando un token param y la respectiva expiración
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el token en los params y la nueva contraseña en el body.
+ * @returns {Promise<void>} - Envía un mensaje de éxito si la contraseña se actualiza correctamente.
+ */
+export const resetPassword = async ({ params, body }: Request, res: Response): Promise<void> => {
+  try {
+    const user = await User.findOne({ resetPasswordToken: params.token, resetPasswordExpiresAt: { $gte: new Date() } });//$gte: greater than or equal to
+    if (!user) return send(res, 401, 'Token de restablecimiento de contraseña inválido o expirado')
+
+    //update password
+    const passHash = await encrypt(body.password, 10);
+    user.password = passHash;
+    user.resetPasswordToken = '';
+    user.resetPasswordExpiresAt = new Date(0);
+    await user.save();
+
+    //send email with success reset
+    const emailSend = await mailtrap.sendResetSuccessEmail(user.email);
+    if ('error' in emailSend) return send(res, 500, emailSend.error);
+    send(res, 200, 'Contraseña restablecida correctamente');
+  } catch (e) { send(res, 500, `Error al restablecer la contraseña: ${e}`) }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
@@ -104,7 +167,7 @@ function setCookies(res: Response, token: string) {
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
  * @returns {Promise<Result<Document>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
  */
-async function verifyCredentials(req: Request): Promise<Result<Document>> {
+async function validateCredentials(req: Request): Promise<Result<Document>> {
   const { email, password } = req.body;
   const userFound = await User.findOne({ email });
   const isMatch = await verified(password, userFound?.password);

@@ -20,6 +20,10 @@ const userSchema: Schema<User> = new Schema({
   },
 
   //email verification
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
   verificationToken: {
     type: String,
     required: true

@@ -1,5 +1,5 @@
-import { VERIFICATION_EMAIL_TEMPLATE } from "./mailtrap.template"
-import { MailtrapClient, SendResponse } from "mailtrap"
+import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "../templates/mailtrap.template"
+import { MailtrapClient, SendError } from "mailtrap"
 
 import { MailtrapResult, EmailProps } from "../interfaces/props.interface"
 import { Result } from "../interfaces/response.interface"
@@ -14,31 +14,45 @@ export class EmailService {
     this.client = new MailtrapClient({ token })
   }
 
-  async sendEmail(options: EmailProps): Promise<MailtrapResult> {
+  private async sendEmail(options: EmailProps): Promise<Result<boolean>> {
     const sender = { email: 'mailtrap@demomailtrap.com', name: 'Gestion Salud' }
-    return this.client.send({
-      ...options,
-      from: sender,
-    })
+    try {
+      const response: MailtrapResult = await this.client.send({ ...options, from: sender })
+      if (!response.success) return { error: (response as SendError).errors.join(', ') }
+      return { value: true }
+    } catch (e) { return { error: `Error interno al enviar el email: ${e}` } }
   }
 
   async sendVerificationEmail(email: string, verificationToken: string): Promise<Result<boolean>> {
-    try {
-      const emailOptions: EmailProps = {
-        to: [{ email }],
-        subject: "Verifica tu cuenta",
-        category: 'Verificación de email',
-        html: VERIFICATION_EMAIL_TEMPLATE.replace('{verificationCode}', verificationToken)
-      }
-      const result = await this.sendEmail(emailOptions)
-      if (isSuccessResponse(result)) return { value: true }
-      return { error: result.errors.join(', ') }
-    } catch (error) { return { error: `Error interno al enviar el email de verificación: ${error}` } }
+    const emailOptions: EmailProps = {
+      to: [{ email }],
+      subject: "Verifica tu cuenta",
+      category: 'Verificación de email',
+      html: VERIFICATION_EMAIL_TEMPLATE.replace('{verificationCode}', verificationToken)
+    }
+    return this.sendEmail(emailOptions)
+  }
+
+  async sendResetPasswordEmail(email: string, resetToken: string): Promise<Result<boolean>> {
+    const url = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
+    const emailOptions: EmailProps = {
+      to: [{ email }],
+      subject: "Restablece tu contraseña",
+      category: 'Restablecimiento de contraseña',
+      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace('{resetURL}', url)
+    }
+    return this.sendEmail(emailOptions)
+  }
+
+  async sendResetSuccessEmail(email: string): Promise<Result<boolean>> {
+    const emailOptions: EmailProps = {
+      to: [{ email }],
+      subject: "Restablecimiento de contraseña exitoso",
+      category: 'Restablecimiento de contraseña',
+      html: PASSWORD_RESET_SUCCESS_TEMPLATE
+    }
+    return this.sendEmail(emailOptions)
   }
 }
 
 export default new EmailService()
-/*---------------------------------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------tools--------------------------------------------------*/
-function isSuccessResponse(result: MailtrapResult): result is SendResponse { return result.success }

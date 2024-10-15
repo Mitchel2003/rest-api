@@ -15,7 +15,7 @@ export class EmailService {
   }
 
   async sendEmail(options: EmailProps): Promise<MailtrapResult> {
-    const sender = { email: 'auth@gestion_salud.com', name: 'Gestion Salud' }
+    const sender = { email: 'mailtrap@demomailtrap.com', name: 'Gestion Salud' }
     return this.client.send({
       ...options,
       from: sender,

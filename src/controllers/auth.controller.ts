@@ -40,11 +40,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {/
     const user = await createUserEncrypt(req);
     const emailSend = await mailtrap.sendVerificationEmail(user.email, user.verificationToken);
     if (!emailSend) return send(res, 500, 'Error al enviar el email de verificación');
-    
     const token = await generateAccessToken({ id: user._id });
     setCookies(res, token);
-    res.status(200).json({ user, emailSend });
-    // send(res, 200, user);
+    send(res, 200, { user, emailSend });
   } catch (e) { send(res, 500, `Error al intentar registrarse: ${e}`) }
 }
 

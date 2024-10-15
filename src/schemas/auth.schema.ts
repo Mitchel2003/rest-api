@@ -24,3 +24,9 @@ export const verifyEmailSchema = z.object({
   code: z
     .string({ required_error: "El código de verificación es requerido" })
 })
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string({ required_error: "El correo electrónico es requerido" })
+    .email({ message: "Correo electrónico inválido" }),
+})

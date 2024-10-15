@@ -1,4 +1,4 @@
-import { loginSchema, registerSchema } from "../schemas/auth.schema";
+import { loginSchema, registerSchema, verifyEmailSchema } from "../schemas/auth.schema";
 import validateSchema from "../middlewares/validator.middleware";
 import tokenRequired from "../middlewares/token.middleware";
 import authRequired from "../middlewares/auth.middleware";
@@ -27,7 +27,7 @@ router.get('/profile', authRequired, profile);
 
 //verify routes
 router.get('/verify-auth', tokenRequired, verifyAuth);
-router.get('/verify-email', verifyEmail);
+router.get('/verify-email', validateSchema(verifyEmailSchema), verifyEmail);
 
 //forgot password routes
 router.post('/forgot-password', forgotPassword);

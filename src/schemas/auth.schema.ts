@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+/*--------------------------------------------------authentication--------------------------------------------------*/
 export const loginSchema = z.object({
   email: z
     .string({ required_error: "El correo electrónico es requerido" })
@@ -19,7 +20,9 @@ export const registerSchema = z.object({
     .string({ required_error: "La contraseña es requerida" })
     .min(6, { message: "La contraseña es demasiado corta" })
 })
+/*---------------------------------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------validation--------------------------------------------------*/
 export const verifyEmailSchema = z.object({
   code: z
     .string({ required_error: "El código de verificación es requerido" })
@@ -30,3 +33,10 @@ export const forgotPasswordSchema = z.object({
     .string({ required_error: "El correo electrónico es requerido" })
     .email({ message: "Correo electrónico inválido" }),
 })
+
+export const resetPasswordSchema = z.object({
+  password: z
+    .string({ required_error: "La contraseña es requerida" })
+    .min(6, { message: "La contraseña es demasiado corta" }),
+})
+/*---------------------------------------------------------------------------------------------------------*/

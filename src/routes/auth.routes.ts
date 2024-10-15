@@ -1,4 +1,4 @@
-import { loginSchema, registerSchema, verifyEmailSchema, forgotPasswordSchema } from "../schemas/auth.schema";
+import { loginSchema, registerSchema, verifyEmailSchema, forgotPasswordSchema, resetPasswordSchema } from "../schemas/auth.schema";
 import validateSchema from "../middlewares/validator.middleware";
 import tokenRequired from "../middlewares/token.middleware";
 import authRequired from "../middlewares/auth.middleware";
@@ -31,6 +31,6 @@ router.post('/verify-email', validateSchema(verifyEmailSchema), verifyEmail);
 
 //forgot password routes
 router.post('/forgot-password', validateSchema(forgotPasswordSchema), forgotPassword);
-router.post('/reset-password/:token', resetPassword);
+router.post('/reset-password/:token', validateSchema(resetPasswordSchema), resetPassword);
 
 export default router;

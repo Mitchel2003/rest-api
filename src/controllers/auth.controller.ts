@@ -33,15 +33,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.
  * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
  */
-export const register = async (req: Request, res: Response): Promise<void> => {//working here...
+export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     await isAccountFound(req, res);
     const user = await createUserEncrypt(req);
-    const emailSend = await mailtrap.sendVerificationEmail(user.email, user.verificationToken);
+    const emailSend = await mailtrap.sendVerificationEmail(user);
     if ('error' in emailSend) return send(res, 500, emailSend.error);
+
+    //set cookies with token auth
     const token = await generateAccessToken({ id: user._id });
     setCookies(res, token);
-    send(res, 200, { user, emailSend });
+    send(res, 200, user);
   } catch (e) { send(res, 500, `Error al intentar registrarse: ${e}`) }
 }
 
@@ -86,13 +88,13 @@ export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<vo
 export const verifyEmail = async ({ body }: Request, res: Response): Promise<void> => {
   try {
     const { code } = body;
-    const user = await User.findOne({ verificationToken: code, verificationExpiresAt: { $gte: new Date() } })//$gte: greater than or equal to
+    const user = await User.findOne({ verificationToken: code, verificationExpiresAt: { $gte: new Date() } })
     if (!user) return send(res, 401, 'Código de verificación inválido o expirado')
 
     //verify email
     user.isVerified = true;
-    user.verificationToken = '';
-    user.verificationExpiresAt = new Date(0);
+    user.verificationToken = undefined;
+    user.verificationExpiresAt = undefined;
     await user.save();
     send(res, 200, 'Email verificado correctamente');
   } catch (e) { send(res, 500, `Error al verificar el email: ${e}`) }
@@ -195,7 +197,7 @@ async function createUserEncrypt(req: Request): Promise<UserProps> {
   const { username, email, password } = req.body;
   const passHash = await encrypt(password, 10);
   const verificationToken = generateVerificationToken();
-  const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); //24 hours
+  const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); //24 hours to verify
   const user = new User({
     username,
     email,

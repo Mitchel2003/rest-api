@@ -26,11 +26,11 @@ const userSchema: Schema<User> = new Schema({
   },
   verificationToken: {
     type: String,
-    required: true
+    required: false
   },
   verificationExpiresAt: {
     type: Date,
-    required: true
+    required: false
   },
 
   //restore data user "password"

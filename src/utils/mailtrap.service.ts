@@ -1,9 +1,9 @@
-import { MailtrapClient, SendError, SendResponse } from "mailtrap"
 import { VERIFICATION_EMAIL_TEMPLATE } from "./mailtrap.template"
-import "dotenv/config"
+import { MailtrapClient, SendResponse } from "mailtrap"
 
-type SendEmailResponse = SendResponse | SendError | { errors: unknown }
-interface EmailProps { to: string; subject: string; html: string }
+import { MailtrapResult, EmailProps } from "../interfaces/props.interface"
+import { Result } from "../interfaces/response.interface"
+import "dotenv/config"
 
 export class EmailService {
   private client: MailtrapClient;
@@ -14,29 +14,26 @@ export class EmailService {
     this.client = new MailtrapClient({ token })
   }
 
-  async sendEmail({ to, subject, html }: EmailProps): Promise<SendEmailResponse> {
-    try {
-      const sender = { email: 'auth@gestion_salud.com', name: 'Gestion Salud' }
-      return await this.client.send({
-        from: sender,
-        to: [{ email: to }],
-        subject,
-        html
-      })
-    } catch (e: unknown) {
-      if (isErrorResponse(e)) return e
-      return { errors: e }
-    }
+  async sendEmail(options: EmailProps): Promise<MailtrapResult> {
+    const sender = { email: 'auth@gestion_salud.com', name: 'Gestion Salud' }
+    return this.client.send({
+      ...options,
+      from: sender,
+    })
   }
 
-  async sendVerificationEmail(email: string, verificationToken: string): Promise<SendEmailResponse> {
-    // const verificationUrl = `${process.env.FRONTEND_URL}/verify/${verificationToken}`;
-    const emailOptions: EmailProps = {
-      to: email,
-      subject: "Verifica tu cuenta",
-      html: VERIFICATION_EMAIL_TEMPLATE
-    }
-    return this.sendEmail(emailOptions)
+  async sendVerificationEmail(email: string, verificationToken: string): Promise<Result<boolean>> {
+    try {
+      const emailOptions: EmailProps = {
+        to: [{ email }],
+        subject: "Verifica tu cuenta",
+        category: 'Verificación de email',
+        html: VERIFICATION_EMAIL_TEMPLATE.replace('{verificationCode}', verificationToken)
+      }
+      const result = await this.sendEmail(emailOptions)
+      if (isSuccessResponse(result)) return { value: true }
+      return { error: result.errors.join(', ') }
+    } catch (error) { return { error: `Error interno al enviar el email de verificación: ${error}` } }
   }
 }
 
@@ -44,4 +41,4 @@ export default new EmailService()
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------tools--------------------------------------------------*/
-function isErrorResponse(e: unknown): e is SendError { return (typeof e === "object" && e !== null && "errors" in e) }
+function isSuccessResponse(result: MailtrapResult): result is SendResponse { return result.success }

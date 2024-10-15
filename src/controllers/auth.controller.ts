@@ -1,18 +1,17 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { Request, Response } from "express";
-import { Document } from "mongoose";
+import { verifyAccessToken, generateAccessToken } from "../libs/jwt.handle"
+import generateVerificationToken from "../libs/math.handle"
+import { encrypt, verified } from "../libs/bcrypt.handle"
+import mailtrap from "../utils/mailtrap.service"
 
-import { verifyAccessToken, generateAccessToken } from "../libs/jwt.handle";
-import generateVerificationToken from "../libs/math.handle";
-import { encrypt, verified } from "../libs/bcrypt.handle";
-import { sendVerificationEmail } from "../utils";
+import { User as UserProps } from "../interfaces/model.interface"
+import { Result, send } from "../interfaces/response.interface"
+import ExtendsRequest from "../interfaces/request.interface"
 
-import { User as UserProps } from "../interfaces/model.interface";
-import { Result, send } from "../interfaces/response.interface";
-import ExtendsRequest from "../interfaces/request.interface";
+import { Request, Response } from "express"
+import { Document } from "mongoose"
 
-import User from "../models/user.model";
-
+import User from "../models/user.model"
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
@@ -27,7 +26,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     setCookies(res, token);
     send(res, 200, user.value);
   } catch (e) { send(res, 500, `Error al intentar iniciar sesión: ${e}`) }
-};
+}
 
 /**
  * Maneja el proceso de registro de un nuevo usuario.
@@ -35,24 +34,18 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  * @param {Response} res - Objeto de respuesta Express.
  * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
  */
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (req: Request, res: Response): Promise<void> => {//working here...
   try {
     await isAccountFound(req, res);
     const user = await createUserEncrypt(req);
-    const emailResult = await sendVerificationEmail(user);
-    
-    if ('error' in emailResult) {
-      // Aquí podrías decidir si quieres continuar con el registro o no
-      console.warn("No se pudo enviar el email de verificación:", emailResult.error);
-    }
+    const emailSend = await mailtrap.sendVerificationEmail(user.email, user.verificationToken);
+    if (!emailSend) return send(res, 500, 'Error al enviar el email de verificación');
 
     const token = await generateAccessToken({ id: user._id });
     setCookies(res, token);
     send(res, 200, user);
-  } catch (e) { 
-    send(res, 500, `Error al intentar registrarse: ${e}`) 
-  }
-};
+  } catch (e) { send(res, 500, `Error al intentar registrarse: ${e}`) }
+}
 
 /**
  * Maneja el proceso de cierre de sesión del usuario.
@@ -64,7 +57,7 @@ export const logout = (req: Request, res: Response): Response<any> => {
   if (!req.cookies.token) return res.sendStatus(200)
   res.cookie('token', '', { expires: new Date(0) });
   return res.sendStatus(200);
-};
+}
 
 /**
  * Obtiene el perfil del usuario autenticado.
@@ -90,7 +83,7 @@ export const tokenCredentials = async ({ cookies }: Request, res: Response): Pro
   if ('error' in token) return send(res, 401, token.error)
   if (!userFound) return send(res, 401, 'No autorizado')
   send(res, 200, userFound);
-};
+}
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------tools--------------------------------------------------*/
@@ -147,7 +140,7 @@ async function createUserEncrypt(req: Request): Promise<UserProps> {
     password: passHash,
     verificationToken,
     verificationExpiresAt
-  });
-  return await user.save();
+  })
+  return await user.save()
 }
 /*---------------------------------------------------------------------------------------------------------*/

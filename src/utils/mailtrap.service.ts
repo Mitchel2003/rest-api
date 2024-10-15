@@ -1,63 +1,47 @@
-import { MailtrapClient } from "mailtrap"
+import { MailtrapClient, SendError, SendResponse } from "mailtrap"
+import { VERIFICATION_EMAIL_TEMPLATE } from "./mailtrap.template"
 import "dotenv/config"
 
-export const mailtrapClient = new MailtrapClient({ token: process.env.MAILTRAP_TOKEN || 'not found' })
-
-export const sender = {
-  email: "auth@gestion_salud.com",
-  name: "Gestion Salud"
-}
-
-
-
-
-
-{/*
-  import * as EmailTemplate from "./emailsTemplate";
-import { MailtrapClient } from "mailtrap";
-
-export interface EmailOptions {
-  to: string;
-  subject: string;
-  html: string;
-}
+type SendEmailResponse = SendResponse | SendError | { errors: unknown }
+interface EmailProps { to: string; subject: string; html: string }
 
 export class EmailService {
   private client: MailtrapClient;
 
   constructor() {
     const token = process.env.MAILTRAP_TOKEN;
-    if (!token) throw new Error("MAILTRAP_TOKEN is not defined in environment variables")
-    this.client = new MailtrapClient({ token });
+    if (!token) throw new Error('MAILTRAP_TOKEN is not defined')
+    this.client = new MailtrapClient({ token })
   }
 
-  async sendEmail(options: EmailOptions): Promise<boolean> {
+  async sendEmail({ to, subject, html }: EmailProps): Promise<SendEmailResponse> {
     try {
-      const sender = { name: "Tu Aplicación", email: "no-reply@tuaplicacion.com" };
-      await this.client.send({
+      const sender = { email: 'auth@gestion_salud.com', name: 'Gestion Salud' }
+      return await this.client.send({
         from: sender,
-        to: [{ email: options.to }],
-        subject: options.subject,
-        html: options.html
-      });
-      return true;
-    } catch (error) {
-      console.error("Error sending email:", error);
-      return false;
+        to: [{ email: to }],
+        subject,
+        html
+      })
+    } catch (e: unknown) {
+      if (isErrorResponse(e)) return e
+      return { errors: e }
     }
   }
 
-  async sendVerificationEmail(email: string, verificationToken: string): Promise<boolean> {
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify/${verificationToken}`;
-    const emailOptions: EmailOptions = {
+  async sendVerificationEmail(email: string, verificationToken: string): Promise<SendEmailResponse> {
+    // const verificationUrl = `${process.env.FRONTEND_URL}/verify/${verificationToken}`;
+    const emailOptions: EmailProps = {
       to: email,
       subject: "Verifica tu cuenta",
-      html: EmailTemplate.VERIFICATION_EMAIL_TEMPLATE
-    };
-    return this.sendEmail(emailOptions);
+      html: VERIFICATION_EMAIL_TEMPLATE
+    }
+    return this.sendEmail(emailOptions)
   }
 }
 
-export const emailService = new EmailService();
+export default new EmailService()
+/*---------------------------------------------------------------------------------------------------------*/
 
-   */}
+/*--------------------------------------------------tools--------------------------------------------------*/
+function isErrorResponse(e: unknown): e is SendError { return (typeof e === "object" && e !== null && "errors" in e) }

@@ -1,9 +1,9 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar equipos */
-import { Request, Response } from "express";
+import { Request, Response } from "express"
 
-import ExtendsRequest from "../interfaces/request.interface";
+import ExtendsRequest from "../interfaces/request.interface"
 import { send } from "../interfaces/response.interface"
-import Equipment from "../models/equip.model";
+import Equipment from "../models/equip.model"
 
 /**
  * Obtiene un equipo específico por su ID.

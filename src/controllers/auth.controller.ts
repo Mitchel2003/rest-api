@@ -5,7 +5,7 @@ import { Document } from "mongoose";
 import { verifyAccessToken, generateAccessToken } from "../libs/jwt.handle";
 import generateVerificationToken from "../libs/math.handle";
 import { encrypt, verified } from "../libs/bcrypt.handle";
-import { sendVerificationEmail } from "../utils/emails";
+import { sendVerificationEmail } from "../utils";
 
 import { User as UserProps } from "../interfaces/model.interface";
 import { Result, send } from "../interfaces/response.interface";

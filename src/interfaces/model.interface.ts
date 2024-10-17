@@ -7,6 +7,10 @@ export interface User extends Document {
   email: string;
   password: string;
 
+  //credentials to access
+  role: string;
+  access: boolean;
+
   //email verification and restore credentials
   isVerified: boolean;
   verificationToken?: string;
@@ -33,6 +37,27 @@ export interface Curriculum extends Document {
   description: string,
   date: Date,
   user: Schema.Types.ObjectId,
+  createdAt?: Date,
+  updatedAt?: Date
+}
+{/* -------------------- Location -------------------- */ }
+//country
+export interface Country extends Document {
+  name: string,
+  createdAt?: Date,
+  updatedAt?: Date
+}
+//state
+export interface State extends Document {
+  name: string,
+  country: Schema.Types.ObjectId,
+  createdAt?: Date,
+  updatedAt?: Date
+}
+//city
+export interface City extends Document {
+  name: string,
+  state: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
 }

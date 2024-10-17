@@ -14,10 +14,12 @@ const taskSchema: Schema<Task> = new Schema({
     type: Date,
     default: Date.now
   },
+
+  //reference to the user who created the task
   user: {
-    type: String,
-    ref: 'user',
-    required: true
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'user'
   }
 }, { timestamps: true, versionKey: false })
 

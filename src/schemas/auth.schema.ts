@@ -18,7 +18,9 @@ export const registerSchema = z.object({
     .email({ message: "Correo electrónico inválido" }),
   password: z
     .string({ required_error: "La contraseña es requerida" })
-    .min(6, { message: "La contraseña es demasiado corta" })
+    .min(6, { message: "La contraseña es demasiado corta" }),
+  role: z
+    .enum(['admin', 'user'], { required_error: "El rol es requerido" })
 })
 /*---------------------------------------------------------------------------------------------------------*/
 

@@ -2,11 +2,11 @@
 import { verifyAccessToken, generateAccessToken } from "../libs/jwt.handle"
 import generateVerificationToken from "../libs/math.handle"
 import { encrypt, verified } from "../libs/bcrypt.handle"
-import mailtrap from "../utils/mailtrap.service"
+import mailtrap from "../services/mailtrap.service"
 
 import { User as UserProps } from "../interfaces/model.interface"
+import { ExtendsRequest } from "../interfaces/request.interface"
 import { Result, send } from "../interfaces/response.interface"
-import ExtendsRequest from "../interfaces/request.interface"
 
 import { Request, Response } from "express"
 import { Document } from "mongoose"

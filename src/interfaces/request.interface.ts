@@ -1,8 +1,13 @@
-import { CredentialsJWT } from "./props.interface";
-import { Request } from "express";
-import { Schema } from "mongoose";
+import { CredentialsJWT, SchemaID, UserReferencesProps } from "./props.interface"
+import { Request } from "express"
 
-interface ExtendsRequest extends Request { user?: UserSchema, token?: CredentialsJWT }
-interface UserSchema { id?: Schema.Types.ObjectId }
+export interface ExtendsRequest extends Request {
+  //... others from Request
 
-export default ExtendsRequest
+  //auth
+  token?: CredentialsJWT;
+  user?: { id?: SchemaID };
+
+  //userReferences
+  userReferences?: UserReferencesProps;
+}

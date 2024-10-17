@@ -1,4 +1,4 @@
-import ExtendsRequest from "../interfaces/request.interface";
+import { ExtendsRequest } from "../interfaces/request.interface";
 import { send } from "../interfaces/response.interface";
 import { verifyAccessToken } from "../libs/jwt.handle";
 import { NextFunction, Response } from "express";
@@ -10,4 +10,4 @@ const authRequired = async (req: ExtendsRequest, res: Response, next: NextFuncti
   next();
 }
 
-export default authRequired;
+export default authRequired

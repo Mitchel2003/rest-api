@@ -5,7 +5,9 @@ import "dotenv/config"
 
 import authRoutes from "./routes/auth.routes"
 import taskRoutes from "./routes/task.routes"
+import locationRoutes from "./routes/location.routes"
 import curriculumRoutes from "./routes/curriculum.routes"
+
 
 const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
@@ -14,6 +16,6 @@ app.use(cookieParser());
 
 app.use('/api', authRoutes);
 app.use('/api', taskRoutes);
-app.use('/api', curriculumRoutes);//working here...
-
+app.use('/api', curriculumRoutes);
+app.use('/api/location', locationRoutes);//working here...
 export default app;

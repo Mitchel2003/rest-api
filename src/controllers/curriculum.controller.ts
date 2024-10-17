@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar curriculums (equipos) */
 import { Request, Response } from "express"
 
-import ExtendsRequest from "../interfaces/request.interface"
+import { ExtendsRequest } from "../interfaces/request.interface"
 import { send } from "../interfaces/response.interface"
 import Curriculum from "../models/curriculum.model"
 

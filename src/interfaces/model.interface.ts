@@ -27,8 +27,8 @@ export interface Task extends Document {
   createdAt?: Date,
   updatedAt?: Date
 }
-{/* -------------------- Equipment -------------------- */ }
-export interface Equipment extends Document {
+{/* -------------------- Curriculum -------------------- */ }
+export interface Curriculum extends Document {
   title: string,
   description: string,
   date: Date,

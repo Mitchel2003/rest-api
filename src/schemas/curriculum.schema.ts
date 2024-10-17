@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createEquipmentSchema = z.object({
+export const curriculumSchema = z.object({
   title: z
     .string({ required_error: "Title is required" }),
   description: z

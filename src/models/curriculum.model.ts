@@ -1,7 +1,7 @@
-import { Equipment } from "../interfaces/model.interface";
+import { Curriculum } from "../interfaces/model.interface";
 import mongoose, { Schema } from "mongoose";
 
-const equipmentSchema: Schema<Equipment> = new Schema({
+const curriculumSchema: Schema<Curriculum> = new Schema({
   title: {
     type: String,
     required: true
@@ -21,4 +21,4 @@ const equipmentSchema: Schema<Equipment> = new Schema({
   }
 }, { timestamps: true, versionKey: false })
 
-export default mongoose.model('equipment', equipmentSchema);
+export default mongoose.model('curriculum', curriculumSchema);

@@ -4,16 +4,7 @@ import tokenRequired from "../middlewares/token.middleware";
 import authRequired from "../middlewares/auth.middleware";
 import { Router } from "express";
 
-import {
-  login,
-  register,
-  logout,
-  profile,
-  verifyAuth,
-  verifyEmail,
-  forgotPassword,
-  resetPassword
-} from "../controllers/auth.controller";
+import { login, register, logout, profile, verifyAuth, verifyEmail, forgotPassword, resetPassword } from "../controllers/auth.controller";
 
 const router = Router();
 

@@ -17,5 +17,5 @@ app.use(cookieParser());
 app.use('/api', authRoutes);
 app.use('/api', taskRoutes);
 app.use('/api', curriculumRoutes);
-app.use('/api/location', locationRoutes);//working here...
+app.use('/api/location', locationRoutes);
 export default app;

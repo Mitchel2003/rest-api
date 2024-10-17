@@ -25,7 +25,7 @@ const router = Router();
 router.post('/city', authRequired, userReferences, validateSchema(citySchema), createCity)
 
 //state
-router.post('/state', authRequired, userReferences, validateSchema(stateSchema), createState)
+router.post('/state', authRequired, userReferences, validateSchema(stateSchema), createState)//working here...
 
 //country
 router.post('/country', authRequired, validateSchema(countrySchema), createCountry)

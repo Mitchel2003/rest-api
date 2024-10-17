@@ -1716,4 +1716,17 @@ Este middleware habilita CORS (Cross-Origin Resource Sharing), lo que permite o 
 ### Conclusión
 El orden de los middlewares en Express es crucial para asegurar que las solicitudes sean procesadas correctamente. Los middlewares como `express.json()` y `cors()` preparan la solicitud antes de que llegue a las rutas, garantizando que los datos estén disponibles y que las políticas de seguridad se apliquen correctamente.
 ### ---------------------------------------------------------------------------------------------------- ###
->>>>>>> origin/main
+
+# Commentaries #
+## 001
+  la razon de que pida el country (id_country de mongoDB) y no lo omita como en el caso de task.schema
+  es porque en la funcion de crearTask se obtiene la "referencia" en este caso (user) desde el
+  ExtendsRequest; esta extencion posee la particularidad de que tiene el user en el body y como?
+  pues resulta que tenemos un middleware que se encarga de ello, y es el authRequired, el cual es
+  un sistema que se encarga de verificar un token presente en las cookies, este token a su vez
+  contiene el ide del usuario (encriptado), al momento de ser validado, y decodificado, se extrae
+  el id, el cual es pasado a este famoso ExtendsRequest, como podras ver, de aqui sale el user.id
+  que vemos por ejemplo en la funcion getTasks o createTask
+
+  explicado esto, cabe mencionar que el menester de country como tal, entonces, para ello, precisamos
+  de hacer referencia a country desde el formulario (input)

@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { verifyAccessToken, generateAccessToken } from "../libs/jwt.handle"
 import generateVerificationToken from "../libs/math.handle"
 import { encrypt, verified } from "../libs/bcrypt.handle"
+import { generateAccessToken } from "../libs/jwt.handle"
 import mailtrap from "../services/mailtrap.service"
 
 import { User as UserProps } from "../interfaces/model.interface"

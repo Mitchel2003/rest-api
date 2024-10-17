@@ -8,8 +8,8 @@ import { getCurriculum, getCurriculums, createCurriculum, updateCurriculum, dele
 const router = Router();
 
 router.post('/cv', authRequired, validateSchema(curriculumSchema), createCurriculum);
-router.get('/cv/:id', authRequired, getCurriculum);
 router.get('/cvs', authRequired, getCurriculums);
+router.get('/cv/:id', authRequired, getCurriculum);
 router.put('/cv/:id', authRequired, updateCurriculum);
 router.delete('/cv/:id', authRequired, deleteCurriculum);
 

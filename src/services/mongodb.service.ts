@@ -1,4 +1,4 @@
-import { SchemaProps, UserReferencesProps } from '../interfaces/request.interface';
+import { SchemaID, UserReferencesProps } from '../interfaces/props.interface';
 import User from '../models/user.model';
 
 /*----------------------------------------------userReferences----------------------------------------------*/
@@ -14,10 +14,10 @@ class UserReferences {
 
   /**
    * Obtiene las referencias de ubicación de un usuario.
-   * @param {SchemaProps} id - ID del usuario
+   * @param {SchemaID} id - ID del usuario
    * @returns {Promise<UserReferencesProps>} Referencias de ubicación del usuario
    */
-  async get(id: SchemaProps): Promise<UserReferencesProps> {
+  async get(id: SchemaID): Promise<UserReferencesProps> {
     try {
       const user = await User.findById(id).populate({
         path: 'headquarter',

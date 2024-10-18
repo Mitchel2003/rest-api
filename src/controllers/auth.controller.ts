@@ -1,18 +1,17 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import generateVerificationToken from "../libs/math.handle"
-import { encrypt, verified } from "../libs/bcrypt.handle"
-import { generateAccessToken } from "../libs/jwt.handle"
+import { encrypt, verified } from "../services/bcrypt.service"
+import { generateAccessToken } from "../services/jwt.service"
 import mailtrap from "../services/mailtrap.service"
 
+import { ExtendsRequest, Result, send } from "../interfaces/api.interface"
 import { User as UserProps } from "../interfaces/model.interface"
-import { ExtendsRequest } from "../interfaces/request.interface"
-import { Result, send } from "../interfaces/response.interface"
+import User from "../models/user.model"
 
+import generateVerificationToken from "../utils/math"
 import { Request, Response } from "express"
 import { Document } from "mongoose"
-import crypto from 'crypto';
+import crypto from "crypto"
 
-import User from "../models/user.model"
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.

@@ -1,8 +1,6 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar tareas */
+import { ExtendsRequest, send } from "../interfaces/api.interface";
 import { Request, Response } from "express";
-
-import { ExtendsRequest } from "../interfaces/request.interface";
-import { send } from "../interfaces/response.interface"
 import Task from "../models/task.model";
 
 /**

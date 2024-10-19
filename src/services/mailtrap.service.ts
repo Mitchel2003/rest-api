@@ -2,7 +2,7 @@ import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_
 import { MailtrapClient, SendError } from "mailtrap"
 
 import { MailtrapResult, EmailProps } from "../interfaces/props.interface"
-import { Result } from "../interfaces/response.interface"
+import { Result } from "../interfaces/api.interface"
 import { User } from "../interfaces/model.interface"
 import "dotenv/config"
 

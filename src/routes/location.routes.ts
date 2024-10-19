@@ -1,8 +1,8 @@
-import { countrySchema, stateSchema, citySchema } from "../schemas/location.schema";
-import userReferences from "../middlewares/references.middleware";
-import validateSchema from "../middlewares/validator.middleware";
-import authRequired from "../middlewares/auth.middleware";
-import { Router } from "express";
+import { countrySchema, stateSchema, citySchema } from "../schemas/location.schema"
+import userReferences from "../middlewares/references.middleware"
+import validateSchema from "../middlewares/validator.middleware"
+import authRequired from "../middlewares/auth.middleware"
+import { Router } from "express"
 
 import {
   //city
@@ -17,9 +17,9 @@ import {
   createCountry,
   deleteCountry,
   updateCountry
-} from "../controllers/location.controller";
+} from "../controllers/location.controller"
 
-const router = Router();
+const router = Router()
 
 //city
 router.post('/city', authRequired, userReferences, validateSchema(citySchema), createCity)

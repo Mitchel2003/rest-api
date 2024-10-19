@@ -1,8 +1,4 @@
-import {
-  Country as TypeCountry,
-  State as TypeState,
-  City as TypeCity
-} from "../interfaces/model.interface";
+import { Country as TypeCountry, State as TypeState, City as TypeCity } from "../interfaces/model.interface";
 import mongoose, { Schema } from "mongoose";
 
 /*--------------------------------------------------city--------------------------------------------------*/

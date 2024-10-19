@@ -74,8 +74,8 @@ export const profile = async (req: ExtendsRequest, res: Response): Promise<void>
  * @returns {Promise<void>} - Envía los datos del usuario autenticado o un mensaje de error.
  */
 export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<void> => {
-  const userFound = await User.findById(req.token?.id)
-  if (!userFound) return send(res, 401, 'No autorizado')
+  const userFound = await User.findById(req.token?.id);
+  if (!userFound) return send(res, 401, 'No autorizado');
   send(res, 200, userFound);
 }
 
@@ -87,8 +87,8 @@ export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<vo
 export const verifyEmail = async ({ body }: Request, res: Response): Promise<void> => {
   try {
     const { code } = body;
-    const user = await User.findOne({ verificationToken: code, verificationExpiresAt: { $gte: new Date() } })
-    if (!user) return send(res, 401, 'Código de verificación inválido o expirado')
+    const user = await User.findOne({ verificationToken: code, verificationExpiresAt: { $gte: new Date() } });
+    if (!user) return send(res, 401, 'Código de verificación inválido o expirado');
 
     //verify email
     user.isVerified = true;
@@ -156,10 +156,11 @@ export const resetPassword = async ({ params, body }: Request, res: Response): P
  * @param {string} token - Token de autenticación a establecer en las cookies.
  */
 function setCookies(res: Response, token: string) {
-  res.cookie('token', token, { // coment sameSite on production
-    sameSite: 'none',
+  res.cookie('token', token, {
     httpOnly: false,
-    secure: true
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 horas
   })
 }
 

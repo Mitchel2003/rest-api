@@ -157,10 +157,10 @@ export const resetPassword = async ({ params, body }: Request, res: Response): P
  */
 function setCookies(res: Response, token: string) {
   res.cookie('token', token, { // coment sameSite on production
-    /* sameSite: 'none', */
+    sameSite: 'none',
     httpOnly: false,
     secure: true
-  });
+  })
 }
 
 /**

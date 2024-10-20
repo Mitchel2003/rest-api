@@ -18,4 +18,5 @@ app.use('/api', authRoutes);
 app.use('/api', taskRoutes);
 app.use('/api', curriculumRoutes);
 app.use('/api/location', locationRoutes);
+
 export default app;

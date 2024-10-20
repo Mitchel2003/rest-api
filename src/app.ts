@@ -8,7 +8,6 @@ import taskRoutes from "./routes/task.routes"
 import locationRoutes from "./routes/location.routes"
 import curriculumRoutes from "./routes/curriculum.routes"
 
-
 const app = express();
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(express.json());

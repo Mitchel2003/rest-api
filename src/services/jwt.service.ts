@@ -1,8 +1,8 @@
-import { CredentialsJWT } from "../interfaces/props.interface";
-import jwt from "jsonwebtoken";
-import "dotenv/config"
+import { CredentialsJWT } from "../interfaces/props.interface"
+import env from "../utils/config"
+import jwt from "jsonwebtoken"
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET as string;
+const TOKEN_SECRET = env.jwtSecret
 /**
  * Esto crea un token de acceso para servicios de autenticación y rutas protegidas
  * @param token - es el dato del parámetro para encriptar en el token, puede ser usado en otro momento para autenticación

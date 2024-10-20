@@ -354,6 +354,46 @@ Tenemos las siguientes situaciones
 - **`"data" in (e as any).response`**: Finalmente, verifica que la propiedad `data` esté dentro del objeto `response`.
 ### ---------------------------------------------------------------------------------------------------- ###
 
+### -------------------------------------------Code references------------------------------------------ ###
+```ts
+import { Request, Response, NextFunction } from "express";
+
+export class AppError extends Error {
+  statusCode: number;
+  isOperational: boolean;
+
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
+
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
+      status: "error",
+      message: err.message,
+    });
+  } else {
+    console.error("Error", err);
+    res.status(500).json({
+      status: "error",
+      message: "Something went wrong",
+    });
+  }
+}
+
+app.use(errorHandler)
+```
+
 ### -------------------------------------Commentaries documentation------------------------------------- ###
 #### 001
   la razon de que pida el country (id_country de mongoDB) y no lo omita como en el caso de task.schema

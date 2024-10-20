@@ -4,13 +4,13 @@ import { MailtrapClient, SendError } from "mailtrap"
 import { MailtrapResult, EmailProps } from "../interfaces/props.interface"
 import { Result } from "../interfaces/api.interface"
 import { User } from "../interfaces/model.interface"
-import "dotenv/config"
+import env from "../utils/config"
 
 export class EmailService {
   private client: MailtrapClient;
 
   constructor() {
-    const token = process.env.MAILTRAP_TOKEN;
+    const token = env.mailtrapToken;
     if (!token) throw new Error('MAILTRAP_TOKEN is not defined')
     this.client = new MailtrapClient({ token })
   }
@@ -52,7 +52,7 @@ export class EmailService {
    * @returns {Promise<Result<boolean>>} - Resultado booleano de la operación
    */
   async sendResetPasswordEmail(email: string, resetToken: string): Promise<Result<boolean>> {
-    const url = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
+    const url = `${env.frontendUrl}/reset-password?token=${resetToken}`
     const emailOptions: EmailProps = {
       to: [{ email }],
       subject: "Restablece tu contraseña",

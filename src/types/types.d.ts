@@ -1,7 +1,6 @@
-import 'cookie-parser';
-import 'express';
-import 'cors';
-
+declare module 'cookie-parser';
+declare module 'express';
+declare module 'cors';
 declare module 'jsonwebtoken';
 declare module 'bcryptjs';
 

@@ -1,7 +1,6 @@
 import cookieParser from "cookie-parser"
 import express from "express"
 import cors from "cors"
-import "dotenv/config"
 
 import authRoutes from "./routes/auth.routes"
 import taskRoutes from "./routes/task.routes"

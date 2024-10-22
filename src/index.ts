@@ -1,4 +1,3 @@
-import "ts-node/register"
 import { connectionDB } from "./db";
 import app from "./app";
 

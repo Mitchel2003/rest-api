@@ -42,6 +42,11 @@ Si el frontend y el backend están en dominios diferentes, debes asegurarte de q
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'None',
   });
+
+  //clean cache
+  npm cache clean --force
+  rm -rf node_modules package-lock.json
+  npm install
   ```
 
 *important to production*

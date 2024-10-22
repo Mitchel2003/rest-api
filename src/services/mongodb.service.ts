@@ -38,7 +38,7 @@ class UserReferences {
       //   state: user.headquarter.city.state._id,
       //   country: user.headquarter.city.state.country._id
       // }
-      return {} as UserReferencesProps //mean while
+      return { user } as UserReferencesProps //mean while
     } catch (e) { throw new Error(`Failed to fetch user references: ${e}`) }
   }
 }

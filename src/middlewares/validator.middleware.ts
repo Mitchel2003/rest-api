@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from "express"
+import { send } from "src/interfaces/api.interface"
 import { ZodType, ZodError } from "zod"
 
 const validateSchema = (schema: ZodType) => (req: Request, res: Response, next: NextFunction) => {
   try {
     schema.parse(req.body)
     next()
-  } catch (e: unknown) { if (e instanceof ZodError) return res.status(400).json(e.errors.map(error => error.message)) }
+  } catch (e: unknown) {
+    if (e instanceof ZodError) return send(res, 400, e.errors.join(', '))
+    send(res, 500, `Error interno del servidor al validar el esquema: ${e}`)
+  }
 }
 
 export default validateSchema

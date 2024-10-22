@@ -1,7 +1,5 @@
 import { SendResponse, SendError } from "mailtrap";
 import { JwtPayload } from "jsonwebtoken";
-import { Response } from "express";
-import { Request } from "express"
 import { Schema } from "mongoose";
 
 /*--------------- schemas ---------------*/

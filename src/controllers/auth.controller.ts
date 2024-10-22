@@ -51,10 +51,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
  * @param {Request} req - Objeto de solicitud Express.
  * @returns {Response<any>} - Envía una respuesta de éxito.
  */
-export const logout = (req: Request, res: Response): Response<any> => {
-  if (!req.cookies.token) return res.sendStatus(200)
+export const logout = (req: Request, res: Response): void => {
+  if (!req.cookies.token) return send(res, 200, 'Cierre de sesión exitoso');
   res.cookie('token', '', { expires: new Date(0) });
-  return res.sendStatus(200);
+  send(res, 200, 'Cierre de sesión exitoso');
 }
 
 /**

@@ -10,7 +10,7 @@ const TOKEN_SECRET = process.env.TOKEN_SECRET as string;
  */
 export async function generateAccessToken(payload: object): Promise<string> {
   return new Promise((resolve, reject) => {
-    jwt.sign(payload, TOKEN_SECRET, { expiresIn: "1d" }, (error, token) => {
+    jwt.sign(payload, TOKEN_SECRET, { expiresIn: "1d" }, (error: Error | null, token: string | undefined) => {
       if (error) return reject(error);
       resolve(token as string);
     });

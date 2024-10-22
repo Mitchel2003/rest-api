@@ -1,3 +1,72 @@
+muy buenos dias, mira estoy intensamente buscando una solucion a mi problema; dejame explicarte un poco el contexto. hasta ahora has sido muy profesional, me has dado las mejores implementaciones y el codigo mas impresionante, ahora se viene un verdadero reto; antes quisiera darte un recuento de como estamos trabajando, mira, tengo mi backend construido con typescript, nodejs, express y otras dependencias mas, por favor hecha un vistazo a mi proyecto; @src  @server  @services  @controllers  @interfaces  @middlewares  @models  @routes  @schemas  @templates  @utils  @app.ts  @db.ts  @index.ts  como podras ver se trata de algo muy bien conformado; el error que estoy recibiendo se trata de error al hacer deploy, en especial cuando empieza a construir con el npm run start, aqui estan mis archivos de configuración @.nvmrc  @package.json  @package-lock.json  @tsconfig.json; como podras notar utilizo mi tsconfig algo configurado; bien, ya que sabes el contexto, he implementado el tsc para el build y el node src/dist para el start, ahora mira, esto es lo que me arroja la consola de Render, es como si al compilar, no se pasaran correctamente los imports "Running build command 'npm i'...
+up to date, audited 136 packages in 551ms
+17 packages are looking for funding
+  run `npm fund` for details
+found 0 vulnerabilities
+==> Uploading build...
+==> Build uploaded in 7s
+==> Build successful 🎉
+==> Deploying...
+==> Using Node.js version 20.10.0 via /opt/render/project/src/.nvmrc
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+==> Running 'npm run build && npm run start'
+> api_gestion_salud@1.0.1 build
+> tsc
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+src/app.ts(1,26): error TS7016: Could not find a declaration file for module 'cookie-parser'. '/opt/render/project/src/node_modules/cookie-parser/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/cookie-parser` if it exists or add a new declaration (.d.ts) file containing `declare module 'cookie-parser';`
+src/app.ts(2,21): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/app.ts(3,18): error TS7016: Could not find a declaration file for module 'cors'. '/opt/render/project/src/node_modules/cors/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/cors` if it exists or add a new declaration (.d.ts) file containing `declare module 'cors';`
+src/controllers/auth.controller.ts(11,35): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/controllers/curriculum.controller.ts(4,35): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/controllers/curriculum.controller.ts(38,54): error TS2339: Property 'body' does not exist on type 'ExtendsRequest'.
+src/controllers/location.controller.ts(4,35): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/controllers/location.controller.ts(41,40): error TS2339: Property 'body' does not exist on type 'ExtendsRequest'.
+src/controllers/location.controller.ts(109,42): error TS2339: Property 'body' does not exist on type 'ExtendsRequest'.
+src/controllers/task.controller.ts(3,35): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/controllers/task.controller.ts(41,40): error TS2339: Property 'body' does not exist on type 'ExtendsRequest'.
+src/interfaces/api.interface.ts(2,26): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/interfaces/api.interface.ts(3,25): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/interfaces/props.interface.ts(2,28): error TS7016: Could not find a declaration file for module 'jsonwebtoken'. '/opt/render/project/src/node_modules/jsonwebtoken/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jsonwebtoken` if it exists or add a new declaration (.d.ts) file containing `declare module 'jsonwebtoken';`
+src/middlewares/auth.middleware.ts(3,40): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/middlewares/auth.middleware.ts(6,46): error TS2339: Property 'cookies' does not exist on type 'ExtendsRequest'.
+src/middlewares/references.middleware.ts(3,40): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/middlewares/token.middleware.ts(3,40): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/middlewares/token.middleware.ts(6,45): error TS2339: Property 'cookies' does not exist on type 'ExtendsRequest'.
+src/middlewares/validator.middleware.ts(1,49): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/routes/auth.routes.ts(5,24): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/routes/curriculum.routes.ts(4,24): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/routes/location.routes.ts(5,24): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/routes/task.routes.ts(4,24): error TS7016: Could not find a declaration file for module 'express'. '/opt/render/project/src/node_modules/express/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/express` if it exists or add a new declaration (.d.ts) file containing `declare module 'express';`
+src/services/bcrypt.service.ts(1,31): error TS7016: Could not find a declaration file for module 'bcryptjs'. '/opt/render/project/src/node_modules/bcryptjs/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/bcryptjs` if it exists or add a new declaration (.d.ts) file containing `declare module 'bcryptjs';`
+src/services/jwt.service.ts(2,17): error TS7016: Could not find a declaration file for module 'jsonwebtoken'. '/opt/render/project/src/node_modules/jsonwebtoken/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jsonwebtoken` if it exists or add a new declaration (.d.ts) file containing `declare module 'jsonwebtoken';`
+==> Exited with status 2" todos los errores se refierena mis dependencias, y si se supone que estan correctamente instaladas y operando entonces no se a que se puede deber este problema, !animo! he avanzado  y ahora entiendo que debo usar el tsc; mis aptitudes y potencial esta a la hora de construir codigo, lamento no entender mucho sobre lo de compilacion y mimificacion del codigo para el deploy, tampoco entiendo muy bien como es que la compilacion me interpreta las dependencias y construye mi codigo, creo que deberia implementar algo como eso, porque si entras ahora al dist que produce mi "tsc" encontraras que el codigo no esta mimificado, tambien he convierte todo a un solo archivo index.js y de allí con todo mimificado y correctamente construido, logra inizializar una aplicacion correctamente @server @dist @services etc. este es mi dist, quiero que inspecciones cada detalle u configuracion de mi proyecto @services   @controllers  @interfaces  @middlewares  @models  @routes  @schemas   @templates  @utils revisa mi @tsconfig.json y ayudame a implementar esta compilacion de codigo para produccion de la manera mas profesional posible, se que existe el eslintr configuracion, pero he optado por trabajar con un compilador mas para backend, por ello uso el tsc, quiero implementar lo mas optimo para mi proyecto, esto para que mi CEO quede impresionado por mi profesionalismo; siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructuracion u abstraccion tan bonita, !VAMOS, eres la mejor!
+
+
+
+
 ### -----------------------------------------------Readme----------------------------------------------- ###
 ## Códigos de estado informativos (100-199):================================================================
 *100* Continue: El servidor ha recibido los encabezados de la solicitud y el cliente debe proceder a enviar el cuerpo de la solicitud.

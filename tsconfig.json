@@ -10,7 +10,7 @@
     "baseUrl": "./src", //base URL para las rutas
 
     "paths": { "@*": ["*"] },
-    "typeRoots": ["@types", "./node_modules/@types"]
+    "types": ["node"],
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

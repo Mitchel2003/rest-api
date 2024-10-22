@@ -7,10 +7,9 @@
     "esModuleInterop": true, //compatibilidad con módulos ES
     "moduleResolution": "node", //resolución de módulos
     "module": "commonjs", //tipo de módulo
-    "baseUrl": "./src", //base URL para las rutas
+    "baseUrl": ".", //base URL para las rutas
 
-    "paths": { "@*": ["*"] },
-    "types": ["node"],
+    "paths": { "@*": ["*"] }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

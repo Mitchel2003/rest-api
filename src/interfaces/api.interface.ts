@@ -1,6 +1,5 @@
 import { CredentialsJWT, SchemaID, UserReferencesProps } from "./props.interface"
-import { Response } from "express"
-import { Request } from "express"
+import { Request, Response } from "express"
 
 /*--------------- request ---------------*/
 export interface ExtendsRequest extends Request {
@@ -15,14 +14,14 @@ export interface ExtendsRequest extends Request {
 /*--------------- response ---------------*/
 export type Error = string
 export type ApiResponse<T> = T | Error
-export type ResponseProps = <T>(
+export type SendResponseProps = <T>(
   res: Response,
   status: number,
   data: T
 ) => void
 
 /*--------------- tools ---------------*/
-export const send: ResponseProps = (res, status, data) => {
+export const send: SendResponseProps = (res, status, data) => {
   const response: ApiResponse<typeof data> = data;
   res.status(status).json(response);
 }

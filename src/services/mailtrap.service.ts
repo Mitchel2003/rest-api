@@ -1,16 +1,16 @@
 import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "../templates/mailtrap.template"
 import { MailtrapClient, SendError } from "mailtrap"
+import config from "../utils/config"
 
 import { MailtrapResult, EmailProps } from "../interfaces/props.interface"
 import { Result } from "../interfaces/api.interface"
 import { User } from "../interfaces/model.interface"
-import "dotenv/config"
 
 export class EmailService {
   private client: MailtrapClient;
 
   constructor() {
-    const token = process.env.MAILTRAP_TOKEN;
+    const token = config.mailtrapToken;
     if (!token) throw new Error('MAILTRAP_TOKEN is not defined')
     this.client = new MailtrapClient({ token })
   }

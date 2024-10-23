@@ -1,1 +1,1 @@
-declare namespace Permissions { type Permissions = any }
+export type Permissions = any;

@@ -6,10 +6,11 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "npm run clean && babel src --extensions \".ts,.tsx\" --out-dir dist --copy-files --source-maps && npm run postbuild && npm run minify",
+    "build": "npm run clean && npm run babel && npm run postbuild && npm run minify",
+    "babel": "babel src --extensions \".ts,.tsx\" --out-dir dist --copy-files --source-maps",
     "minify": "terser dist/**/*.js --compress --mangle --output dist/",
     "postbuild": "tsc --emitDeclarationOnly",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist && mkdir dist"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +36,7 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/typescript": "^0.4.29",
+    "rimraf": "^6.0.1",
     "terser": "^5.36.0"
   }
 }

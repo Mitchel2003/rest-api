@@ -1,1 +1,1 @@
-declare namespace MailtrapAPI { type Permissions = any }
+declare namespace MailtrapAPI { export type Permissions = any }

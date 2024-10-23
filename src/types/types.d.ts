@@ -1,1 +1,1 @@
-export type Permissions = any;
+declare namespace Permissions { }

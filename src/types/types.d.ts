@@ -49,8 +49,6 @@ declare module 'mailtrap' {
     permissions: Permissions;
   }
 
-  
-
   // // Extendemos la definición del módulo principal de Mailtrap
   // export interface MailtrapClient {
   //   send(options: any): Promise<any>;
@@ -71,4 +69,4 @@ declare global {
 }
 
 // Exportamos Permissions para uso fuera del contexto de Mailtrap si es necesario
-export type MailtrapPermissions = Mailtrap.Permissions;
+export type Permissions = Mailtrap.Permissions;

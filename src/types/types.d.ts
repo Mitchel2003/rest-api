@@ -1,0 +1,1 @@
+declare namespace MailtrapAPI { type Permissions = any }

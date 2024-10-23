@@ -1,6 +1,15 @@
 import 'mailtrap';
 
 // Extendemos las definiciones de tipos para 'mailtrap'
+export declare namespace MailtrapAPI {
+  export type Permissions = {
+    can_read: boolean;
+    can_update: boolean;
+    can_destroy: boolean;
+    can_leave: boolean;
+  };
+}
+
 declare module 'mailtrap' {
   // Declaramos la interfaz Permissions
   export interface Permissions {

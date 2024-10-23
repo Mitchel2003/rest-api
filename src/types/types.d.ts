@@ -1,8 +1,8 @@
 import 'mailtrap';
 
-export declare namespace Permissions {
-  export type can_read = boolean;
-  export type can_update = boolean;
-  export type can_destroy = boolean;
-  export type can_leave = boolean;
+declare namespace Permissions {
+  type can_read = boolean;
+  type can_update = boolean;
+  type can_destroy = boolean;
+  type can_leave = boolean;
 }

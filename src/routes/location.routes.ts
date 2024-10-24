@@ -41,6 +41,14 @@ haremos si tenemos varias ciudades u departamentos en donde opera el usuario */
 /* aunque pensandolo mejor, si intuimos que al traer una de las sedes, ya se trae toda la info de localizacion, y si intuimos que la persona opera
 en un pais, entonces si tendria sentido usar el userReferences, pero de modo que solo usamos el id del pais */
 
+/* antes siquiera de intentar crear un estado, debemos arreglar una logica un poco obsoleta; resulta que en userReference estamos
+intentando obtener el headquarte para empezar e ir escalando hasta llegar a pais, pero el detalle esta en que no hay ningun Headquarter
+en la base de datos, error mio; ahora bien, como se supone que vamos a obtener el pais si no tenemos el headquarter?
+porque se supone que mediante esta busqueda diferida logramos ir obteniendo datos respecto a la sede (headquarter) al que pertenece el usuario */
+
+/* ahora, si se supone que el usuario pertenece a una sede, y esta a su vez pertenece a una ciudad y un departamento, y este a su vez
+pertenece a un pais, entonces si tendriamos sentido usar el userReferences, pero de este modo solo obtendriamos el id del pais */
+
 router.post('/state', authRequired, userReferences, validateSchema(stateSchema), createState)//working here...
 router.get('/state/:id', authRequired, getState)
 router.get('/states', authRequired, getStates)

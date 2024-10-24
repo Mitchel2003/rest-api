@@ -1,15 +1,16 @@
-// import 'mailtrap';
-// import { Permissions } from 'mailtrap/dist/types/api/inboxes';
+import 'mailtrap';
+// import * as Inboxes from 'mailtrap/dist/types/api/inboxes';
 
-declare module 'mailtrap/dist/types/api/projects.d.ts' {
-  // Usa el tipo Permissions del namespace Mailtrap.Project
-
+declare module 'mailtrap/dist/types/api/projects' {
   export type Permissions = {
     can_read: boolean;
     can_update: boolean;
     can_destroy: boolean;
     can_leave: boolean;
   }
+
+  // export type Permissions = {
+  // }
 
   // export namespace Project {
   //   // Definir el tipo ShareLinks dentro del namespace

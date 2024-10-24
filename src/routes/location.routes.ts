@@ -30,7 +30,7 @@ router.post('/state', authRequired, userReferences, validateSchema(stateSchema),
 //country
 router.post('/country', authRequired, validateSchema(countrySchema), createCountry)
 router.get('/country/:id', authRequired, getCountry)
-router.get('/countries', authRequired, getCountries)
+router.get('/countrys', authRequired, getCountries)
 router.put('/country/:id', authRequired, updateCountry)
 router.delete('/country/:id', authRequired, deleteCountry)
 

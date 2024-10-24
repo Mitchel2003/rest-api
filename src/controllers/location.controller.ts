@@ -161,10 +161,7 @@ export const getCountries = async (res: Response): Promise<void> => {
   try {
     const countries = await Country.find();
     send(res, 200, countries);
-  } catch (e) { 
-    console.error(`Error al obtener los países: ${e}`);
-    send(res, 500, `Error interno del servidor al obtener los países: ${e}`); 
-  }
+  } catch (e) { send(res, 500, `Error interno del servidor al obtener los países: ${e}`) }
 }
 
 /**

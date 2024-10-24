@@ -20,15 +20,6 @@ export interface User extends Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
-{/* -------------------- Task -------------------- */ }
-export interface Task extends Document {
-  title: string,
-  description: string,
-  date: Date,
-  user: Schema.Types.ObjectId,
-  createdAt?: Date,
-  updatedAt?: Date
-}
 {/* -------------------- Curriculum -------------------- */ }
 export interface Curriculum extends Document {
   title: string,

@@ -155,7 +155,10 @@ export const getCountry = async ({ params }: Request, res: Response): Promise<vo
 
 /**
  * Obtiene todos los países.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del usuario en user.id.
  * @returns {Promise<void>} - Envía todos los países encontrados o un mensaje de error.
+ * @example
+ * { countries: [...], currentUser: {...} }
  */
 export const getCountries = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {

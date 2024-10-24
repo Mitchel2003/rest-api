@@ -159,9 +159,6 @@ export const getCountry = async ({ params }: Request, res: Response): Promise<vo
  */
 export const getCountries = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body;
-    console.log(email, password);
-    
     const countries = await Country.find();
     send(res, 200, countries);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener los países: ${e}`) }

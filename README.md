@@ -26,6 +26,9 @@
 *503* Service Unavailable: El servidor no está disponible temporalmente, generalmente debido a mantenimiento o sobrecarga.
 *504* Gateway Timeout: El servidor, actuando como una puerta de enlace o proxy, no recibió una respuesta a tiempo del servidor ascendente.
 
+## Request and Response:=====================================================================================
+En las funciones de los controladores, se debe usar el objeto de solicitud `req` para obtener los datos de la solicitud y el objeto de respuesta `res` para enviar la respuesta al cliente; en caso de que no dependamos de `req` en la función, no debemos eliminarle de los params, debemos usarlos para evitar el 502 error.
+
 ## Populate:=================================================================================================
 Para obtener los datos del usuario que creó el curriculum, cliente, etc. se debe usar el método `populate` de mongoose
 ```typescript

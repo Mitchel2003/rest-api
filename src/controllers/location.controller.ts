@@ -155,7 +155,6 @@ export const getCountry = async ({ params }: Request, res: Response): Promise<vo
 
 /**
  * Obtiene todos los países.
- * @param {Request} req - Objeto de solicitud Express.
  * @returns {Promise<void>} - Envía todos los países encontrados o un mensaje de error.
  */
 export const getCountries = async (res: Response): Promise<void> => {

@@ -4,11 +4,11 @@ import { Schema } from "mongoose";
 
 /*--------------- schemas ---------------*/
 export type SchemaID = Schema.Types.ObjectId;
-export interface UserReferencesProps {
+export type UserReferencesProps = {
   city?: SchemaID;
   state?: SchemaID;
   country?: SchemaID;
-}
+} | {}
 
 /*--------------- mailtrap.service.ts ---------------*/
 export type MailtrapResult = (SendResponse & { success: true }) | (SendError & { success: false })

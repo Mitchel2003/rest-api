@@ -22,10 +22,11 @@ export const getCity = async ({ params }: Request, res: Response): Promise<void>
  * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del departamento en state.id.
  * @returns {Promise<void>} - Envía todas las ciudades encontradas o un mensaje de error.
  */
-export const getCities = async (req: ExtendsRequest, res: Response): Promise<void> => {
+export const getCities = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    if (!req.userReferences?.state) return send(res, 400, "Referencia de usuario no encontrada");
-    const cities = await City.find({ state: req.userReferences.state }).populate('state');
+    // if (!req.userReferences?.state) return send(res, 400, "Referencia de usuario no encontrada");
+    // const cities = await City.find({ state: req.userReferences.state }).populate('state');
+    const cities = await City.find({ state: body.state }).populate('state');
     send(res, 200, cities);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener las ciudades: ${e}`) }
 }
@@ -35,10 +36,11 @@ export const getCities = async (req: ExtendsRequest, res: Response): Promise<voi
  * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener los datos de la ciudad en el body y el ID del departamento en state.id.
  * @returns {Promise<void>} - Envía la ciudad creada o un mensaje de error.
  */
-export const createCity = async (req: ExtendsRequest, res: Response): Promise<void> => {
+export const createCity = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    if (!req.userReferences?.state) return send(res, 400, "Referencia de usuario no encontrada");
-    const cityForm = new City({ ...req.body, state: req.userReferences.state });
+    // if (!req.userReferences?.state) return send(res, 400, "Referencia de usuario no encontrada");
+    // const cityForm = new City({ ...req.body, state: req.userReferences.state });
+    const cityForm = new City({ ...body });
     const city = await cityForm.save();
     send(res, 201, city);
   } catch (e) { send(res, 500, `Error interno del servidor al crear la ciudad: ${e}`) }
@@ -90,10 +92,11 @@ export const getState = async ({ params }: Request, res: Response): Promise<void
  * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del usuario en user.id.
  * @returns {Promise<void>} - Envía todos los departamentos encontrados o un mensaje de error.
  */
-export const getStates = async (req: ExtendsRequest, res: Response): Promise<void> => {
+export const getStates = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    if (!req.userReferences?.country) return send(res, 400, "Referencia 'país' no encontrada");
-    const states = await State.find({ country: req.userReferences.country }).populate('country');
+    // if (!req.userReferences?.country) return send(res, 400, "Referencia 'país' no encontrada");
+    // const states = await State.find({ country: req.userReferences.country }).populate('country');
+    const states = await State.find({ country: body.country }).populate('country');
     send(res, 200, states);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener los departamentos: ${e}`) }
 }
@@ -103,10 +106,11 @@ export const getStates = async (req: ExtendsRequest, res: Response): Promise<voi
  * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener los datos del departamento en el body y el ID del país en country.id.
  * @returns {Promise<void>} - Envía el departamento creado o un mensaje de error.
  */
-export const createState = async (req: ExtendsRequest, res: Response): Promise<void> => {
+export const createState = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    if (!req.userReferences?.country) return send(res, 400, "Referencia 'país' no encontrada")
-    const stateForm = new State({ ...req.body, country: req.userReferences.country });
+    // if (!req.userReferences?.country) return send(res, 400, "Referencia 'país' no encontrada");
+    // const stateForm = new State({ ...req.body, country: req.userReferences.country });
+    const stateForm = new State({ ...body });
     const state = await stateForm.save();
     send(res, 201, state);
   } catch (e) { send(res, 500, `Error interno del servidor al crear el estado: ${e}`) }

@@ -19,7 +19,7 @@ class UserReferences {
    */
   async get(id: SchemaID): Promise<UserReferencesProps> {//working here...
     try {
-      const user = await UserHeadquarter.find({ id_user: id }).populate({
+      const user = await UserHeadquarter.findOne({ user: id }).populate({
         path: 'headquarter',
         populate: {
           path: 'city',
@@ -32,13 +32,10 @@ class UserReferences {
         }
       })
 
-      // if (!user || !user.headquarter) return {}
+      return { user, headquarter: user?.headquarter }
       // return {
-      //   city: user.headquarter.city._id,
-      //   state: user.headquarter.city.state._id,
-      //   country: user.headquarter.city.state.country._id
+      //   city: user.headquarter
       // }
-      return { user } as UserReferencesProps //mean while
     } catch (e) { throw new Error(`Failed to fetch user references: ${e}`) }
   }
 }

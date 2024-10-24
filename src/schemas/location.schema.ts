@@ -7,7 +7,9 @@ export const citySchema = z.object({
 
 export const stateSchema = z.object({
   name: z
-    .string({ required_error: "Name is required" })
+    .string({ required_error: "Name is required" }),
+  country: z
+    .string({ required_error: "Country is required" })
 })
 
 export const countrySchema = z.object({

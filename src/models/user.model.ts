@@ -1,14 +1,13 @@
 import { User } from "../interfaces/model.interface";
 import mongoose, { Schema } from "mongoose";
+import configSchema from "../utils/schema";
 
 const userSchema: Schema<User> = new Schema({
-  //user essentials
+  //standard
   username: { type: String, required: true, trim: true },
   email: { type: String, required: true, unique: true, trim: true },
   password: { type: String, required: true },
-
-  //credentials to access
-  role: { type: String, required: true, enum: ['admin', 'user'] },
+  role: { type: String, required: true, enum: ['engineer', 'admin'] },
   access: { type: Boolean, default: false },
 
   //email verification
@@ -20,6 +19,6 @@ const userSchema: Schema<User> = new Schema({
   resetPasswordToken: { type: String, required: false },
   resetPasswordExpiresAt: { type: Date, required: false }
 
-}, { timestamps: true, versionKey: false })
+}, configSchema)
 
-export default mongoose.model('user', userSchema);
+export default mongoose.model('user', userSchema)

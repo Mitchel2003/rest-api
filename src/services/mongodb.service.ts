@@ -1,5 +1,5 @@
 import { SchemaID, UserReferencesProps } from '../interfaces/props.interface';
-import User from '../models/user.model';
+import { UserHeadquarter } from '../models/location.model';
 
 /*----------------------------------------------userReferences----------------------------------------------*/
 class UserReferences {
@@ -17,9 +17,9 @@ class UserReferences {
    * @param {SchemaID} id - ID del usuario
    * @returns {Promise<UserReferencesProps>} Referencias de ubicación del usuario
    */
-  async get(id: SchemaID): Promise<UserReferencesProps> {
+  async get(id: SchemaID): Promise<UserReferencesProps> {//working here...
     try {
-      const user = await User.findById(id).populate({
+      const user = await UserHeadquarter.find({ id_user: id }).populate({
         path: 'headquarter',
         populate: {
           path: 'city',

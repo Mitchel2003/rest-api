@@ -1,5 +1,6 @@
 import { Curriculum } from "../interfaces/model.interface";
 import mongoose, { Schema } from "mongoose";
+import configSchema from "../utils/schema";
 
 const curriculumSchema: Schema<Curriculum> = new Schema({
   title: {
@@ -14,11 +15,13 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
     type: Date,
     default: Date.now
   },
+
+  //reference to the user who created the curriculum
   user: {
-    type: String,
-    ref: 'user',
-    required: true
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'user'
   }
-}, { timestamps: true, versionKey: false })
+}, configSchema)
 
 export default mongoose.model('curriculum', curriculumSchema);

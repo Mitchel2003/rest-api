@@ -1,5 +1,6 @@
 import { Task } from "../interfaces/model.interface";
 import mongoose, { Schema } from "mongoose";
+import configSchema from "../utils/schema";
 
 const taskSchema: Schema<Task> = new Schema({
   title: {
@@ -21,6 +22,6 @@ const taskSchema: Schema<Task> = new Schema({
     required: true,
     ref: 'user'
   }
-}, { timestamps: true, versionKey: false })
+}, configSchema)
 
 export default mongoose.model('task', taskSchema);

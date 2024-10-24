@@ -1,15 +1,13 @@
 import { Document, Schema } from "mongoose";
 
-{/* -------------------- User -------------------- */ }
+{/* -------------------- Users -------------------- */ }
 export interface User extends Document {
-  //standard data
-  username: string;
-  email: string;
-  password: string;
-
-  //credentials to access
-  role: string;
-  access: boolean;
+  //standard
+  username: string,
+  email: string,
+  password: string,
+  role: 'engineer' | 'admin',
+  access: boolean, //corresponds to boolean to allow access to the system
 
   //email verification and restore credentials
   isVerified: boolean;
@@ -41,23 +39,43 @@ export interface Curriculum extends Document {
   updatedAt?: Date
 }
 {/* -------------------- Location -------------------- */ }
-//country
 export interface Country extends Document {
   name: string,
   createdAt?: Date,
   updatedAt?: Date
 }
-//state
 export interface State extends Document {
   name: string,
   country: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
 }
-//city
 export interface City extends Document {
   name: string,
   state: Schema.Types.ObjectId,
+  createdAt?: Date,
+  updatedAt?: Date
+}
+export interface Headquarter extends Document {
+  name: string,
+  address: string,
+  city: Schema.Types.ObjectId,
+  client: Schema.Types.ObjectId,
+  createdAt?: Date,
+  updatedAt?: Date
+}
+export interface UserHeadquarter extends Document {//relationship between user and headquarter
+  user: Schema.Types.ObjectId,
+  headquarter: Schema.Types.ObjectId,
+  createdAt?: Date,
+  updatedAt?: Date
+}
+{/* -------------------- Client -------------------- */ }
+export interface Client extends Document {
+  name: string,
+  email: string,
+  phone: number,
+  nit: string,
   createdAt?: Date,
   updatedAt?: Date
 }

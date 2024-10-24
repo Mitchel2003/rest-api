@@ -26,6 +26,21 @@
 *503* Service Unavailable: El servidor no está disponible temporalmente, generalmente debido a mantenimiento o sobrecarga.
 *504* Gateway Timeout: El servidor, actuando como una puerta de enlace o proxy, no recibió una respuesta a tiempo del servidor ascendente.
 
+## Populate:=================================================================================================
+Para obtener los datos del usuario que creó el curriculum, cliente, etc. se debe usar el método `populate` de mongoose
+```typescript
+const curriculum = await Curriculum.findById(params.id).populate('user');
+```
+Esto aparte de permitirnos obtener el Curriculum, también nos permite obtener los datos del usuario que lo creó, al final, resultamos con un objeto que contiene el Curriculum y el usuario que lo creó.
+```typescript
+{
+  _id: string,
+  title: string,
+  description: string,
+  user: { username: string, email: string }
+}
+```
+
 ## Fix dev or deploy:=======================================================================================
 **Asegurarse de que las cookies están configuradas correctamente con CORS**
 Si el frontend y el backend están en dominios diferentes, debes asegurarte de que tanto el servidor como el frontend permiten el uso compartido de cookies a través de solicitudes CORS:

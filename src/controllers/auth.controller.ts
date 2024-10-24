@@ -131,7 +131,10 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
  */
 export const resetPassword = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
-    const user = await User.findOne({ resetPasswordToken: params.token, resetPasswordExpiresAt: { $gte: new Date() } });//$gte: greater than or equal to
+    const user = await User.findOne({//$gte: greater than or equal to
+      resetPasswordToken: params.token,
+      resetPasswordExpiresAt: { $gte: new Date() }
+    })
     if (!user) return send(res, 401, 'Token de restablecimiento de contraseña inválido o expirado')
 
     //update password

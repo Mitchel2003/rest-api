@@ -1,34 +1,42 @@
 // import 'mailtrap';
-import { Inbox } from 'mailtrap/dist/types/api/inboxes';
+// import { Permissions } from 'mailtrap/dist/types/api/inboxes';
 
 declare module 'mailtrap/dist/types/api/projects.d.ts' {
   // Usa el tipo Permissions del namespace Mailtrap.Project
-  export namespace Project {
-    // Definir el tipo ShareLinks dentro del namespace
-    type ShareLinks = {
-      admin: string;
-      viewer: string;
-    };
 
-    // Definir el tipo Permissions dentro del namespace
-    type Permissions = {
-      can_read: boolean;
-      can_update: boolean;
-      can_destroy: boolean;
-      can_leave: boolean;
-    };
-
-    // Definir el tipo Project usando los tipos del mismo namespace
-    export type Project = {
-      id: number;
-      name: string;
-      share_links: ShareLinks;
-      inboxes: Inbox[]; // Usar el tipo Inbox desde el namespace
-      permissions: Permissions;  // Usar Permissions del mismo namespace
-    };
-
-    export {};
+  export type Permissions = {
+    can_read: boolean;
+    can_update: boolean;
+    can_destroy: boolean;
+    can_leave: boolean;
   }
+
+  // export namespace Project {
+  //   // Definir el tipo ShareLinks dentro del namespace
+  //   type ShareLinks = {
+  //     admin: string;
+  //     viewer: string;
+  //   };
+
+  //   // Definir el tipo Permissions dentro del namespace
+  //   type Permissions = {
+  //     can_read: boolean;
+  //     can_update: boolean;
+  //     can_destroy: boolean;
+  //     can_leave: boolean;
+  //   };
+
+  //   // Definir el tipo Project usando los tipos del mismo namespace
+  //   export type Project = {
+  //     id: number;
+  //     name: string;
+  //     share_links: ShareLinks;
+  //     inboxes: Inbox[]; // Usar el tipo Inbox desde el namespace
+  //     permissions: Permissions;  // Usar Permissions del mismo namespace
+  //   };
+
+  //   export {};
+  // }
 }
 
 

@@ -157,8 +157,11 @@ export const getCountry = async ({ params }: Request, res: Response): Promise<vo
  * Obtiene todos los países.
  * @returns {Promise<void>} - Envía todos los países encontrados o un mensaje de error.
  */
-export const getCountries = async (res: Response): Promise<void> => {
+export const getCountries = async (req: Request, res: Response): Promise<void> => {
   try {
+    const { email, password } = req.body;
+    console.log(email, password);
+    
     const countries = await Country.find();
     send(res, 200, countries);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener los países: ${e}`) }

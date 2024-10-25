@@ -1,1 +1,2 @@
-export default () => Math.floor(100000 + Math.random() * 900000).toString();
+export const generateVerificationToken = () => Math.floor(100000 + Math.random() * 900000).toString();
+export const generateVerificationExpiresAt = () => new Date(Date.now() + 24 * 60 * 60 * 1000); //24 hours to verify

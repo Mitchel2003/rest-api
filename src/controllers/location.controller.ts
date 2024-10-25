@@ -1,6 +1,6 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar ubicaciones */
-import { ExtendsRequest, send } from "../interfaces/api.interface"
-import { Country, State, City } from "../models/location.model"
+import { ExtendsRequest, send } from "../interfaces/api.interface";
+import { Country, State, City } from "../models/location.model";
 import { handlerErrorResponse } from "../utils/handler";
 import { Request, Response } from "express";
 

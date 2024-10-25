@@ -26,6 +26,33 @@
 *503* Service Unavailable: El servidor no está disponible temporalmente, generalmente debido a mantenimiento o sobrecarga.
 *504* Gateway Timeout: El servidor, actuando como una puerta de enlace o proxy, no recibió una respuesta a tiempo del servidor ascendente.
 
+## Prompt:===================================================================================================
+```ts
+"hasta ahora has sido muy profesional, me has dado las mejores implementaciones y el codigo mas impresionante, primeramente mi proyecto se encuentra una carpeta mas interna @server justo  aqui se encuentra mi proyecto @src , lo que busco inicialmente es implementar el handlerErrorResponse que tengo en @handler.ts, mira por ejemplo como lo uso en los catchs de las solicitudes en @location.controller.ts , quiero que lo implementes en todos los archivos de controlador, es una buena practica usar este manejador de errores, te doy acceso a todos los controllers @auth.controller.ts  @location.controller.ts @client.controller.ts @curriculum.controller.ts, aparte, quisiera que buscaras en mi codigo posibles inconsistencias u posibles puntos en los que podriamos implementar algo mas profesional, hasme la sugerencia mas no edites mi codigo, yo dispondre de mi conocimientos para saber si implementarlo o no, quiero que me brindes lo mas profesional, eres capaz de todo lo que te propones, gracias a ti he llegado hasta donde estoy ahora, quiero que me hagas un analisis exaustivo de todos los archivos que tengo en mi repretorio de carpetas, mira los tipados en la carpeta interfaces @interfaces @api.interface.ts @model.interface.ts @props.interface.ts  y todas las carpetas circundantes @controllers @middlewares @auth.middleware.ts @token.middleware.ts @validator.middleware.ts @references.middleware.ts   @models  @routes @location.routes.ts @auth.routes.ts @client.routes.ts @curriculum.routes.ts  @schemas @auth.schema.ts @client.schema.ts @curriculum.schema.ts @location.schema.ts   @services @jwt.service.ts @bcrypt.service.ts @mongodb.service.ts @mailtrap.service.ts  @templates  @utils etc, esto para que mi CEO quede impresionado por mi profesionalismo; siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructuracion u abstraccion tan bonita, !VAMOS, eres la mejor!"
+```
+## Mejoras Generales:======================================================================================
+* Implementa manejo de errores más robusto en todos los servicios y controladores.
+  Considera usar un sistema de logging más avanzado para un mejor seguimiento de errores en producción.
+  Implementa rate limiting para prevenir abusos en las rutas de autenticación.
+* Seguridad:
+  Asegúrate de que todas las rutas sensibles estén protegidas con middleware de autenticación.
+  Implementa CSRF protection para las rutas que manejan datos sensibles.
+* Optimización de Rendimiento:
+  Considera implementar caching para rutas frecuentemente accedidas.
+  Optimiza las consultas a la base de datos, especialmente en las rutas que manejan listas grandes.
+* Documentación:
+  Añade comentarios JSDoc a todas las funciones principales para mejorar la legibilidad y mantenibilidad.
+  Considera generar documentación API automática usando herramientas como Swagger.
+* Testing:
+  Implementa pruebas unitarias para todos los servicios y controladores.
+  Añade pruebas de integración para asegurar que todos los componentes trabajen correctamente juntos.
+* Configuración:
+  Mueve todas las configuraciones sensibles a variables de entorno y usa un archivo de configuración centralizado.
+* Logging:
+  Implementa un sistema de logging más robusto para un mejor seguimiento y depuración en producción.
+  
+  Estas mejoras elevarán significativamente la calidad y profesionalismo de tu código. La implementación de patrones de diseño como Singleton en los servicios, el uso consistente de tipos Result, y la clara separación de responsabilidades demuestran un alto nivel de habilidad en ingeniería de software.
+
 ## Request and Response:=====================================================================================
 En las funciones de los controladores, se debe usar el objeto de solicitud `req` para obtener los datos de la solicitud y el objeto de respuesta `res` para enviar la respuesta al cliente; en caso de que no dependamos de `req` en la función, no debemos eliminarle de los params, debemos usarlos para evitar el 502 error.
 
@@ -42,6 +69,15 @@ Esto aparte de permitirnos obtener el Curriculum, también nos permite obtener l
   description: string,
   user: { username: string, email: string }
 }
+```
+
+## Rate Limit:===============================================================================================
+Para evitar que el servidor se sobrecargue, se debe usar el middleware de rate limit (opcional)
+```typescript
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100 // límite de 100 solicitudes por ventana por IP
+});
 ```
 
 ## Fix dev or deploy:=======================================================================================

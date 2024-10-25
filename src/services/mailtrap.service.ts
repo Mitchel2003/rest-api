@@ -26,13 +26,14 @@ export class EmailService {
       const response: MailtrapResult = await this.client.send({ ...options, from: sender })
       if (!response.success) return { error: (response as SendError).errors.join(', ') }
       return { value: true }
-    } catch (e) { return { error: `Error interno al enviar el email: ${e}` } }
+    } catch (e) { return { error: `Error interno del servidor al enviar el email: ${e}` } }
   }
 
   /**
    * Envia un email de verificacion de cuenta al usuario
-   * @param {string} email - Email del usuario
-   * @param {string} verificationToken - Corresponde a un codigo de 6 digitos
+   * @param {User} user - Objeto de usuario
+   * @param {string} user.email - Email del usuario
+   * @param {string} user.verificationToken - Corresponde a un codigo de 6 digitos
    * @returns {Promise<Result<boolean>>} - Resultado booleano de la operación
    */
   async sendVerificationEmail({ email, verificationToken }: User): Promise<Result<boolean>> {

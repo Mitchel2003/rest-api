@@ -1,5 +1,6 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar curriculums (equipos) */
 import { ExtendsRequest, send } from "../interfaces/api.interface"
+import { handlerErrorResponse } from "../utils/handler"
 import Curriculum from "../models/curriculum.model"
 import { Request, Response } from "express"
 
@@ -13,7 +14,7 @@ export const getCurriculum = async ({ params }: Request, res: Response): Promise
     const curriculum = await Curriculum.findById(params.id).populate('user');
     if (!curriculum) return send(res, 404, 'Curriculum no encontrado');
     send(res, 200, curriculum);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener el curriculum: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener el curriculum") }
 }
 
 /**
@@ -25,7 +26,7 @@ export const getCurriculums = async (req: ExtendsRequest, res: Response): Promis
   try {
     const curriculums = await Curriculum.find({ user: req.user?.id }).populate('user');
     send(res, 200, curriculums);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener los curriculums: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener los curriculums") }
 }
 
 /**
@@ -38,7 +39,7 @@ export const createCurriculum = async (req: ExtendsRequest, res: Response): Prom
     const curriculumFormat = new Curriculum({ ...req.body, user: req.user?.id });
     const curriculum = await curriculumFormat.save();
     send(res, 201, curriculum);
-  } catch (e) { send(res, 500, `Error interno del servidor al crear el curriculum: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "crear el curriculum") }
 }
 
 /**
@@ -51,7 +52,7 @@ export const updateCurriculum = async ({ params, body }: Request, res: Response)
     const curriculum = await Curriculum.findByIdAndUpdate(params.id, body, { new: true });
     if (!curriculum) return send(res, 404, 'Curriculum no encontrado');
     send(res, 200, curriculum);
-  } catch (e) { send(res, 500, `Error interno del servidor al actualizar el curriculum: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "actualizar el curriculum") }
 }
 
 /**
@@ -64,5 +65,5 @@ export const deleteCurriculum = async ({ params }: Request, res: Response): Prom
     const curriculum = await Curriculum.findByIdAndDelete(params.id);
     if (!curriculum) return send(res, 404, 'Curriculum no encontrado');
     send(res, 200, curriculum);
-  } catch (e) { send(res, 500, `Error interno del servidor al eliminar el curriculum: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "eliminar el curriculum") }
 }

@@ -1,5 +1,6 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar clientes (entidades)*/
 import { ExtendsRequest, send } from "../interfaces/api.interface"
+import { handlerErrorResponse } from "../utils/handler"
 import { Request, Response } from "express"
 import Client from "../models/client.model"
 
@@ -13,18 +14,19 @@ export const getClient = async ({ params }: Request, res: Response): Promise<voi
     const client = await Client.findById(params.id);
     if (!client) return send(res, 404, 'Cliente no encontrado');
     send(res, 200, client);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener el cliente: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener el cliente") }
 }
 
 /**
  * Obtiene todos los clientes.
  * @returns {Promise<void>} - Envía un objeto con los clientes.
  */
-export const getClients = async (res: Response): Promise<void> => {
+export const getClients = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
+    const user = req.user;
     const clients = await Client.find();
-    send(res, 200, clients);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener los clientes: ${e}`) }
+    send(res, 200, { clients, user });
+  } catch (e) { handlerErrorResponse(res, e, "obtener los clientes") }
 }
 
 /**
@@ -37,7 +39,7 @@ export const createClient = async (req: ExtendsRequest, res: Response): Promise<
     const clientFormat = new Client({ ...req.body });
     const client = await clientFormat.save();
     send(res, 201, client);
-  } catch (e) { send(res, 500, `Error interno del servidor al crear el cliente: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "crear el cliente") }
 }
 
 /**
@@ -50,7 +52,7 @@ export const updateClient = async ({ params, body }: Request, res: Response): Pr
     const client = await Client.findByIdAndUpdate(params.id, body, { new: true });
     if (!client) return send(res, 404, 'Cliente no encontrado');
     send(res, 200, client);
-  } catch (e) { send(res, 500, `Error interno del servidor al actualizar el cliente: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "actualizar el cliente") }
 }
 
 /**
@@ -63,5 +65,5 @@ export const deleteClient = async ({ params }: Request, res: Response): Promise<
     const client = await Client.findByIdAndDelete(params.id);
     if (!client) return send(res, 404, 'Cliente no encontrado');
     send(res, 200, client);
-  } catch (e) { send(res, 500, `Error interno del servidor al eliminar el cliente: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "eliminar el cliente") }
 }

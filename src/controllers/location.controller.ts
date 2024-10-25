@@ -81,7 +81,7 @@ export const deleteCity = async ({ params }: Request, res: Response): Promise<vo
  */
 export const getState = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const state = await State.findById(params.id).populate('country');
+    const state = await State.findById(params.id);
     if (!state) return send(res, 404, 'Departamento no encontrado');
     send(res, 200, state);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener el departamento: ${e}`) }
@@ -89,27 +89,24 @@ export const getState = async ({ params }: Request, res: Response): Promise<void
 
 /**
  * Obtiene todos los departamentos.
- * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del usuario en user.id.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del país en country.id.
  * @returns {Promise<void>} - Envía todos los departamentos encontrados o un mensaje de error.
  */
 export const getStates = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    // if (!req.userReferences?.country) return send(res, 400, "Referencia 'país' no encontrada");
-    // const states = await State.find({ country: req.userReferences.country }).populate('country');
-    const states = await State.find({ country: body.country }).populate('country');
+    const usePopulate = body.country ? { country: body.country } : {};
+    const states = await State.find(usePopulate).populate('country');
     send(res, 200, states);
   } catch (e) { send(res, 500, `Error interno del servidor al obtener los departamentos: ${e}`) }
 }
 
 /**
  * Crea un nuevo departamento.
- * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener los datos del departamento en el body y el ID del país en country.id.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del departamento en el body y el ID del país en country.id.
  * @returns {Promise<void>} - Envía el departamento creado o un mensaje de error.
  */
 export const createState = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    // if (!req.userReferences?.country) return send(res, 400, "Referencia 'país' no encontrada");
-    // const stateForm = new State({ ...req.body, country: req.userReferences.country });
     const stateForm = new State({ ...body });
     const state = await stateForm.save();
     send(res, 201, state);
@@ -166,9 +163,9 @@ export const getCountry = async ({ params }: Request, res: Response): Promise<vo
  */
 export const getCountries = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const currentUser = req.userReferences;
+    const user = req.user;
     const countries = await Country.find();
-    send(res, 200, { countries, currentUser });
+    send(res, 200, { countries, user });
   } catch (e) { send(res, 500, `Error interno del servidor al obtener los países: ${e}`) }
 }
 

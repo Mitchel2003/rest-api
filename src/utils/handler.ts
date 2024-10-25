@@ -9,7 +9,7 @@ import { Response } from "express";
  * Este handler esta diseñado para solicitudes express (req, res), por tanto, es usual verle en los controladores
  * @param {Response} res - Objeto de respuesta Express.
  * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} message - Mensaje que refiere a la solicitud en contexto.
+ * @param {string} message - Mensaje que refiere a la solicitud en contexto fallida.
  * @example "crear departamento", "actualizar departamento" etc
  */
 export const handlerErrorResponse = (res: Response, e: unknown, message: string) => {

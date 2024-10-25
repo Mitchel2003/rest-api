@@ -15,7 +15,7 @@ export const getCity = async ({ params }: Request, res: Response): Promise<void>
     const city = await City.findById(params.id).populate('state');
     if (!city) return send(res, 404, 'Ciudad no encontrada');
     send(res, 200, city);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener la ciudad: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener la ciudad") }
 }
 
 /**
@@ -29,7 +29,7 @@ export const getCities = async ({ body }: Request, res: Response): Promise<void>
     // const cities = await City.find({ state: req.userReferences.state }).populate('state');
     const cities = await City.find({ state: body.state }).populate('state');
     send(res, 200, cities);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener las ciudades: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener las ciudades") }
 }
 
 /**
@@ -44,7 +44,7 @@ export const createCity = async ({ body }: Request, res: Response): Promise<void
     const cityForm = new City({ ...body });
     const city = await cityForm.save();
     send(res, 201, city);
-  } catch (e) { send(res, 500, `Error interno del servidor al crear la ciudad: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "crear la ciudad") }
 }
 
 /**
@@ -57,7 +57,7 @@ export const updateCity = async ({ params, body }: Request, res: Response): Prom
     const city = await City.findByIdAndUpdate(params.id, body, { new: true });
     if (!city) return send(res, 404, 'Ciudad no encontrada');
     send(res, 200, city);
-  } catch (e) { send(res, 500, `Error interno del servidor al actualizar la ciudad: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "actualizar la ciudad") }
 }
 
 /**
@@ -70,7 +70,7 @@ export const deleteCity = async ({ params }: Request, res: Response): Promise<vo
     const city = await City.findByIdAndDelete(params.id);
     if (!city) return send(res, 404, 'Ciudad no encontrada');
     send(res, 200, 'Eliminado correctamente');
-  } catch (e) { send(res, 500, `Error interno del servidor al eliminar la ciudad: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "eliminar la ciudad") }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
@@ -85,12 +85,16 @@ export const getState = async ({ params }: Request, res: Response): Promise<void
     const state = await State.findById(params.id);
     if (!state) return send(res, 404, 'Departamento no encontrado');
     send(res, 200, state);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener el departamento: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener el departamento") }
 }
 
 /**
  * Obtiene todos los departamentos.
  * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del país en country.id.
+ * @argument usePopulate - Respecto al body obtenido, podemos mimificar el rango de busqueda de departamentos mediante country.id.
+ * @example
+ * if req.body.country => usePopulate = { country }
+ * default usePopulate = {} => search all states
  * @returns {Promise<void>} - Envía todos los departamentos encontrados o un mensaje de error.
  */
 export const getStates = async ({ body }: Request, res: Response): Promise<void> => {
@@ -98,7 +102,7 @@ export const getStates = async ({ body }: Request, res: Response): Promise<void>
     const usePopulate = body.country ? { country: body.country } : {};
     const states = await State.find(usePopulate).populate('country');
     send(res, 200, states);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener los departamentos: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener los departamentos") }
 }
 
 /**
@@ -124,7 +128,7 @@ export const updateState = async ({ params, body }: Request, res: Response): Pro
     const state = await State.findByIdAndUpdate(params.id, body, { new: true });
     if (!state) return send(res, 404, 'Departamento no encontrado');
     send(res, 200, state);
-  } catch (e) { send(res, 500, `Error interno del servidor al actualizar el departamento: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "actualizar el departamento") }
 }
 
 /**
@@ -137,7 +141,7 @@ export const deleteState = async ({ params }: Request, res: Response): Promise<v
     const state = await State.findByIdAndDelete(params.id);
     if (!state) return send(res, 404, 'Departamento no encontrado');
     send(res, 200, 'Eliminado correctamente');
-  } catch (e) { send(res, 500, `Error interno del servidor al eliminar el departamento: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "eliminar el departamento") }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
@@ -152,7 +156,7 @@ export const getCountry = async ({ params }: Request, res: Response): Promise<vo
     const country = await Country.findById(params.id);
     if (!country) return send(res, 404, 'País no encontrado');
     send(res, 200, country);
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener el país: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener el país") }
 }
 
 /**
@@ -167,7 +171,7 @@ export const getCountries = async (req: ExtendsRequest, res: Response): Promise<
     const user = req.user;
     const countries = await Country.find();
     send(res, 200, { countries, user });
-  } catch (e) { send(res, 500, `Error interno del servidor al obtener los países: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "obtener los países") }
 }
 
 /**
@@ -180,7 +184,7 @@ export const createCountry = async ({ body }: Request, res: Response): Promise<v
     const countryForm = new Country({ ...body });
     const country = await countryForm.save();
     send(res, 201, country);
-  } catch (e) { send(res, 500, `Error interno del servidor al crear el país: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "crear el país") }
 }
 
 /**
@@ -193,7 +197,7 @@ export const updateCountry = async ({ params, body }: Request, res: Response): P
     const country = await Country.findByIdAndUpdate(params.id, body, { new: true });
     if (!country) return send(res, 404, 'País no encontrado');
     send(res, 200, country);
-  } catch (e) { send(res, 500, `Error interno del servidor al actualizar el país: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "actualizar el país") }
 }
 
 /**
@@ -206,6 +210,6 @@ export const deleteCountry = async ({ params }: Request, res: Response): Promise
     const country = await Country.findByIdAndDelete(params.id);
     if (!country) return send(res, 404, 'País no encontrado');
     send(res, 200, 'Eliminado correctamente');
-  } catch (e) { send(res, 500, `Error interno del servidor al eliminar el país: ${e}`) }
+  } catch (e) { handlerErrorResponse(res, e, "eliminar el país") }
 }
 /*---------------------------------------------------------------------------------------------------------*/

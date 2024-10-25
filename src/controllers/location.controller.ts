@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar ubicaciones */
 import { ExtendsRequest, send } from "../interfaces/api.interface"
 import { Country, State, City } from "../models/location.model"
-import { isMongooseError } from "../utils/handler";
+import { handlerErrorResponse } from "../utils/handler";
 import { Request, Response } from "express";
 
 /*--------------------------------------------------city--------------------------------------------------*/
@@ -111,10 +111,7 @@ export const createState = async ({ body }: Request, res: Response): Promise<voi
     const stateForm = new State({ ...body });
     const state = await stateForm.save();
     send(res, 201, state);
-  } catch (e) {
-    isMongooseError(e, res);
-    send(res, 500, `Error interno del servidor al crear el estado: ${e}`)
-  }
+  } catch (e) { handlerErrorResponse(res, e, "crear departamento") }
 }
 
 /**

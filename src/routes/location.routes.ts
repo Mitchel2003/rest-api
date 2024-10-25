@@ -1,5 +1,4 @@
 import { countrySchema, stateSchema, /*citySchema*/ } from "../schemas/location.schema"
-import userReferences from "../middlewares/references.middleware"
 import validateSchema from "../middlewares/validator.middleware"
 import authRequired from "../middlewares/auth.middleware"
 import { Router } from "express"

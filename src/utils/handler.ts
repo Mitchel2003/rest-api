@@ -9,12 +9,13 @@ import { Response } from "express";
  * Este handler esta diseñado para solicitudes express (req, res), por tanto, es usual verle en los controladores
  * @param {Response} res - Objeto de respuesta Express.
  * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} message - Mensaje que refiere a la procedencia de esta solicitud fallida
+ * @param {string} message - Mensaje que refiere a la solicitud en contexto.
  * @example "crear departamento", "actualizar departamento" etc
  */
 export const handlerErrorResponse = (res: Response, e: unknown, message: string) => {
-  isMongooseError(res, e, message);
-  isUnknownError(res, e, message);
+  const path = `Error interno del servidor al ${message}`
+  isMongooseError(res, e, path);
+  isUnknownError(res, e, path);
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
@@ -23,22 +24,19 @@ export const handlerErrorResponse = (res: Response, e: unknown, message: string)
  * Manejador de errores de mongoose
  * @param {Response} res - Objeto de respuesta Express.
  * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} message - Mensaje que refiere a la procedencia de esta solicitud fallida
+ * @param {string} path - Mensaje que refiere a la procedencia de esta solicitud fallida
  */
-export const isMongooseError = (res: Response, e: unknown, message: string) => {
-  if (e instanceof MongooseError) return send(res, 500, `
-    Error interno del servidor al ${message}: 
-    Error mongoose: ${e.name} => ${e.message}
-  `)
+export const isMongooseError = (res: Response, e: unknown, path: string) => {
+  if (e instanceof MongooseError) return send(res, 500, `${path}: Error mongoose: ${e.name} => ${e.message}`)
 }
 
 /**
  * Manejador de errores desconocidos
  * @param {Response} res - Objeto de respuesta Express.
  * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} message - Mensaje que refiere a la procedencia de esta solicitud fallida
+ * @param {string} path - Mensaje que refiere a la procedencia de esta solicitud fallida
  */
-export const isUnknownError = (res: Response, e: unknown, message: string) => {
-  return send(res, 500, `Error interno del servidor al ${message}: ${e}`)
+export const isUnknownError = (res: Response, e: unknown, path: string) => {
+  return send(res, 500, `${path}: ${e}`)
 }
 /*---------------------------------------------------------------------------------------------------------*/

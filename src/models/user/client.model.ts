@@ -1,6 +1,6 @@
-import { Client } from "../interfaces/model.interface";
+import { Client } from "../../types/user/client.type";
+import configSchema from "../../utils/schema";
 import mongoose, { Schema } from "mongoose";
-import configSchema from "../utils/schema";
 
 const clientSchema: Schema<Client> = new Schema({
   name: { type: String, required: true },

@@ -1,5 +1,5 @@
 import { SchemaID, UserReferencesProps } from '../interfaces/props.interface';
-import { UserHeadquarter } from '../models/location.model';
+import UserHeadquarter from '../models/relation/userHeadquarter.model';
 
 /*----------------------------------------------userReferences----------------------------------------------*/
 class UserReferences {

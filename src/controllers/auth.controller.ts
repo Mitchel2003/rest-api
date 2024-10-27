@@ -5,7 +5,7 @@ import auth from "../services/auth.service"
 
 import { ExtendsRequest, send } from "../interfaces/api.interface"
 import { handlerErrorResponse } from "../utils/handler"
-import User from "../models/user.model"
+import User from "../models/user/user.model"
 
 import { Request, Response } from "express"
 /*--------------------------------------------------Essentials--------------------------------------------------*/

@@ -3,8 +3,5 @@
     ["@babel/preset-env", { "targets": { "node": "20" } }],
     "@babel/preset-typescript"
   ],
-  "plugins": [
-    "module-alias",
-    "babel-plugin-transform-typescript-metadata"
-  ]
+  "plugins": ["babel-plugin-transform-typescript-metadata"]
 }

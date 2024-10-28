@@ -4,7 +4,7 @@ import config from "../utils/config"
 
 import { MailtrapResult, EmailProps } from "../interfaces/props.interface"
 import { Result } from "../interfaces/api.interface"
-import { User } from "../interfaces/model.interface"
+import { User } from "../types/user/user.type"
 
 export class EmailService {
   private client: MailtrapClient;

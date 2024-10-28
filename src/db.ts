@@ -1,7 +1,7 @@
 import config from "./utils/config";
 import mongoose from "mongoose";
 
-export const connectionDB = async () => {
+export default async () => {
   try {
     await mongoose.connect(config.mongodbUri);
     console.log("connection sucessful");

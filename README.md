@@ -53,6 +53,10 @@
   
   Estas mejoras elevarán significativamente la calidad y profesionalismo de tu código. La implementación de patrones de diseño como Singleton en los servicios, el uso consistente de tipos Result, y la clara separación de responsabilidades demuestran un alto nivel de habilidad en ingeniería de software.
 
+## Mailtrap to firebase:=====================================================================================
+Al momento de enviar un email, se debe usar firebase, ya que mailtrap no permite enviar emails a dominios de terceros, esto causa un error en producción:
+"Error interno del servidor al enviar el email: Error: Demo domains can only be used to send emails to account owners. You can only send testing emails to your own email address."
+
 ## Request and Response:=====================================================================================
 En las funciones de los controladores, se debe usar el objeto de solicitud `req` para obtener los datos de la solicitud y el objeto de respuesta `res` para enviar la respuesta al cliente; en caso de que no dependamos de `req` en la función, no debemos eliminarle de los params, debemos usarlos para evitar el 502 error.
 

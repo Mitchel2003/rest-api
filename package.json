@@ -45,6 +45,6 @@
     "@types/nodemailer": "^6.4.16"
   },
   "_moduleAliases": {
-    "@/*": "dist/src/"
+    "@/*": "dist/src"
   }
 }

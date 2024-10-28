@@ -1,6 +1,6 @@
-import { ExtendsRequest, send } from "../../interfaces/api.interface"
-import { handlerErrorResponse } from "../../utils/handler"
-import Country from "../../models/location/country.model"
+import { ExtendsRequest, send } from "@/interfaces/api.interface"
+import { handlerErrorResponse } from "@/utils/handler"
+import Country from "@/models/location/country.model"
 
 import { Request, Response } from "express"
 

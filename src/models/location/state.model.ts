@@ -1,5 +1,5 @@
-import { State } from "../../types/location/state.type";
-import configSchema from "../../utils/schema";
+import { State } from "@/types/location/state.type";
+import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const stateSchema: Schema<State> = new Schema({

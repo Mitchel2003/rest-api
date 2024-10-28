@@ -1,5 +1,5 @@
+import { Query } from "@/types/repository.type"
 import { Document, Schema } from "mongoose"
-import { Query } from "repository.type"
 
 export interface UserHeadquarter extends Document {//relationship between user and headquarter
   user: Schema.Types.ObjectId,

@@ -1,8 +1,8 @@
-import { resetPassword as Service } from "../../services/auth.service"
-import mailtrap from "../../services/mailtrap.service"
+import { resetPassword as Service } from "@/services/auth.service"
+import mailtrap from "@/services/mailtrap.service"
 
-import { handlerErrorResponse } from "../../utils/handler"
-import { send } from "../../interfaces/api.interface"
+import { handlerErrorResponse } from "@/utils/handler"
+import { send } from "@/interfaces/api.interface"
 import { Request, Response } from "express"
 
 /**

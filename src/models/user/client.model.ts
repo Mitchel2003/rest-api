@@ -1,5 +1,5 @@
-import { Client } from "../../types/user/client.type";
-import configSchema from "../../utils/schema";
+import { Client } from "@/types/user/client.type";
+import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const clientSchema: Schema<Client> = new Schema({

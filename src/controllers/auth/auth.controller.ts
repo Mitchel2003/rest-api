@@ -1,10 +1,10 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { generateAccessToken } from "../../services/jwt.service"
-import { auth, verify } from "../../services/auth.service"
-import mailtrap from "../../services/mailtrap.service"
+import { generateAccessToken } from "@/services/jwt.service"
+import { auth, verify } from "@/services/auth.service"
+import mailtrap from "@/services/mailtrap.service"
 
-import { handlerErrorResponse } from "../../utils/handler"
-import { send } from "../../interfaces/api.interface"
+import { handlerErrorResponse } from "@/utils/handler"
+import { send } from "@/interfaces/api.interface"
 
 import { Request, Response } from "express"
 /*--------------------------------------------------Essentials--------------------------------------------------*/

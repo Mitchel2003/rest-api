@@ -1,10 +1,10 @@
-import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "../templates/mailtrap.template"
+import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "@/templates/mailtrap.template"
 import { MailtrapClient, SendError } from "mailtrap"
-import config from "../utils/config"
+import config from "@/utils/config"
 
-import { MailtrapResult, EmailProps } from "../interfaces/props.interface"
-import { Result } from "../interfaces/api.interface"
-import { User } from "../types/user/user.type"
+import { MailtrapResult, EmailProps } from "@/interfaces/props.interface"
+import { Result } from "@/interfaces/api.interface"
+import { User } from "@/types/user/user.type"
 
 export class EmailService {
   private client: MailtrapClient;

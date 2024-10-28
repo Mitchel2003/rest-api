@@ -1,8 +1,8 @@
-import { generateVerificationToken, generateVerificationExpiresAt } from "../utils/math";
-import { encrypt, verified } from "../services/bcrypt.service";
-import { User as UserProps } from "../types/user/user.type";
-import { Result } from "../interfaces/api.interface";
-import User from "../models/user/user.model";
+import { generateVerificationToken, generateVerificationExpiresAt } from "@/utils/math";
+import { encrypt, verified } from "@/services/bcrypt.service";
+import { User as UserProps } from "@/types/user/user.type";
+import { Result } from "@/interfaces/api.interface";
+import User from "@/models/user/user.model";
 
 import { Document } from "mongoose";
 import { Request } from "express";

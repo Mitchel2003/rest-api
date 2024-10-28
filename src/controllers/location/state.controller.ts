@@ -1,6 +1,6 @@
-import { handlerErrorResponse } from "../../utils/handler"
-import { send } from "../../interfaces/api.interface"
-import State from "../../models/location/state.model"
+import { handlerErrorResponse } from "@/utils/handler"
+import { send } from "@/interfaces/api.interface"
+import State from "@/models/location/state.model"
 
 import { Request, Response } from "express"
 

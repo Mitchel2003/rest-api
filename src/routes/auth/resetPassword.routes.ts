@@ -1,6 +1,6 @@
-import resetPasswordSchema, { forgotPasswordSchema } from "../../schemas/auth/resetPassword.schema"
-import { forgotPassword, resetPassword } from "../../controllers/auth/resetPassword.controller"
-import validateSchema from "../../middlewares/validator.middleware"
+import resetPasswordSchema, { forgotPasswordSchema } from "@/schemas/auth/resetPassword.schema"
+import { forgotPassword, resetPassword } from "@/controllers/auth/resetPassword.controller"
+import validateSchema from "@/middlewares/validator.middleware"
 import { Router } from "express"
 
 const router = Router()

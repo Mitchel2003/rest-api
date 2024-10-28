@@ -1,9 +1,9 @@
-import validateSchema from "../../middlewares/validator.middleware"
-import authRequired from "../../middlewares/auth.middleware"
-import citySchema from "../../schemas/location/city.schema"
+import validateSchema from "@/middlewares/validator.middleware"
+import authRequired from "@/middlewares/auth.middleware"
+import citySchema from "@/schemas/location/city.schema"
 import { Router } from "express"
 
-import { createCity, getCity } from "../../controllers/location/city.controller"
+import { createCity, getCity } from "@/controllers/location/city.controller"
 
 const router = Router()
 

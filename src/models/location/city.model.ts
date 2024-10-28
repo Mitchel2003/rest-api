@@ -1,5 +1,5 @@
-import { City } from "../../types/location/city.type";
-import configSchema from "../../utils/schema";
+import { City } from "@/types/location/city.type";
+import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const citySchema: Schema<City> = new Schema({

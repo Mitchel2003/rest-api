@@ -1,5 +1,5 @@
-import { ExtendsRequest, send } from "../interfaces/api.interface";
-import { verifyAccessToken } from "../services/jwt.service";
+import { ExtendsRequest, send } from "@/interfaces/api.interface";
+import { verifyAccessToken } from "@/services/jwt.service";
 import { NextFunction, Response } from "express";
 
 const authRequired = async (req: ExtendsRequest, res: Response, next: NextFunction) => {

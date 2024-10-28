@@ -1,6 +1,6 @@
-import CurriculumModel from "../../models/form/curriculum.model";
-import { Query, Repository } from "../../types/repository.type";
-import { Curriculum } from "../../types/form/curriculum.type";
+import CurriculumModel from "@/models/form/curriculum.model";
+import { Query, Repository } from "@/types/repository.type";
+import { Curriculum } from "@/types/form/curriculum.type";
 
 export class CurriculumRepository implements Repository<Curriculum> {
   async create(data: Curriculum): Promise<Curriculum> {

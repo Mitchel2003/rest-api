@@ -1,5 +1,5 @@
-import { UserHeadquarter } from "../../types/relation/userHeadquarter.type";
-import configSchema from "../../utils/schema";
+import { UserHeadquarter } from "@/types/relation/userHeadquarter.type";
+import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const userHeadquarterSchema: Schema<UserHeadquarter> = new Schema({

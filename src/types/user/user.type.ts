@@ -1,4 +1,4 @@
-import { Query } from "../repository.type"
+import { Query } from "@/types/repository.type"
 import { Document } from "mongoose";
 
 export interface User extends Document {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { send } from "../interfaces/api.interface"
+import { send } from "@/interfaces/api.interface"
 import { ZodType, ZodError } from "zod"
 
 const validateSchema = (schema: ZodType) => (req: Request, res: Response, next: NextFunction) => {

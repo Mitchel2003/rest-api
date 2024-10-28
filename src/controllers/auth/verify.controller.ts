@@ -1,7 +1,7 @@
-import { ExtendsRequest, send } from "../../interfaces/api.interface"
-import { verify as Service } from "../../services/auth.service"
-import { handlerErrorResponse } from "../../utils/handler"
-import User from "../../models/user/user.model"
+import { ExtendsRequest, send } from "@/interfaces/api.interface"
+import { verify as Service } from "@/services/auth.service"
+import { handlerErrorResponse } from "@/utils/handler"
+import User from "@/models/user/user.model"
 import { Request, Response } from "express"
 
 /**

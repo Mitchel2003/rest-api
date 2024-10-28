@@ -1,5 +1,5 @@
-import { ExtendsRequest, send } from "../../interfaces/api.interface"
-import User from "../../models/user/user.model"
+import { ExtendsRequest, send } from "@/interfaces/api.interface"
+import User from "@/models/user/user.model"
 import { Response } from "express"
 
 /**

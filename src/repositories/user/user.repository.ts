@@ -1,6 +1,6 @@
-import { Query, Repository } from "../../types/repository.type";
-import UserModel from "../../models/user/user.model";
-import { User } from "../../types/user/user.type";
+import { Query, Repository } from "@/types/repository.type";
+import UserModel from "@/models/user/user.model";
+import { User } from "@/types/user/user.type";
 
 export class UserRepository implements Repository<User> {
   async create(data: User): Promise<User> {

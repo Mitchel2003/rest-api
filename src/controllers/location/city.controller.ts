@@ -1,6 +1,6 @@
-import { handlerErrorResponse } from "../../utils/handler"
-import { send } from "../../interfaces/api.interface"
-import City from "../../models/location/city.model"
+import { handlerErrorResponse } from "@/utils/handler"
+import { send } from "@/interfaces/api.interface"
+import City from "@/models/location/city.model"
 
 import { Request, Response } from "express"
 

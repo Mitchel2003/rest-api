@@ -1,4 +1,4 @@
-import { send } from "../interfaces/api.interface";
+import { send } from "@/interfaces/api.interface";
 import { MongooseError } from "mongoose";
 import { Response } from "express";
 

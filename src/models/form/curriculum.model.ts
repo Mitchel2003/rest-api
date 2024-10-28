@@ -1,6 +1,6 @@
-import { Curriculum } from "../../types/form/curriculum.type";
+import { Curriculum } from "@/types/form/curriculum.type";
 import mongoose, { Schema } from "mongoose";
-import configSchema from "../../utils/schema";
+import configSchema from "@/utils/schema";
 
 const curriculumSchema: Schema<Curriculum> = new Schema({
   title: {

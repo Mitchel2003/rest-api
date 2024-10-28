@@ -1,5 +1,5 @@
-import { CredentialsJWT } from "../interfaces/props.interface";
-import config from "../utils/config";
+import { CredentialsJWT } from "@/interfaces/props.interface";
+import config from "@/utils/config";
 import jwt from "jsonwebtoken";
 
 const TOKEN_SECRET = config.jwtSecret;

@@ -1,5 +1,5 @@
-import { Headquarter } from "../../types/location/headquarter.type";
-import configSchema from "../../utils/schema";
+import { Headquarter } from "@/types/location/headquarter.type";
+import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const headquarterSchema: Schema<Headquarter> = new Schema({

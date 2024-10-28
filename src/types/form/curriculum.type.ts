@@ -1,5 +1,5 @@
+import { Query } from "@/types/repository.type"
 import { Document, Schema } from "mongoose";
-import { Query } from "../repository.type"
 
 export interface Curriculum extends Document {
   title: string,

@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar clientes (entidades)*/
-import { ExtendsRequest, send } from "../../interfaces/api.interface"
-import { handlerErrorResponse } from "../../utils/handler"
-import Client from "../../models/user/client.model"
+import { ExtendsRequest, send } from "@/interfaces/api.interface"
+import { handlerErrorResponse } from "@/utils/handler"
+import Client from "@/models/user/client.model"
 import { Request, Response } from "express"
 
 /**

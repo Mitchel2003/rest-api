@@ -1,9 +1,9 @@
-import validateSchema from "../../middlewares/validator.middleware"
-import authRequired from "../../middlewares/auth.middleware"
-import { clientSchema } from "../../schemas/user/client.schema"
+import validateSchema from "@/middlewares/validator.middleware"
+import authRequired from "@/middlewares/auth.middleware"
+import { clientSchema } from "@/schemas/user/client.schema"
 import { Router } from "express"
 
-import { getClient, getClients, createClient, updateClient, deleteClient } from "../../controllers/user/client.controller"
+import { getClient, getClients, createClient, updateClient, deleteClient } from "@/controllers/user/client.controller"
 
 const router = Router()
 

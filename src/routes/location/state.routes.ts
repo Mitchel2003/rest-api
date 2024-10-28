@@ -1,9 +1,9 @@
-import validateSchema from "../../middlewares/validator.middleware"
-import stateSchema from "../../schemas/location/state.schema"
-import authRequired from "../../middlewares/auth.middleware"
+import validateSchema from "@/middlewares/validator.middleware"
+import stateSchema from "@/schemas/location/state.schema"
+import authRequired from "@/middlewares/auth.middleware"
 import { Router } from "express"
 
-import { createState, getState, getStates, updateState, deleteState } from "../../controllers/location/state.controller"
+import { createState, getState, getStates, updateState, deleteState } from "@/controllers/location/state.controller"
 
 const router = Router()
 

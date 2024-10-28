@@ -1,5 +1,5 @@
+import { Query } from "@/types/repository.type";
 import { Document } from "mongoose";
-import { Query } from "repository.type";
 
 export interface Client extends Document {
   name: string,

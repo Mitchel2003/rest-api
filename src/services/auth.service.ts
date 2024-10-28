@@ -23,16 +23,14 @@ class AuthService {
    */
   async createUser({ body }: Request): Promise<Result<UserProps>> {
     try {
-      const { username, email, password } = body;
-      const userFound = await User.findOne({ email });
+      const userFound = await User.findOne({ email: body.email });
       if (userFound) return { error: 'Email se encuentra en uso' }
 
-      const passHash = await encrypt(password, 10);
+      const passHash = await encrypt(body.password, 10);
       const verificationToken = generateVerificationToken();
       const verificationExpiresAt = generateVerificationExpiresAt();
       const user = new User({
-        username,
-        email,
+        ...body,
         password: passHash,
         verificationToken,
         verificationExpiresAt

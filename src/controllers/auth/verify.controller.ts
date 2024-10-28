@@ -1,7 +1,7 @@
 import { ExtendsRequest, send } from "../../interfaces/api.interface"
+import { verify as Service } from "../../services/auth.service"
 import { handlerErrorResponse } from "../../utils/handler"
 import User from "../../models/user/user.model"
-import auth from "../../services/auth.service"
 import { Request, Response } from "express"
 
 /**
@@ -23,7 +23,7 @@ export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<vo
  */
 export const verifyEmail = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await auth.verifyEmail(body.code);
+    const result = await Service.verifyEmail(body.code);
     if ('error' in result) return send(res, 400, result.error);
     send(res, 200, 'Email verificado correctamente');
   } catch (e) { handlerErrorResponse(res, e, "verificar email") }

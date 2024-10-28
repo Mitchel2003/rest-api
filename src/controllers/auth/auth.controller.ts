@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
 import { generateAccessToken } from "../../services/jwt.service"
+import { auth, verify } from "../../services/auth.service"
 import mailtrap from "../../services/mailtrap.service"
-import auth from "../../services/auth.service"
 
 import { handlerErrorResponse } from "../../utils/handler"
 import { send } from "../../interfaces/api.interface"
@@ -16,7 +16,7 @@ import { Request, Response } from "express"
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
-    const user = await auth.verifyCredentials(email, password);
+    const user = await verify.verifyCredentials(email, password);
     if ('error' in user) return send(res, 403, user.error);
     const token = await generateAccessToken({ id: user.value._id });
     setCookies(res, token);

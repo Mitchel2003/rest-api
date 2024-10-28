@@ -1,8 +1,8 @@
+import { resetPassword as Service } from "../../services/auth.service"
+import mailtrap from "../../services/mailtrap.service"
+
 import { handlerErrorResponse } from "../../utils/handler"
 import { send } from "../../interfaces/api.interface"
-
-import mailtrap from "../../services/mailtrap.service"
-import auth from "../../services/auth.service"
 import { Request, Response } from "express"
 
 /**
@@ -14,7 +14,7 @@ import { Request, Response } from "express"
  */
 export const forgotPassword = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await auth.resetTokenCredentials(body.email);
+    const result = await Service.resetTokenCredentials(body.email);
     if ('error' in result) return send(res, 400, result.error);
 
     const emailSend = await mailtrap.sendResetPasswordEmail(body.email, result.value);
@@ -33,7 +33,7 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
  */
 export const resetPassword = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await auth.updatePassword(params.token, body.password);
+    const result = await Service.updatePassword(params.token, body.password);
     if ('error' in result) return send(res, 400, result.error);
 
     const emailSend = await mailtrap.sendResetSuccessEmail(result.value.email);

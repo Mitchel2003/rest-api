@@ -34,12 +34,12 @@ export const getUserDefaultFB = (user: User): UserFirebase => {
   return {
     //various
     uid: '',
-    tenantId: '',
     photoURL: '',
     providerId: '',
     phoneNumber: '',
     refreshToken: '',
     providerData: [],
+    tenantId: user.id,
 
     //auth
     isAnonymous: false,

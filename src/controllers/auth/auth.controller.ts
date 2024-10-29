@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
+import { authService as authFB, emailService as emailFB } from "@/services/firebase.service"
 import { generateAccessToken } from "@/services/jwt.service"
-import { emailService } from "@/services/firebase.service"
-import { auth, verify } from "@/services/auth.service"
+import { verify } from "@/services/auth.service"
 
 import { handlerErrorResponse } from "@/utils/handler"
 import { send } from "@/interfaces/api.interface"
@@ -29,19 +29,29 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.
  * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
  */
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const preRegister = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await auth.createUser(req);
-    if ('error' in user) return send(res, 500, user.error);
+    const { email, password, username } = req.body;
+    const preRegister = await authFB.preRegister(email, password);
+    if ('error' in preRegister) return send(res, 500, preRegister.error);
+
+    const setProfile = await authFB.updateProfile(username);
+    if ('error' in setProfile) return send(res, 500, setProfile.error);
 
     const url = req.headers.origin as string;
-    const emailSend = await emailService.sendEmailVerification(user.value, url);
+    const emailSend = await emailFB.sendEmailVerification(user.value, url);
     if ('error' in emailSend) return send(res, 500, emailSend.error);
 
     //set cookies with token auth
     const token = await generateAccessToken({ id: user.value._id });
     setCookies(res, token);
     send(res, 200, user.value);
+  } catch (e) { handlerErrorResponse(res, e, "registrarse") }
+}
+
+export const register = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password, username } = req.body;
   } catch (e) { handlerErrorResponse(res, e, "registrarse") }
 }
 

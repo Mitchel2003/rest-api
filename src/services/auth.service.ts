@@ -23,9 +23,6 @@ class AuthService {
    */
   async createUser({ body }: Request): Promise<Result<UserProps>> {
     try {
-      const userFound = await User.findOne({ email: body.email });
-      if (userFound) return { error: 'Email se encuentra en uso' }
-
       const passHash = await encrypt(body.password, 10);
       const verificationToken = generateVerificationToken();
       const verificationExpiresAt = generateVerificationExpiresAt();
@@ -38,6 +35,11 @@ class AuthService {
       const userSaved = await user.save();
       return { value: userSaved };
     } catch (e) { return { error: `Error al crear el usuario: ${e}` } }
+  }
+
+  async isUserExists(email: string): Promise<Result<boolean>> {
+    const user = await User.findOne({ email });
+    return user ? { value: true } : { value: false };
   }
 }
 

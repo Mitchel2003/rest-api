@@ -1,5 +1,5 @@
 import { resetPassword as Service } from "@/services/auth.service"
-import mailtrap from "@/services/mailtrap.service"
+// import { emailService } from "@/services/firebase.service"
 
 import { handlerErrorResponse } from "@/utils/handler"
 import { send } from "@/interfaces/api.interface"
@@ -17,8 +17,8 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
     const result = await Service.resetTokenCredentials(body.email);
     if ('error' in result) return send(res, 400, result.error);
 
-    const emailSend = await mailtrap.sendResetPasswordEmail(body.email, result.value);
-    if ('error' in emailSend) return send(res, 500, emailSend.error);
+    // const emailSend = await emailService.sendResetPasswordEmail(body.email, result.value);
+    // if ('error' in emailSend) return send(res, 500, emailSend.error);
 
     send(res, 200, 'Email enviado correctamente');
   } catch (e) { handlerErrorResponse(res, e, "enviar email de restablecimiento de contraseña") }
@@ -36,8 +36,8 @@ export const resetPassword = async ({ params, body }: Request, res: Response): P
     const result = await Service.updatePassword(params.token, body.password);
     if ('error' in result) return send(res, 400, result.error);
 
-    const emailSend = await mailtrap.sendResetSuccessEmail(result.value.email);
-    if ('error' in emailSend) return send(res, 500, emailSend.error);
+    // const emailSend = await emailService.sendResetSuccessEmail(result.value.email);
+    // if ('error' in emailSend) return send(res, 500, emailSend.error);
 
     send(res, 200, 'Contraseña restablecida correctamente');
   } catch (e) { handlerErrorResponse(res, e, "restablecer contraseña") }

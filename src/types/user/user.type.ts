@@ -27,5 +27,5 @@ export interface UserService {
   findOneUser(query: Query): Promise<User>
   findUserById(id: string): Promise<User | null>
   updateUser(id: string, user: Partial<User>): Promise<User | null>
-  DeleteUser(id: string): Promise<boolean>
+  deleteUser(id: string): Promise<boolean>
 }

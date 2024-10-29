@@ -1,17 +1,21 @@
-import { ref, listAll, getStorage, uploadBytes, deleteObject, getDownloadURL, FirebaseStorage, StorageReference } from "firebase/storage";
-import { StorageService as Service, StorageMetadata } from "@/interfaces/db.interface";
-import { Result } from "@/interfaces/api.interface";
-import { initializeApp } from "firebase/app";
-import config from "@/utils/config";
+import { getStorage, ref, deleteObject, getDownloadURL, FirebaseStorage, StorageReference } from "firebase/storage";
+import { sendEmailVerification } from "firebase/auth";
 
-class StorageService implements Service {
+import { Result } from "@/interfaces/api.interface";
+import { User } from "@/types/user/user.type";
+import { app } from "@/utils/firebase";
+import {
+  StorageService as IStorage,
+  EmailService as IEmail,
+  StorageMetadata,
+  getUserDefaultFB
+} from "@/interfaces/db.interface";
+
+class StorageService implements IStorage {
   private static instance: StorageService;
   private readonly storage: FirebaseStorage;
 
-  private constructor() {
-    const app = initializeApp(config.firebaseConfig);
-    this.storage = getStorage(app);
-  }
+  private constructor() { this.storage = getStorage(app) }
 
   public static getInstance(): StorageService {
     if (!StorageService.instance) { StorageService.instance = new StorageService() }
@@ -48,6 +52,7 @@ class StorageService implements Service {
    */
   async uploadFile(path: string, file: File): Promise<Result<string>> {
     return this.handler(async () => {
+      const { uploadBytes } = await import('firebase/storage');
       const storageRef = this.getReference(path);
       const metadata = this.buildMetadata(file);
       const upload = await uploadBytes(storageRef, file, metadata);
@@ -73,6 +78,7 @@ class StorageService implements Service {
    */
   async getFiles(path: string): Promise<Result<string[]>> {
     return this.handler(async () => {
+      const { listAll } = await import('firebase/storage');
       const storageRef = this.getReference(path);
       const files = await listAll(storageRef);
       return await Promise.all(files.items.map(item => getDownloadURL(item)))
@@ -104,4 +110,37 @@ class StorageService implements Service {
   }
 }
 
+class EmailService implements IEmail {
+  private static instance: EmailService;
+  private constructor() { }
+
+  public static getInstance(): EmailService {
+    if (!EmailService.instance) { EmailService.instance = new EmailService() }
+    return EmailService.instance;
+  }
+
+  private async handler<T>(operation: () => Promise<T>, error: string): Promise<Result<T>> {
+    //TODO: Implementar el manejo de errores de forma mas profesional
+    try {
+      const result = await operation();
+      return { value: result }
+    } catch (e) { return { error: `Error interno del servidor al ${error}: ${e instanceof Error ? e.message : String(e)}` } }
+  }
+
+  /**
+   * Envia un correo de verificación al usuario.
+   * @param user - El usuario a verificar, contiene las credenciales del usuario.
+   * @param url - La URL de la aplicación, se utiliza para redirigir al usuario a la URL de verificación.
+   * @example url = 'https://mitchel2003.github.io/Gestion_salud/src/public'
+   */
+  async sendEmailVerification(user: User, url: string): Promise<Result<void>> {
+    const redirect = `${url}/auth/verify-email/${user.email}/${user.verificationToken}`;
+    return this.handler(async () =>
+      await sendEmailVerification(getUserDefaultFB(user), { url: redirect }),
+      'Enviar correo de verificación'
+    )
+  }
+}
+
+export const emailService = EmailService.getInstance();
 export const storageService = StorageService.getInstance();

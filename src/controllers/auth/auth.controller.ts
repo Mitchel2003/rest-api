@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
 import { generateAccessToken } from "@/services/jwt.service"
+import { emailService } from "@/services/firebase.service"
 import { auth, verify } from "@/services/auth.service"
-import mailtrap from "@/services/mailtrap.service"
 
 import { handlerErrorResponse } from "@/utils/handler"
 import { send } from "@/interfaces/api.interface"
@@ -34,7 +34,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const user = await auth.createUser(req);
     if ('error' in user) return send(res, 500, user.error);
 
-    const emailSend = await mailtrap.sendVerificationEmail(user.value);
+    const url = req.headers.origin as string;
+    const emailSend = await emailService.sendEmailVerification(user.value, url);
     if ('error' in emailSend) return send(res, 500, emailSend.error);
 
     //set cookies with token auth

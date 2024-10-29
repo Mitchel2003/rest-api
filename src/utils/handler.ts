@@ -1,4 +1,5 @@
 import { send } from "@/interfaces/api.interface";
+import { FirebaseError } from "firebase/app";
 import { MongooseError } from "mongoose";
 import { Response } from "express";
 
@@ -15,6 +16,7 @@ import { Response } from "express";
 export const handlerErrorResponse = (res: Response, e: unknown, message: string) => {
   const path = `Error interno del servidor al ${message}`
   isMongooseError(res, e, path);
+  isFirebaseError(res, e, path);
   isUnknownError(res, e, path);
 }
 /*---------------------------------------------------------------------------------------------------------*/
@@ -28,6 +30,16 @@ export const handlerErrorResponse = (res: Response, e: unknown, message: string)
  */
 export const isMongooseError = (res: Response, e: unknown, path: string) => {
   if (e instanceof MongooseError) return send(res, 500, `${path}: Error mongoose: ${e.name} => ${e.message}`)
+}
+
+/**
+ * Manejador de errores de firebase
+ * @param {Response} res - Objeto de respuesta Express.
+ * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
+ * @param {string} path - Mensaje que refiere a la procedencia de esta solicitud fallida
+ */
+export const isFirebaseError = (res: Response, e: unknown, path: string) => {
+  if (e instanceof FirebaseError) return send(res, 500, `${path}: Error firebase(${e.code}): ${e.name} => ${e.message}`)
 }
 
 /**

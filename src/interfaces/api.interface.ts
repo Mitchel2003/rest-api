@@ -1,4 +1,5 @@
-import { CredentialsJWT, SchemaID, UserReferencesProps } from "./props.interface"
+import { SchemaID, LocationProps } from "@/interfaces/db.interface";
+import { CredentialsJWT } from "@/interfaces/props.interface";
 import { Request, Response } from "express"
 
 /*--------------- request ---------------*/
@@ -8,7 +9,7 @@ export interface ExtendsRequest extends Request {
   user?: { id?: SchemaID };
 
   //userReferences
-  userReferences?: UserReferencesProps;
+  userReferences?: LocationProps;
 }
 
 /*--------------- response ---------------*/

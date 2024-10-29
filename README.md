@@ -452,3 +452,20 @@ Tenemos las siguientes situaciones
 
   Entonces, mirando como estan las cosas, toca separar las responsabilidades; de modo que no se dependa de las credenciales del usuario
   para el crud de country, state y city, una vez construida esta logica, podremos empezar a crear un headquarter
+
+#### 003
+A la hora de actualizar un archivo, tengamos en cuenta que debemos sustituir;
+  ahora bien, la cosa se complica al momento de hacer referencia a ese archivo en el ref(),
+  porque debemos saber el nombre de este más su extencion (png, jpg, etc).
+
+  ```ts
+  ref(storage, 'users/profile/{username}/imagen.png')
+  ```
+
+  En cambio, si creamos una relacion carpeta-archivo, he intuido que 1 file corresponde a 1 carpeta
+  tal que así (users/profile/{username}/photo) entonces solo nos ocuparemos de eliminar este folder
+  y subir el nuevo archivo en esa direccion (users/profile/{username}/photo/imagen.png).
+
+  El procedimiento es:
+  - Eliminar el folder (path) en cuestion.
+  - Subir el nuevo archivo en esa direccion.

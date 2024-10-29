@@ -1,10 +1,19 @@
 import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "@/templates/mailtrap.template"
-import { MailtrapClient, SendError } from "mailtrap"
+import { MailtrapClient, SendError, SendResponse } from "mailtrap"
 import config from "@/utils/config"
 
-import { MailtrapResult, EmailProps } from "@/interfaces/props.interface"
 import { Result } from "@/interfaces/api.interface"
 import { User } from "@/types/user/user.type"
+
+export type MailtrapResult = (SendResponse & { success: true }) | (SendError & { success: false })
+
+type Email = { email: string }
+export interface EmailProps {
+  to: Email[]
+  html: string
+  subject: string
+  category: string
+}
 
 export class EmailService {
   private client: MailtrapClient;

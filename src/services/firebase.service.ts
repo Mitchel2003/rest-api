@@ -1,91 +1,106 @@
+import { ref, listAll, getStorage, uploadBytes, deleteObject, getDownloadURL, FirebaseStorage, StorageReference } from "firebase/storage";
+import { StorageService as Service, StorageMetadata } from "@/interfaces/db.interface";
 import { Result } from "@/interfaces/api.interface";
 import { initializeApp } from "firebase/app";
 import config from "@/utils/config";
-import {
-  ref,
-  listAll,
-  getStorage,
-  uploadBytes,
-  deleteObject,
-  getDownloadURL,
-  FirebaseStorage
-} from "firebase/storage";
 
-const app = initializeApp(config.firebaseConfig);
+class StorageService implements Service {
+  private static instance: StorageService;
+  private readonly storage: FirebaseStorage;
 
-class StorageService {
-  private static instance: StorageService | undefined;
-  private storage: FirebaseStorage;
-  private files: string[];
-
-  constructor() {
-    this.files = []
-    this.storage = getStorage(app)
+  private constructor() {
+    const app = initializeApp(config.firebaseConfig);
+    this.storage = getStorage(app);
   }
 
   public static getInstance(): StorageService {
-    if (!StorageService.instance) StorageService.instance = new StorageService()
-    return StorageService.instance
+    if (!StorageService.instance) { StorageService.instance = new StorageService() }
+    return StorageService.instance;
   }
 
-  /**
-   * Subir un archivo a Firebase Storage
-   * @param {string} path - Ruta donde se almacenará el archivo
-   * @param {File} file - Archivo a subir, corresponde a un archivo de imagen.
-   * @example
-   * path = "users/123456/profile.png"
-   * file = "png, jpg or jpeg"
-   * @returns {Promise<string>} URL del archivo subido
-   */
-  async uploadFile(path: string, file: File): Promise<string> {
-    const storageRef = ref(this.storage, path);
-    const uploadTask = await uploadBytes(storageRef, file);
-    return getDownloadURL(uploadTask.ref);
-  }
+  private getReference(path: string): StorageReference { return ref(this.storage, path) }
 
-  /**
-   * Obtener la URL de un archivo almacenado en Firebase Storage
-   * @param {string} path - Ruta del archivo
-   * @returns {Promise<string>} URL del archivo
-   */
-  async getFile(path: string): Promise<string> {
-    const storageRef = ref(this.storage, path);
-    return getDownloadURL(storageRef);
-  }
-
-  /**
-   * Obtener todas las URLs de los archivos almacenados en una ruta específica
-   * @param {string} path - Ruta donde se encuentran los archivos
-   * @returns {Promise<string[]>} Array de URLs de los archivos
-   */
-  async getFiles(path: string): Promise<string[]> {
-    if (this.files.length > 0) this.files = [];
-    const storageRef = ref(this.storage, path);
-    const files = await listAll(storageRef);
-    this.files = await Promise.all(
-      files.items.map(async (item) => await getDownloadURL(item))
-    )
-    return this.files
-  }
-
-  async updateFile(path: string, file: File): Promise<Result<string>> {//working here...
+  private async handler<T>(operation: () => Promise<T>, error: string): Promise<Result<T>> {
     try {
-      const deleted = await deleteFile(path);
-      if (!deleted) return { error: "No se pudo eliminar el archivo" }
-      return await this.uploadFile(path, file);
-    } catch (error) {
-      return ""
+      const result = await operation();
+      return { value: result }
+    } catch (e) { return { error: `Error interno del servidor al ${error}: ${e instanceof Error ? e.message : String(e)}` } }
+  }
+
+  /**
+   * Construye los metadatos del archivo para Firebase.
+   * @param file - El archivo a subir. @example file: "imagen.png"
+   * @returns Los metadatos del archivo; esto se traduce en la configuración del archivo en Firebase.
+   */
+  private buildMetadata(file: File): StorageMetadata {
+    return {
+      contentType: file.type,
+      customMetadata: { originalName: file.name, uploadedAt: new Date().toISOString() }
     }
   }
 
   /**
-   * Eliminar un archivo almacenado en Firebase Storage
-   * @param {string} path - Ruta del archivo
-   * @example path = "users/123456/profile.png"
+   * Subir un archivo al almacenamiento de Firebase.
+   * @param path - La ruta del archivo final.
+   * @example path podria ser 'users/profile/{username}'
+   * @param file - El archivo a subir.
+   * @returns La URL del archivo subido.
    */
-  async deleteFile(path: string): Promise<void> {
-    const storageRef = ref(this.storage, path);
-    await deleteObject(storageRef);
+  async uploadFile(path: string, file: File): Promise<Result<string>> {
+    return this.handler(async () => {
+      const storageRef = this.getReference(path);
+      const metadata = this.buildMetadata(file);
+      const upload = await uploadBytes(storageRef, file, metadata);
+      return await getDownloadURL(upload.ref);
+    }, 'Subir archivo')
+  }
+
+  /**
+   * Obtener la URL de un archivo del almacenamiento de Firebase.
+   * @param path - La ruta del archivo al que se accede.
+   * @example path = 'users/profile/{username}/imagen.png'
+   * @returns La URL del archivo.
+   */
+  async getFile(path: string): Promise<Result<string>> {
+    return this.handler(async () => await getDownloadURL(this.getReference(path)), 'Obtener archivo')
+  }
+
+  /**
+   * Obtener las URLs de todos los archivos de un directorio del almacenamiento de Firebase.
+   * @param path - La ruta del directorio al que se accede.
+   * @example path = 'users/profile/{username}'
+   * @returns Un array con las URLs de los archivos.
+   */
+  async getFiles(path: string): Promise<Result<string[]>> {
+    return this.handler(async () => {
+      const storageRef = this.getReference(path);
+      const files = await listAll(storageRef);
+      return await Promise.all(files.items.map(item => getDownloadURL(item)))
+    }, 'Obtener archivos')
+  }
+
+  /**
+   * Actualiza un archivo en el almacenamiento de Firebase.
+   * @param path - La ruta del archivo final @example path: "users/profile/{username}"
+   * @param file - El archivo nuevo a subir, con su nombre y extension @example file: "imagen.png"
+   * @link https://github.com/Mitchel2003/rest-api/blob/main/README.md#003
+   * @returns La URL del archivo actualizado.
+   */
+  async updateFile(path: string, file: File): Promise<Result<string>> {
+    return this.handler(async () => {
+      await deleteObject(this.getReference(path));
+      const result = await this.uploadFile(path, file);
+      if ('error' in result) { return 'No se actualizó el file' }
+      return result.value
+    }, 'Actualizar archivo')
+  }
+
+  /**
+   * Elimina un archivo del almacenamiento de Firebase.
+   * @param path - La ruta del archivo a eliminar.
+   */
+  async deleteFile(path: string): Promise<Result<void>> {
+    return this.handler(async () => await deleteObject(this.getReference(path)), 'Eliminar archivo')
   }
 }
 

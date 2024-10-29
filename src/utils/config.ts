@@ -7,5 +7,5 @@ export default {
   frontendUrl: process.env.FRONTEND_URL as string,
   jwtSecret: process.env.TOKEN_SECRET as string,
   mongodbUri: process.env.MONGODB_URI as string,
-  firebaseConfig: JSON.parse(process.env.FIREBASE_CONFIG as string),
-}
+  firebaseConfig: JSON.stringify(process.env.FIREBASE_CONFIG as string),
+};

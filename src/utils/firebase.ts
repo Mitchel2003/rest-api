@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
 import config from "./config";
 
-export const app = initializeApp(config.firebaseConfig);
+const firebaseConfig = JSON.parse(config.firebaseConfig);
+export const app = initializeApp(firebaseConfig);

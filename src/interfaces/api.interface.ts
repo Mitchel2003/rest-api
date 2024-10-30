@@ -1,15 +1,9 @@
-import { SchemaID, LocationProps } from "@/interfaces/db.interface";
-import { CredentialsJWT } from "@/interfaces/props.interface";
+import { SchemaID } from "@/interfaces/db.interface";
 import { Request, Response } from "express"
 
 /*--------------- request ---------------*/
 export interface ExtendsRequest extends Request {
-  //auth
-  token?: CredentialsJWT;
   user?: { id?: SchemaID };
-
-  //userReferences
-  userReferences?: LocationProps;
 }
 
 /*--------------- response ---------------*/
@@ -22,6 +16,12 @@ export type SendResponseProps = <T>(
 ) => void
 
 /*--------------- tools ---------------*/
+/**
+ * Envía una respuesta con el estado HTTP y el dato correspondiente.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @param {number} status - Código de estado HTTP.
+ * @param {T} data - Dato a enviar en la respuesta.
+ */
 export const send: SendResponseProps = (res, status, data) => {
   const response: ApiResponse<typeof data> = data;
   res.status(status).json(response);

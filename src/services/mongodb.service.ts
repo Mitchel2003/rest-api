@@ -1,43 +1,42 @@
-import UserHeadquarter from "@/models/relation/userHeadquarter.model";
-import { SchemaID, LocationProps } from "@/interfaces/db.interface";
+import { IDatabase, UserCredentialsFB } from "@/interfaces/db.interface";
+import { handlerService as handler } from "@/utils/handler";
+import { Result } from "@/interfaces/api.interface";
 
-/*----------------------------------------------userReferences----------------------------------------------*/
-class UserReferences {
-  private static instance: UserReferences | undefined;
+import userRepository from "@/repositories/user/user.repository";
+import { User as UserMongo } from "@/types/user/user.type";
 
+class DatabaseService implements IDatabase {//working here...
+  private static instance: DatabaseService;
   private constructor() { }
 
-  public static getInstance(): UserReferences {
-    if (!UserReferences.instance) UserReferences.instance = new UserReferences()
-    return UserReferences.instance
+  public static getInstance(): DatabaseService {
+    if (!DatabaseService.instance) DatabaseService.instance = new DatabaseService()
+    return DatabaseService.instance;
   }
 
   /**
-   * Obtiene las referencias de ubicación de un usuario.
-   * @param {SchemaID} id - ID del usuario
-   * @returns {Promise<LocationProps>} Referencias de ubicación del usuario
+   * Crea un nuevo usuario con la contraseña encriptada y un token de verificación email definido.
+   * @param {UserCredentialsFB} user - Contiene los datos del nuevo usuario a crear.
+   * @returns {Promise<UserMongo>} - Retorna el documento del usuario creado.
    */
-  async get(id: SchemaID): Promise<LocationProps> {//working here...
-    try {
-      const user = await UserHeadquarter.findOne({ user: id }).populate({
-        path: 'headquarter',
-        populate: {
-          path: 'city',
-          populate: {
-            path: 'state',
-            populate: {
-              path: 'country'
-            }
-          }
-        }
-      })
+  async createUser(user: UserCredentialsFB): Promise<Result<UserMongo>> {
+    return handler(async () => {
+      const userSaved = await userRepository.create(user as UserMongo)
+      return userSaved
+    }, "crear usuario")
+  }
 
-      return { user, headquarter: user?.headquarter }
-      // return {
-      //   city: user.headquarter
-      // }
-    } catch (e) { throw new Error(`Failed to fetch user references: ${e}`) }
+  /**
+   * Verifica si el email existe en la base de datos (usuario registrado).
+   * @param {string} email - El email del usuario a verificar.
+   * @returns {Promise<boolean>} - Retorna true o false.
+   */
+  async isUserFound(email: string): Promise<Result<boolean>> {
+    return handler(async () => {
+      const user = await userRepository.findOne({ email });
+      return user !== null
+    }, "verificar si el usuario existe")
   }
 }
 
-export const userReferences = UserReferences.getInstance();
+export const db = DatabaseService.getInstance();

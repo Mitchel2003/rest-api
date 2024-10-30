@@ -2,7 +2,15 @@ import { Query, Repository } from "@/types/repository.type";
 import UserModel from "@/models/user/user.model";
 import { User } from "@/types/user/user.type";
 
-export class UserRepository implements Repository<User> {
+class UserRepository implements Repository<User> {
+  private static instance: UserRepository;
+  private constructor() { }
+
+  public static getInstance(): UserRepository {
+    if (!UserRepository.instance) UserRepository.instance = new UserRepository()
+    return UserRepository.instance;
+  }
+
   async create(data: User): Promise<User> {
     const user = new UserModel(data)
     return await user.save()
@@ -24,3 +32,5 @@ export class UserRepository implements Repository<User> {
     return res !== null
   }
 }
+
+export default UserRepository.getInstance()

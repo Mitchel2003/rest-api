@@ -5,8 +5,8 @@ import jwt from "jsonwebtoken";
 const TOKEN_SECRET = config.jwtSecret;
 /**
  * Esto crea un token de acceso para servicios de autenticación y rutas protegidas
- * @param token - es el dato del parámetro para encriptar en el token, puede ser usado en otro momento para autenticación
- * @returns {string} obtenemos una cadena que corresponde al token hash
+ * @param token - Corresponde a credencial (id) para encriptar en el token; representa el uid del usuario autenticado "firebase".
+ * @returns {string} Obtenemos un string que corresponde al token hash.
  */
 export async function generateAccessToken(payload: object): Promise<string> {
   return new Promise((resolve, reject) => {

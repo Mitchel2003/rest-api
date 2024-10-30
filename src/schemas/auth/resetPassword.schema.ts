@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export default z.object({
+export const resetPasswordSchema = z.object({
   password: z
     .string({ required_error: "La contraseña es requerida" })
     .min(6, { message: "La contraseña es demasiado corta" }),

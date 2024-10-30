@@ -1,2 +1,5 @@
-export const generateVerificationToken = () => Math.floor(100000 + Math.random() * 900000).toString();
-export const generateVerificationExpiresAt = () => new Date(Date.now() + 24 * 60 * 60 * 1000); //24 hours to verify
+/**
+ * Define el tiempo de expiración para validar un solicitud de verificación.
+ * @returns {Date} - Fecha de expiración = 24 horas.
+ */
+export const generateVerificationExpiresAt = (): Date => new Date(Date.now() + 24 * 60 * 60 * 1000)

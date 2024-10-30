@@ -1,83 +1,110 @@
-import { getAuth, Auth, sendEmailVerification, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
-import { getStorage, ref, deleteObject, getDownloadURL, FirebaseStorage, StorageReference } from "firebase/storage";
+import { getAuth, Auth, updateProfile, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, confirmPasswordReset } from "firebase/auth"
+import { getStorage, FirebaseStorage, ref, deleteObject, getDownloadURL, uploadBytes, listAll } from "firebase/storage"
+import { getFirestore, Firestore, setDoc, doc, CollectionReference, collection } from "firebase/firestore"
 
-import { User as UserFirebase } from "firebase/auth";
-import { Result } from "@/interfaces/api.interface";
-import { User } from "@/types/user/user.type";
-import { app } from "@/utils/firebase";
+import { handlerService as handler } from "@/utils/handler"
+import { User as UserFirebase } from "firebase/auth"
+import { Result } from "@/interfaces/api.interface"
+import { app } from "@/utils/firebase"
+import config from "@/utils/config"
 import {
+  DatabaseService as IDatabase,
   StorageService as IStorage,
   AuthService as IAuth,
-  StorageMetadata,
-} from "@/interfaces/db.interface";
+  UserCredentialsFB,
+} from "@/interfaces/db.interface"
 
 /*--------------------------------------------------Auth--------------------------------------------------*/
 class AuthService implements IAuth {
-  private static instance: AuthService;
-  private readonly auth: Auth;
+  private static instance: AuthService
+  private readonly auth: Auth
 
   private constructor() { this.auth = getAuth(app) }
 
   public static getInstance(): AuthService {
     if (!AuthService.instance) { AuthService.instance = new AuthService() }
-    return AuthService.instance;
-  }
-  //---------------authentication---------------
-  async register(email: string, password: string): Promise<Result<UserFirebase>> {
-    return handler(async () => (await createUserWithEmailAndPassword(this.auth, email, password)).user, 'Crear usuario')
-  }
-  async setProfile(username: string): Promise<Result<void>> {
-    return handler(async () => {
-      if (!this.auth.currentUser) throw new Error('No se encontró un usuario (auth)')
-      await updateProfile(this.auth.currentUser, { displayName: username })
-    }, 'Actualizar perfil')
+    return AuthService.instance
   }
 
-  //---------------verification---------------
-  async verifyCredentials(email: string, password: string): Promise<Result<UserFirebase>> {
-    return handler(async () => (await signInWithEmailAndPassword(this.auth, email, password)).user, 'Verificar credenciales')
+  /*---------------> registration <---------------*/
+  /**
+   * Crea un usuario con credenciales en Firebase.
+   * @param {string} username - El nombre de usuario.
+   * @param {string} email - El correo del usuario.
+   * @param {string} password - La contraseña del usuario.
+   * @returns {Promise<Result<UserAuth>>} El usuario auth de firebase creado.
+  */
+  async registerAccount(username: string, email: string, password: string): Promise<Result<UserFirebase>> {
+    return handler(async () => {
+      const res = await createUserWithEmailAndPassword(this.auth, email, password)
+      if (!res.user) throw new Error('No se pudo crear el usuario')
+      await updateProfile(res.user, { displayName: username })
+      return res.user
+    }, 'Crear usuario')
   }
+
+  /*---------------> verification <---------------*/
+  /**
+   * Verifica las credenciales del usuario.
+   * @param {string} email - El email del usuario.
+   * @param {string} password - La contraseña del usuario.
+   * @returns {Promise<Result<UserAuth>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
+   */
+  async verifyCredentials(email: string, password: string): Promise<Result<UserFirebase>> {
+    return handler(async () => {
+      const res = await signInWithEmailAndPassword(this.auth, email, password)
+      if (!res.user) throw new Error('Credenciales inválidas')
+      return res.user
+    }, 'Verificar credenciales')
+  }
+
+  /*---------------> authentication <---------------*/
   /**
    * Envia un correo de verificación de cuenta al correo suministrado por el usuario.
-   * @param user - El usuario a verificar, contiene las credenciales del usuario.
-   * @param url - La URL de la aplicación, se utiliza para redirigir al usuario a la URL de verificación.
-   * @example url = 'https://mitchel2003.github.io/Gestion_salud/src/public'
-  */
-  async sendEmailVerification(user: User, url: string): Promise<Result<void>> {
-    const redirect = `${url}/auth/verify-email/${user.email}/${user.verificationToken}`;
+   * El enlace de redireccion (url) lo definimos en el metodo dado que necesitamos el uid del usuario.
+   * @link https://github.com/Mitchel2003/rest-api/blob/main/README.md#004
+   */
+  async sendEmailVerification(): Promise<Result<void>> {
     return handler(async () => {
       if (!this.auth.currentUser) throw new Error('No se encontró un usuario (auth)')
-      await sendEmailVerification(this.auth.currentUser, { url: redirect })
+      const url = `${config.frontendUrl}/auth/verify-action?uid=${this.auth.currentUser.uid}`
+      await sendEmailVerification(this.auth.currentUser, { url })
     }, 'Enviar correo de verificación')
+  }
+
+  /**
+   * Envia un correo de restablecimiento de contraseña al correo suministrado por el usuario.
+   * Enlace de redireccion esta definido en el archivo de configuracion de firebase (templates).
+   * @param {string} email - El email del usuario.
+  */
+  async sendEmailResetPassword(email: string): Promise<Result<void>> {
+    return handler(async () => await sendPasswordResetEmail(this.auth, email), 'Enviar correo de restablecimiento de contraseña')
+  }
+
+  /**
+   * Actualiza la contraseña del usuario mediante un token de restablecimiento (oobCode) generado por firebase.
+   * @param {string} oobCode - El token de restablecimiento de contraseña.
+   * @param {string} newPassword - La contraseña de la solicitud de restablecimiento (forgot password).
+   */
+  async validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>> {
+    return handler(async () => await confirmPasswordReset(this.auth, oobCode, newPassword), 'Validar restablecimiento de contraseña')
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------Storage--------------------------------------------------*/
 class StorageService implements IStorage {
-  private static instance: StorageService;
-  private readonly storage: FirebaseStorage;
+  private static instance: StorageService
+  private readonly storage: FirebaseStorage
 
   private constructor() { this.storage = getStorage(app) }
 
   public static getInstance(): StorageService {
     if (!StorageService.instance) { StorageService.instance = new StorageService() }
-    return StorageService.instance;
+    return StorageService.instance
   }
 
-  private getReference(path: string): StorageReference { return ref(this.storage, path) }
-
-  /**
-   * Construye los metadatos del archivo para Firebase.
-   * @param file - El archivo a subir. @example file: "imagen.png"
-   * @returns Los metadatos del archivo; esto se traduce en la configuración del archivo en Firebase.
-  */
-  private buildMetadata(file: File): StorageMetadata {
-    return {
-      contentType: file.type,
-      customMetadata: { originalName: file.name, uploadedAt: new Date().toISOString() }
-    }
-  }
+  private getReference(path: string) { return ref(this.storage, path) }
 
   /**
    * Subir un archivo al almacenamiento de Firebase.
@@ -88,11 +115,10 @@ class StorageService implements IStorage {
   */
   async uploadFile(path: string, file: File): Promise<Result<string>> {
     return handler(async () => {
-      const { uploadBytes } = await import('firebase/storage');
-      const storageRef = this.getReference(path);
-      const metadata = this.buildMetadata(file);
-      const upload = await uploadBytes(storageRef, file, metadata);
-      return await getDownloadURL(upload.ref);
+      const storageRef = this.getReference(path)
+      const metadata = buildStorageMetadata(file)
+      const upload = await uploadBytes(storageRef, file, metadata)
+      return await getDownloadURL(upload.ref)
     }, 'Subir archivo')
   }
 
@@ -114,9 +140,8 @@ class StorageService implements IStorage {
   */
   async getFiles(path: string): Promise<Result<string[]>> {
     return handler(async () => {
-      const { listAll } = await import('firebase/storage');
-      const storageRef = this.getReference(path);
-      const files = await listAll(storageRef);
+      const storageRef = this.getReference(path)
+      const files = await listAll(storageRef)
       return await Promise.all(files.items.map(item => getDownloadURL(item)))
     }, 'Obtener archivos')
   }
@@ -130,8 +155,8 @@ class StorageService implements IStorage {
   */
   async updateFile(path: string, file: File): Promise<Result<string>> {
     return handler(async () => {
-      await deleteObject(this.getReference(path));
-      const result = await this.uploadFile(path, file);
+      await deleteObject(this.getReference(path))
+      const result = await this.uploadFile(path, file)
       if ('error' in result) { return 'No se actualizó el file' }
       return result.value
     }, 'Actualizar archivo')
@@ -147,15 +172,67 @@ class StorageService implements IStorage {
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
-/*--------------------------------------------------tools--------------------------------------------------*/
-const handler = async <T>(operation: () => Promise<T>, error: string): Promise<Result<T>> => {
-  //TODO: Implementar el manejo de errores de forma mas profesional
-  try {
-    const result = await operation();
-    return { value: result }
-  } catch (e) { return { error: `Error interno del servidor al ${error}: ${e instanceof Error ? e.message : String(e)}` } }
+/*--------------------------------------------------Database--------------------------------------------------*/
+class DatabaseService implements IDatabase {
+  private static instance: DatabaseService
+  private readonly db: Firestore
+
+  private constructor() { this.db = getFirestore(app) }
+
+  public static getInstance(): DatabaseService {
+    if (!DatabaseService.instance) { DatabaseService.instance = new DatabaseService() }
+    return DatabaseService.instance
+  }
+
+  /**
+   * Crea las credenciales de un usuario en la base de datos de firebase.
+   * @param user - El usuario autenticado a registrar, consta de su email, nombre de usuario y uid.
+   * @param credentials - Corresponde a las credenciales del usuario, contiene el rol del usuario en validacion.
+  */
+  async registerUserCredentials(user: UserFirebase, credentials: UserCredentialsFB): Promise<Result<void>> {
+    return handler(async () => {
+      return await setDoc(doc(this.getSubCollection('users'), user.uid), {
+        username: user.displayName,
+        role: credentials.role,
+        email: user.email,
+        access: false,
+      })
+    }, 'Crear usuario')
+  }
+
+  /**
+   * Obtiene una referencia a una subcolección de la colección principal.
+   * @param name - El nombre de la subcolección.
+   * @returns Una referencia a la subcolección.
+  */
+  getSubCollection(name: string): CollectionReference {
+    return collection(this.getCollection(), name)
+  }
+
+  /**
+   * Obtiene una referencia a la colección principal.
+   * @returns Una referencia a la colección principal.
+  */
+  getCollection(): CollectionReference {
+    return collection(this.db, 'gestion_salud')
+  }
 }
 /*---------------------------------------------------------------------------------------------------------*/
-export const authService = AuthService.getInstance();
-export const storageService = StorageService.getInstance();
+
+/*--------------------------------------------------tools--------------------------------------------------*/
+/**
+ * Construye los metadatos del archivo para Firebase Storage.
+ * @param file - El archivo a subir. @example file: "imagen.png"
+ * @returns Los metadatos del archivo con su configuración para Firebase Storage.
+ */
+const buildStorageMetadata = (file: File): object => {
+  return {
+    contentType: file.type,
+    customMetadata: { originalName: file.name, uploadedAt: new Date().toISOString() }
+  }
+}
+/*---------------------------------------------------------------------------------------------------------*/
+export const authService = AuthService.getInstance()
+export const storageService = StorageService.getInstance()
+export const databaseService = DatabaseService.getInstance()
 /*---------------------------------------------------------------------------------------------------------*/

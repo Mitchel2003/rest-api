@@ -3,18 +3,10 @@ import { Document } from "mongoose";
 
 export interface User extends Document {
   //standard
-  username: string,
   email: string,
-  password: string,
+  username: string,
+  access: boolean,
   role: 'engineer' | 'admin',
-  access: boolean, //corresponds to boolean to allow access to the system
-
-  //email verification and restore credentials
-  isVerified: boolean;
-  verificationToken?: string;
-  verificationExpiresAt?: Date;
-  resetPasswordToken?: string;
-  resetPasswordExpiresAt?: Date;
 
   //defautls mongoDB
   createdAt?: Date;

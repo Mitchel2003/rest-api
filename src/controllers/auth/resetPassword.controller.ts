@@ -1,6 +1,4 @@
-import { resetPassword as Service } from "@/services/auth.service"
-// import { emailService } from "@/services/firebase.service"
-
+import { authService as authFB } from "@/services/firebase.service"
 import { handlerErrorResponse } from "@/utils/handler"
 import { send } from "@/interfaces/api.interface"
 import { Request, Response } from "express"
@@ -14,12 +12,8 @@ import { Request, Response } from "express"
  */
 export const forgotPassword = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await Service.resetTokenCredentials(body.email);
-    if ('error' in result) return send(res, 400, result.error);
-
-    // const emailSend = await emailService.sendResetPasswordEmail(body.email, result.value);
-    // if ('error' in emailSend) return send(res, 500, emailSend.error);
-
+    const result = await authFB.sendEmailResetPassword(body.email);
+    if ('error' in result) return send(res, 500, result.error);
     send(res, 200, 'Email enviado correctamente');
   } catch (e) { handlerErrorResponse(res, e, "enviar email de restablecimiento de contraseña") }
 }
@@ -33,12 +27,8 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
  */
 export const resetPassword = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await Service.updatePassword(params.token, body.password);
-    if ('error' in result) return send(res, 400, result.error);
-
-    // const emailSend = await emailService.sendResetSuccessEmail(result.value.email);
-    // if ('error' in emailSend) return send(res, 500, emailSend.error);
-
+    const result = await authFB.validateResetPassword(params.oobCode, body.password);
+    if ('error' in result) return send(res, 500, result.error);
     send(res, 200, 'Contraseña restablecida correctamente');
   } catch (e) { handlerErrorResponse(res, e, "restablecer contraseña") }
 }

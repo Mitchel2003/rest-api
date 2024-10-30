@@ -1,8 +1,3 @@
-hasta ahora has sido muy profesional, me has dado las mejores implementaciones y el codigo mas impresionante, primeramente mi proyecto se encuentra una carpeta mas interna @server  justo  aqui se encuentra mi proyecto @src, mira lo que pasa es que estoy usando este servicio de firebase storage para el almacenamiento de imagenes en la nube, el detalle esta en que estoy construyendo la clase que controlará el servicio @firebase.service.ts, quiero que mires y consideres otras implementaciones que he trabajado anteriormente @auth.service.ts @mailtrap.service.ts @mongodb.service.ts @jwt.service.ts que buscan el profesionalismo y el empleo del mejor codigo en aras de escalabilidad y todo como si fuese un Senior en programacion, podras notar que en mi @firebase.service.ts estoy usando repetidasveces el ref(this.storage, path), quizas empezar por aqui, quiero que me construyas este servicio de firebase con las implementaciones mas profesionales y eficientes en cuanto a codigo, quiero que me brindes lo mas profesional, eres capaz de todo lo que te propones, gracias a ti he llegado hasta donde estoy ahora, quiero que me hagas un analisis exaustivo de todos los archivos que tengo en mi repretorio de carpetas, mira los tipados en la carpeta interfaces @interfaces @api.interface.ts @props.interface.ts y todas las carpetas circundantes como por ejemplo los controladores que al final utilizan estos servicios @controllers @auth.controller.ts @curriculum.controller.ts @user.controller.ts @verify.controller.ts @resetPassword.controller.ts etc, tambien mira las rutas y como estas brindan las funcionalidades respectivas @routes @auth.routes.ts @verify.routes.ts etc, quiero que mi CEO quede impresionado por mi profesionalismo; siempre opto por las maneras mas profesionales y esteticas de conseguirlo, recuerda que siempre busco maneras de hacer mejor las cosas, necesito lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructuracion u abstraccion tan bonita, !VAMOS, eres la mejor!
-
-
-
-
 ### -----------------------------------------------Readme----------------------------------------------- ###
 ## Códigos de estado informativos (100-199):================================================================
 *100* Continue: El servidor ha recibido los encabezados de la solicitud y el cliente debe proceder a enviar el cuerpo de la solicitud.
@@ -459,7 +454,7 @@ Tenemos las siguientes situaciones
   para el crud de country, state y city, una vez construida esta logica, podremos empezar a crear un headquarter
 
 #### 003
-A la hora de actualizar un archivo, tengamos en cuenta que debemos sustituir;
+  A la hora de actualizar un archivo, tengamos en cuenta que debemos sustituir;
   ahora bien, la cosa se complica al momento de hacer referencia a ese archivo en el ref(),
   porque debemos saber el nombre de este más su extencion (png, jpg, etc).
 
@@ -474,3 +469,11 @@ A la hora de actualizar un archivo, tengamos en cuenta que debemos sustituir;
   El procedimiento es:
   - Eliminar el folder (path) en cuestion.
   - Subir el nuevo archivo en esa direccion.
+
+#### 004
+  Dado que las credenciales del usuario previamente registrado en el database de firestore (pre-registro)
+  estan ubicadas en la siguiente ruta "gestion_salud/users/{uid}"; se nos complica el crear un usuario (mongoDB)
+  por el hecho de que no tenemos metodos para obtener la autenticacion de firestore (uid); por ello pasamos el "uid"
+  como un parametro de busqueda (userSearchParam), y es usado desde el frontend para consultar las credenciales y
+  crear este usuario en mongoDB, recuerda que (authentication user) es realizado por firebase con sus servicios de
+  resetPassword y sendEmailVerification, sin embargo, la base de datos standar es mongoDB.

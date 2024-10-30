@@ -1,12 +1,25 @@
-import { send } from "@/interfaces/api.interface";
+import { Result, send } from "@/interfaces/api.interface";
 import { FirebaseError } from "firebase/app";
 import { MongooseError } from "mongoose";
 import { Response } from "express";
 
-/*--------------------------------------------------handler--------------------------------------------------*/
+/*--------------------------------------------------handlers--------------------------------------------------*/
+/**
+ * Nos ayuda a manejar las operaciones en los servicios.
+ * Engloba un try catch para controlar los errores; se trabaja con un resultado de tipo Result<T>
+ * @param {Function} operation - La operación a realizar.
+ * @param {string} error - El contexto del error; brinda información sobre la operación que se está realizando.
+ * @returns {Promise<Result<T>>} - El resultado de la operación (value o error)
+ */
+export const handlerService = async <T>(operation: () => Promise<T>, error: string): Promise<Result<T>> => {
+  try {
+    const result = await operation()
+    return { value: result }
+  } catch (e) { return { error: `Error al ${error}: ${e instanceof Error ? e.message : String(e)}` } }
+}
+
 /**
  * Nos permite manejar los errores que se puedan presentar al momento de ejecutar la solicitud
- * 
  * Este handler esta diseñado para solicitudes express (req, res), por tanto, es usual verle en los controladores
  * @param {Response} res - Objeto de respuesta Express.
  * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.

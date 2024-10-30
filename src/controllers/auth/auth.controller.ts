@@ -1,7 +1,6 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { authService as authFB } from "@/services/firebase.service"
+import { authService as authFB, databaseService as database_FB } from "@/services/firebase.service"
 import { generateAccessToken } from "@/services/jwt.service"
-import { verify } from "@/services/auth.service"
 
 import { handlerErrorResponse } from "@/utils/handler"
 import { send } from "@/interfaces/api.interface"
@@ -16,9 +15,9 @@ import { Request, Response } from "express"
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
-    const user = await verify.verifyCredentials(email, password);
-    if ('error' in user) return send(res, 403, user.error);
-    const token = await generateAccessToken({ id: user.value._id });
+    const user = await authFB.verifyCredentials(email, password);
+    if ('error' in user) return send(res, 401, user.error);
+    const token = await generateAccessToken({ id: user.value.uid });
     setCookies(res, token);
     send(res, 200, user.value);
   } catch (e) { handlerErrorResponse(res, e, "iniciar sesión") }
@@ -31,21 +30,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  */
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password, username } = req.body;
-    const user = await authFB.register(email, password);
-    if ('error' in user) return send(res, 500, user.error);
+    const { email, password, username, role } = req.body;
+    const auth = await authFB.registerAccount(username, email, password);
+    if ('error' in auth) return send(res, 500, auth.error);
 
-    const profile = await authFB.setProfile(username);
-    if ('error' in profile) return send(res, 500, profile.error);
+    const register = await database_FB.registerUserCredentials(auth.value, { role });
+    if ('error' in register) return send(res, 500, register.error);
 
-    const url = req.headers.origin as string;//working here...
-    const emailSend = await authFB.sendEmailVerification(user.value, url);
-    if ('error' in emailSend) return send(res, 500, emailSend.error);
+    const sendEmail = await authFB.sendEmailVerification();
+    if ('error' in sendEmail) return send(res, 500, sendEmail.error);
 
-    //set cookies with token auth
-    const token = await generateAccessToken({ id: user.value._id });
-    setCookies(res, token);
-    send(res, 200, user.value);
+    send(res, 200, 'Usuario registrado exitosamente, se ha enviado un correo de verificación');
   } catch (e) { handlerErrorResponse(res, e, "registrarse") }
 }
 
@@ -63,7 +58,7 @@ export const logout = (req: Request, res: Response): void => {
 
 /*--------------------------------------------------tools--------------------------------------------------*/
 /**
- * Establece las cookies de autenticación en la respuesta.
+ * Establece las cookies de autenticación en la respuesta HTTP.
  * @param {Response} res - Objeto de respuesta Express.
  * @param {string} token - Token de autenticación a establecer en las cookies.
  */

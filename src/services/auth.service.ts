@@ -16,6 +16,7 @@ class AuthService {
     if (!AuthService.instance) AuthService.instance = new AuthService()
     return AuthService.instance;
   }
+  
   /**
    * Crea un nuevo usuario con la contraseña encriptada y un token de verificación email definido.
    * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del nuevo usuario en el body.

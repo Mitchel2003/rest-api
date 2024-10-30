@@ -1,4 +1,4 @@
-import { IdTokenResult, UserCredential, User as UserFirebase } from "firebase/auth";
+import { User as UserFirebase } from "firebase/auth";
 import { Result } from "@/interfaces/api.interface";
 import { User } from "@/types/user/user.type";
 import { Schema } from "mongoose";
@@ -15,12 +15,13 @@ export type LocationProps = {
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface AuthService {
-  preRegister(email: string, password: string): Promise<Result<UserCredential>>;
-  updateProfile(username: string): Promise<Result<void>>;
-}
+  //authentication
+  register(email: string, password: string): Promise<Result<UserFirebase>>;
+  setProfile(username: string): Promise<Result<void>>;
 
-export interface EmailService {
-  sendEmailVerification(user: User, url: string): Promise<Result<void>>;
+  //verification
+  verifyCredentials(email: string, password: string): Promise<Result<UserFirebase>>
+  sendEmailVerification(user: User, url: string): Promise<Result<void>>
 }
 
 export interface StorageMetadata { contentType: string; customMetadata?: Record<string, string> }
@@ -30,36 +31,5 @@ export interface StorageService {
   getFiles(path: string): Promise<Result<string[]>>;
   updateFile(path: string, file: File): Promise<Result<string>>;
   deleteFile(path: string): Promise<Result<void>>;
-}
-
-
-export const getUserDefaultFB = (user: User): UserFirebase => {
-  return {
-    //various
-    uid: '',
-    photoURL: '',
-    providerId: '',
-    phoneNumber: '',
-    refreshToken: '',
-    providerData: [],
-    tenantId: user.id,
-
-    //auth
-    isAnonymous: false,
-    emailVerified: false,
-    displayName: user.username,
-    email: user.email,
-
-    //default
-    metadata: {
-      lastSignInTime: new Date().toISOString(),
-      creationTime: new Date().toISOString()
-    },
-    toJSON: () => ({}),
-    reload: () => Promise.resolve(),
-    delete: () => Promise.resolve(),
-    getIdToken: () => Promise.resolve(''),
-    getIdTokenResult: () => Promise.resolve({} as IdTokenResult),
-  }
 }
 /*---------------------------------------------------------------------------------------------------------*/

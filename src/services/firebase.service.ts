@@ -1,19 +1,14 @@
+import { getAuth, Auth, sendEmailVerification, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from "firebase/auth";
 import { getStorage, ref, deleteObject, getDownloadURL, FirebaseStorage, StorageReference } from "firebase/storage";
-import { getAuth, Auth, sendEmailVerification, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
-import { generateVerificationToken, generateVerificationExpiresAt } from "@/utils/math";
-import { encrypt } from "@/services/bcrypt.service";
-
+import { User as UserFirebase } from "firebase/auth";
 import { Result } from "@/interfaces/api.interface";
-import { UserCredential } from "firebase/auth";
 import { User } from "@/types/user/user.type";
 import { app } from "@/utils/firebase";
 import {
   StorageService as IStorage,
-  EmailService as IEmail,
   AuthService as IAuth,
   StorageMetadata,
-  getUserDefaultFB
 } from "@/interfaces/db.interface";
 
 /*--------------------------------------------------Auth--------------------------------------------------*/
@@ -27,57 +22,33 @@ class AuthService implements IAuth {
     if (!AuthService.instance) { AuthService.instance = new AuthService() }
     return AuthService.instance;
   }
-
-  async preRegister(email: string, password: string): Promise<Result<UserCredential>> {
-    return handler(async () => {
-      const passHash = await encrypt(password, 10);
-      const verificationToken = generateVerificationToken();
-      const verificationExpiresAt = generateVerificationExpiresAt();
-      await createUserWithEmailAndPassword(this.auth, email, passHash)
-      
-    }, 'Crear usuario')
+  //---------------authentication---------------
+  async register(email: string, password: string): Promise<Result<UserFirebase>> {
+    return handler(async () => (await createUserWithEmailAndPassword(this.auth, email, password)).user, 'Crear usuario')
   }
-
-  async updateProfile(username: string): Promise<Result<void>> {
-    //TODO: practica el new Error para usar el catch de handler
+  async setProfile(username: string): Promise<Result<void>> {
     return handler(async () => {
-      if (!this.auth.currentUser) throw new Error('No se encontró el usuario')
-      await updateProfile(this.auth.currentUser, {
-        displayName: username,
-        //TODO: utilizamos esta variable para crear un object con las credenciales del usuario
-        photoURL: `{
-          username: ${username},
-          email: ${this.auth.currentUser.email}
-        }`
-      })
+      if (!this.auth.currentUser) throw new Error('No se encontró un usuario (auth)')
+      await updateProfile(this.auth.currentUser, { displayName: username })
     }, 'Actualizar perfil')
   }
-}
-/*---------------------------------------------------------------------------------------------------------*/
 
-/*--------------------------------------------------Email--------------------------------------------------*/
-class EmailService implements IEmail {
-  private static instance: EmailService;
-  private constructor() { }
-
-  public static getInstance(): EmailService {
-    if (!EmailService.instance) { EmailService.instance = new EmailService() }
-    return EmailService.instance;
+  //---------------verification---------------
+  async verifyCredentials(email: string, password: string): Promise<Result<UserFirebase>> {
+    return handler(async () => (await signInWithEmailAndPassword(this.auth, email, password)).user, 'Verificar credenciales')
   }
-
   /**
-   * Envia un correo de verificación al usuario.
+   * Envia un correo de verificación de cuenta al correo suministrado por el usuario.
    * @param user - El usuario a verificar, contiene las credenciales del usuario.
    * @param url - La URL de la aplicación, se utiliza para redirigir al usuario a la URL de verificación.
    * @example url = 'https://mitchel2003.github.io/Gestion_salud/src/public'
   */
   async sendEmailVerification(user: User, url: string): Promise<Result<void>> {
-    console.log({ user, url });
     const redirect = `${url}/auth/verify-email/${user.email}/${user.verificationToken}`;
-    return handler(async () =>
-      await sendEmailVerification(getUserDefaultFB(user), { url: redirect }),
-      'Enviar correo de verificación'
-    )
+    return handler(async () => {
+      if (!this.auth.currentUser) throw new Error('No se encontró un usuario (auth)')
+      await sendEmailVerification(this.auth.currentUser, { url: redirect })
+    }, 'Enviar correo de verificación')
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/
@@ -175,10 +146,6 @@ class StorageService implements IStorage {
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/
-export const authService = AuthService.getInstance();
-export const emailService = EmailService.getInstance();
-export const storageService = StorageService.getInstance();
-/*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------tools--------------------------------------------------*/
 const handler = async <T>(operation: () => Promise<T>, error: string): Promise<Result<T>> => {
@@ -188,4 +155,7 @@ const handler = async <T>(operation: () => Promise<T>, error: string): Promise<R
     return { value: result }
   } catch (e) { return { error: `Error interno del servidor al ${error}: ${e instanceof Error ? e.message : String(e)}` } }
 }
+/*---------------------------------------------------------------------------------------------------------*/
+export const authService = AuthService.getInstance();
+export const storageService = StorageService.getInstance();
 /*---------------------------------------------------------------------------------------------------------*/

@@ -27,4 +27,35 @@ export const send: SendResponseProps = (res, status, data) => {
   res.status(status).json(response);
 }
 
-export type Result<T> = { value: T } | { error: Error } //type Either
+/** Tipo para manejar resultados exitosos o errores de manera elegante */
+export type Result<T> = Success<T> | Failure;
+
+interface Success<T> {
+  success: true;
+  data: T;
+}
+
+interface Failure {
+  success: false;
+  error: {
+    message: string;
+    code?: string;
+    details?: unknown;
+  };
+}
+
+/** Funciones auxiliares para crear resultados */
+export const success = <T>(data: T): Success<T> => ({
+  success: true,
+  data
+});
+
+export const failure = (message: string, code?: string, details?: unknown): Failure => ({
+  success: false,
+  error: { message, code, details }
+});
+
+/** Función para enviar respuestas HTTP consistentes */
+export const send = <T>(res: Response, status: number, data: T): void => {
+  res.status(status).json(data);
+};

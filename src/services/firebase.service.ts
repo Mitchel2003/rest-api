@@ -13,6 +13,7 @@ import {
   AuthService as IAuth,
   UserCredentialsFB,
 } from "@/interfaces/db.interface"
+import ErrorAPI from '@/errors';
 
 /*--------------------------------------------------Auth--------------------------------------------------*/
 class AuthService implements IAuth {
@@ -35,8 +36,9 @@ class AuthService implements IAuth {
   async registerAccount(username: string, email: string, password: string): Promise<Result<UserFirebase>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      //"Error al Crear usuario: Firebase: Error (auth/email-already-in-use)."
-      if (!res.user) throw new Error('No se pudo crear el usuario')
+      if (!res.user) {
+        throw new ErrorAPI('No se pudo crear el usuario');
+      }
       await updateProfile(res.user, { displayName: username })
       return res.user
     }, 'crear usuario (Firebase Auth)')

@@ -1,67 +1,57 @@
-import { Result, send } from "@/interfaces/api.interface";
-import { FirebaseError } from "firebase/app";
-import { MongooseError } from "mongoose";
-import { Response } from "express";
+import { Result, success, failure } from '@/interfaces/api.interface';
+import HandlerErrorsFB from '@/errors/FirebaseError';
+import ErrorAPI from '@/errors';
 
-/*--------------------------------------------------handlers--------------------------------------------------*/
+import { FirebaseError } from 'firebase/app';
+import { MongooseError } from 'mongoose';
+import { Response } from 'express';
+
 /**
- * Nos ayuda a manejar las operaciones en los servicios.
- * Engloba un try catch para controlar los errores; se trabaja con un resultado de tipo Result<T>
- * @param {Function} operation - La operación a realizar.
- * @param {string} error - El contexto del error; brinda información sobre la operación que se está realizando.
- * @returns {Promise<Result<T>>} - El resultado de la operación (value o error)
+ * Maneja operaciones asíncronas y envuelve los resultados en un tipo Result.
  */
-export const handlerService = async <T>(operation: () => Promise<T>, error: string): Promise<Result<T>> => {
+export async function handlerService<T>(
+  operation: () => Promise<T>, 
+  context: string
+): Promise<Result<T>> {
   try {
-    const result = await operation()
-    return { value: result }
-  } catch (e) { return { error: `Error al ${error}: ${e instanceof Error ? e.message : String(e)}` } }
+    const result = await operation();
+    return success(result);
+  } catch (e: unknown) {
+    const error = normalizeError(e, context);
+    return failure(error.message, error.code, error.details);
+  }
 }
 
 /**
- * Nos permite manejar los errores que se puedan presentar al momento de ejecutar la solicitud
- * Este handler esta diseñado para solicitudes express (req, res), por tanto, es usual verle en los controladores
- * @param {Response} res - Objeto de respuesta Express.
- * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} message - Mensaje que refiere a la solicitud en contexto fallida.
- * @example "crear departamento", "actualizar departamento" etc
+ * Maneja errores en respuestas HTTP de manera consistente.
  */
-export const handlerErrorResponse = (res: Response, e: unknown, message: string) => {
-  const path = `Error interno del servidor al ${message}`
-  isMongooseError(res, e, path);
-  isFirebaseError(res, e, path);
-  isUnknownError(res, e, path);
-}
-/*---------------------------------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------errors response--------------------------------------------------*/
-/**
- * Manejador de errores de mongoose
- * @param {Response} res - Objeto de respuesta Express.
- * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} path - Mensaje que refiere a la procedencia de esta solicitud fallida
- */
-export const isMongooseError = (res: Response, e: unknown, path: string) => {
-  if (e instanceof MongooseError) return send(res, 500, `${path}: Error mongoose: ${e.name} => ${e.message}`)
+export function handlerErrorResponse(res: Response, e: unknown, context: string): void {
+  const error = normalizeError(e, context);
+  send(res, error.statusCode, {
+    message: error.message,
+    code: error.code,
+    details: error.details
+  });
 }
 
 /**
- * Manejador de errores de firebase
- * @param {Response} res - Objeto de respuesta Express.
- * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} path - Mensaje que refiere a la procedencia de esta solicitud fallida
+ * Normaliza diferentes tipos de errores a nuestro ErrorAPI.
  */
-export const isFirebaseError = (res: Response, e: unknown, path: string) => {
-  if (e instanceof FirebaseError) return send(res, 500, `${path}: Error firebase(${e.code}): ${e.name} => ${e.message}`)
+function normalizeError(error: unknown, context: string): ErrorAPI {
+  if (error instanceof FirebaseError) {
+    return HandlerErrorsFB(error);
+  }
+  if (error instanceof MongooseError) {
+    return new ErrorAPI(
+      `Error de base de datos al ${context}: ${error.message}`,
+      500,
+      'DATABASE_ERROR'
+    );
+  }
+  if (error instanceof ErrorAPI) {
+    return error;
+  }
+  return new ErrorAPI(
+    `Error al ${context}: ${error instanceof Error ? error.message : String(error)}`
+  );
 }
-
-/**
- * Manejador de errores desconocidos
- * @param {Response} res - Objeto de respuesta Express.
- * @param {unknown} e - Error desconocido; puede ser de cualquier tipo.
- * @param {string} path - Mensaje que refiere a la procedencia de esta solicitud fallida
- */
-export const isUnknownError = (res: Response, e: unknown, path: string) => {
-  return send(res, 500, `${path}: ${e}`)
-}
-/*---------------------------------------------------------------------------------------------------------*/

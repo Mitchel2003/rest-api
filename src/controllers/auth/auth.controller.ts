@@ -5,6 +5,7 @@ import { generateAccessToken } from "@/services/jwt.service"
 import { handlerErrorResponse } from "@/utils/handler"
 import { send } from "@/interfaces/api.interface"
 
+import ErrorAPI from "@/errors"
 import { Request, Response } from "express"
 /*--------------------------------------------------Essentials--------------------------------------------------*/
 /**
@@ -16,7 +17,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     const user = await authFB.verifyCredentials(email, password);
-    if ('error' in user) return send(res, 401, user.error);
+    if ('error' in user) throw new ErrorAPI(user.error, 401);
+
     const token = await generateAccessToken({ id: user.value.uid });
     setCookies(res, token);
     send(res, 200, user.value);
@@ -31,17 +33,34 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, username, role } = req.body;
-    const auth = await authFB.registerAccount(username, email, password);
-    if ('error' in auth) return send(res, 500, auth.error);
 
-    const register = await database_FB.registerUserCredentials(auth.value, { role });
-    if ('error' in register) return send(res, 500, register.error);
+    // Registrar cuenta
+    const authResult = await authFB.registerAccount(username, email, password);
+    if (!authResult.success) {
+      throw new ErrorAPI(authResult.error.message, 400, authResult.error.code);
+    }
 
-    const sendEmail = await authFB.sendEmailVerification();
-    if ('error' in sendEmail) return send(res, 500, sendEmail.error);
+    // Registrar credenciales
+    const registerResult = await database_FB.registerUserCredentials(
+      authResult.data, 
+      { role }
+    );
+    if (!registerResult.success) {
+      throw new ErrorAPI(registerResult.error.message);
+    }
 
-    send(res, 200, 'Usuario registrado exitosamente, se ha enviado un correo de verificación');
-  } catch (e) { handlerErrorResponse(res, e, "registrarse") }
+    // Enviar email de verificación
+    const emailResult = await authFB.sendEmailVerification();
+    if (!emailResult.success) {
+      throw new ErrorAPI(emailResult.error.message);
+    }
+
+    send(res, 200, {
+      message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación'
+    });
+  } catch (e) {
+    handlerErrorResponse(res, e, "registrarse");
+  }
 }
 
 /**

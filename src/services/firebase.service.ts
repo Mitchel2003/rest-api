@@ -5,8 +5,8 @@ import { getFirestore, Firestore, setDoc, doc, CollectionReference, collection }
 import { handlerService as handler } from "@/utils/handler"
 import { User as UserFirebase } from "firebase/auth"
 import { Result } from "@/interfaces/api.interface"
-import { app } from "@/utils/firebase"
 import config from "@/utils/config"
+import app from "@/utils/firebase"
 import {
   DatabaseService as IDatabase,
   StorageService as IStorage,
@@ -208,10 +208,11 @@ class DatabaseService implements IDatabase {
   }
   /**
    * Obtiene una referencia a la colección principal.
+   * La abreviatura de la colección es 'gs' (gestion_salud).
    * @returns {CollectionReference} Una referencia a la colección principal.
   */
   getCollection(): CollectionReference {
-    return collection(this.db, 'gestion_salud')
+    return collection(this.db, 'gs')
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/

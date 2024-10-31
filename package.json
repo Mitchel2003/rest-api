@@ -20,7 +20,6 @@
     "@babel/preset-env": "^7.25.9",
     "@babel/preset-typescript": "^7.25.9",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
-    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
@@ -36,7 +35,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",

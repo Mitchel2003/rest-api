@@ -37,10 +37,11 @@ class AuthService implements IAuth {
   async registerAccount(username: string, email: string, password: string): Promise<Result<UserFirebase>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
+      //"Error al Crear usuario: Firebase: Error (auth/email-already-in-use)."
       if (!res.user) throw new Error('No se pudo crear el usuario')
       await updateProfile(res.user, { displayName: username })
       return res.user
-    }, 'Crear usuario')
+    }, 'crear usuario (Firebase Auth)')
   }
 
   /*---------------> verification <---------------*/
@@ -55,7 +56,7 @@ class AuthService implements IAuth {
       const res = await signInWithEmailAndPassword(this.auth, email, password)
       if (!res.user) throw new Error('Credenciales inválidas')
       return res.user
-    }, 'Verificar credenciales')
+    }, 'verificar credenciales')
   }
 
   /*---------------> authentication <---------------*/
@@ -69,7 +70,7 @@ class AuthService implements IAuth {
       if (!this.auth.currentUser) throw new Error('No se encontró un usuario (auth)')
       const url = `${config.frontendUrl}/auth/verify-action?uid=${this.auth.currentUser.uid}`
       await sendEmailVerification(this.auth.currentUser, { url })
-    }, 'Enviar correo de verificación')
+    }, 'enviar correo de verificación')
   }
 
   /**
@@ -78,7 +79,7 @@ class AuthService implements IAuth {
    * @param {string} email - El email del usuario.
   */
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
-    return handler(async () => await sendPasswordResetEmail(this.auth, email), 'Enviar correo de restablecimiento de contraseña')
+    return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')
   }
 
   /**
@@ -87,7 +88,7 @@ class AuthService implements IAuth {
    * @param {string} newPassword - La contraseña de la solicitud de restablecimiento (forgot password).
    */
   async validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>> {
-    return handler(async () => await confirmPasswordReset(this.auth, oobCode, newPassword), 'Validar restablecimiento de contraseña')
+    return handler(async () => await confirmPasswordReset(this.auth, oobCode, newPassword), 'validar restablecimiento de contraseña')
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/
@@ -119,7 +120,7 @@ class StorageService implements IStorage {
       const metadata = buildStorageMetadata(file)
       const upload = await uploadBytes(storageRef, file, metadata)
       return await getDownloadURL(upload.ref)
-    }, 'Subir archivo')
+    }, 'subir archivo')
   }
 
   /**
@@ -129,7 +130,7 @@ class StorageService implements IStorage {
    * @returns La URL del archivo.
   */
   async getFile(path: string): Promise<Result<string>> {
-    return handler(async () => await getDownloadURL(this.getReference(path)), 'Obtener archivo')
+    return handler(async () => await getDownloadURL(this.getReference(path)), 'obtener archivo')
   }
 
   /**
@@ -143,7 +144,7 @@ class StorageService implements IStorage {
       const storageRef = this.getReference(path)
       const files = await listAll(storageRef)
       return await Promise.all(files.items.map(item => getDownloadURL(item)))
-    }, 'Obtener archivos')
+    }, 'obtener archivos')
   }
 
   /**
@@ -159,7 +160,7 @@ class StorageService implements IStorage {
       const result = await this.uploadFile(path, file)
       if ('error' in result) { return 'No se actualizó el file' }
       return result.value
-    }, 'Actualizar archivo')
+    }, 'actualizar archivo')
   }
 
   /**
@@ -167,7 +168,7 @@ class StorageService implements IStorage {
    * @param path - La ruta del archivo a eliminar.
   */
   async deleteFile(path: string): Promise<Result<void>> {
-    return handler(async () => await deleteObject(this.getReference(path)), 'Eliminar archivo')
+    return handler(async () => await deleteObject(this.getReference(path)), 'eliminar archivo')
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/
@@ -197,7 +198,7 @@ class DatabaseService implements IDatabase {
         email: user.email,
         access: false,
       })
-    }, 'Crear usuario')
+    }, 'crear credenciales de usuario (Firebase Database)')
   }
 
   /**

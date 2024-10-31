@@ -18,14 +18,12 @@ import {
 class AuthService implements IAuth {
   private static instance: AuthService
   private readonly auth: Auth
-
   private constructor() { this.auth = getAuth(app) }
 
   public static getInstance(): AuthService {
     if (!AuthService.instance) { AuthService.instance = new AuthService() }
     return AuthService.instance
   }
-
   /*---------------> registration <---------------*/
   /**
    * Crea un usuario con credenciales en Firebase.
@@ -33,7 +31,7 @@ class AuthService implements IAuth {
    * @param {string} email - El correo del usuario.
    * @param {string} password - La contraseña del usuario.
    * @returns {Promise<Result<UserAuth>>} El usuario auth de firebase creado.
-  */
+   */
   async registerAccount(username: string, email: string, password: string): Promise<Result<UserFirebase>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
@@ -72,16 +70,14 @@ class AuthService implements IAuth {
       await sendEmailVerification(this.auth.currentUser, { url })
     }, 'enviar correo de verificación')
   }
-
   /**
    * Envia un correo de restablecimiento de contraseña al correo suministrado por el usuario.
    * Enlace de redireccion esta definido en el archivo de configuracion de firebase (templates).
    * @param {string} email - El email del usuario.
-  */
+   */
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
     return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')
   }
-
   /**
    * Actualiza la contraseña del usuario mediante un token de restablecimiento (oobCode) generado por firebase.
    * @param {string} oobCode - El token de restablecimiento de contraseña.
@@ -97,23 +93,46 @@ class AuthService implements IAuth {
 class StorageService implements IStorage {
   private static instance: StorageService
   private readonly storage: FirebaseStorage
-
   private constructor() { this.storage = getStorage(app) }
 
   public static getInstance(): StorageService {
     if (!StorageService.instance) { StorageService.instance = new StorageService() }
     return StorageService.instance
   }
-
+  /**
+   * Obtiene una referencia a un archivo en el almacenamiento de Firebase.
+   * @param {string} path - La ruta del archivo al que se accede.
+   */
   private getReference(path: string) { return ref(this.storage, path) }
-
+  /**
+   * Obtener la URL de un archivo del almacenamiento de Firebase.
+   * @param {string} path - La ruta del archivo al que se accede.
+   * @example path = 'users/profile/{username}/imagen.png'
+   * @returns {Promise<Result<string>>} La URL del archivo.
+   */
+  async getFile(path: string): Promise<Result<string>> {
+    return handler(async () => await getDownloadURL(this.getReference(path)), 'obtener archivo')
+  }
+  /**
+   * Obtener las URLs de todos los archivos de un directorio del almacenamiento de Firebase.
+   * @param {string} path - La ruta del directorio al que se accede.
+   * @example path = 'users/profile/{username}'
+   * @returns {Promise<Result<string[]>>} Un array con las URLs de los archivos.
+   */
+  async getFiles(path: string): Promise<Result<string[]>> {
+    return handler(async () => {
+      const storageRef = this.getReference(path)
+      const files = await listAll(storageRef)
+      return await Promise.all(files.items.map(item => getDownloadURL(item)))
+    }, 'obtener archivos')
+  }
   /**
    * Subir un archivo al almacenamiento de Firebase.
-   * @param path - La ruta del archivo final.
+   * @param {string} path - La ruta del archivo final.
    * @example path podria ser 'users/profile/{username}'
-   * @param file - El archivo a subir.
-   * @returns La URL del archivo subido.
-  */
+   * @param {File} file - El archivo a subir.
+   * @returns {Promise<Result<string>>} La URL del archivo subido.
+   */
   async uploadFile(path: string, file: File): Promise<Result<string>> {
     return handler(async () => {
       const storageRef = this.getReference(path)
@@ -122,38 +141,13 @@ class StorageService implements IStorage {
       return await getDownloadURL(upload.ref)
     }, 'subir archivo')
   }
-
-  /**
-   * Obtener la URL de un archivo del almacenamiento de Firebase.
-   * @param path - La ruta del archivo al que se accede.
-   * @example path = 'users/profile/{username}/imagen.png'
-   * @returns La URL del archivo.
-  */
-  async getFile(path: string): Promise<Result<string>> {
-    return handler(async () => await getDownloadURL(this.getReference(path)), 'obtener archivo')
-  }
-
-  /**
-   * Obtener las URLs de todos los archivos de un directorio del almacenamiento de Firebase.
-   * @param path - La ruta del directorio al que se accede.
-   * @example path = 'users/profile/{username}'
-   * @returns Un array con las URLs de los archivos.
-  */
-  async getFiles(path: string): Promise<Result<string[]>> {
-    return handler(async () => {
-      const storageRef = this.getReference(path)
-      const files = await listAll(storageRef)
-      return await Promise.all(files.items.map(item => getDownloadURL(item)))
-    }, 'obtener archivos')
-  }
-
   /**
    * Actualiza un archivo en el almacenamiento de Firebase.
-   * @param path - La ruta del archivo final @example path: "users/profile/{username}"
-   * @param file - El archivo nuevo a subir, con su nombre y extension @example file: "imagen.png"
+   * @param {string} path - La ruta del archivo final @example path: "users/profile/{username}"
+   * @param {File} file - El archivo nuevo a subir, con su nombre y extension @example file: "imagen.png"
    * @link https://github.com/Mitchel2003/rest-api/blob/main/README.md#003
-   * @returns La URL del archivo actualizado.
-  */
+   * @returns {Promise<Result<string>>} La URL del archivo actualizado.
+   */
   async updateFile(path: string, file: File): Promise<Result<string>> {
     return handler(async () => {
       await deleteObject(this.getReference(path))
@@ -162,11 +156,10 @@ class StorageService implements IStorage {
       return result.value
     }, 'actualizar archivo')
   }
-
   /**
    * Elimina un archivo del almacenamiento de Firebase.
-   * @param path - La ruta del archivo a eliminar.
-  */
+   * @param {string} path - La ruta del archivo a eliminar.
+   */
   async deleteFile(path: string): Promise<Result<void>> {
     return handler(async () => await deleteObject(this.getReference(path)), 'eliminar archivo')
   }
@@ -177,19 +170,17 @@ class StorageService implements IStorage {
 class DatabaseService implements IDatabase {
   private static instance: DatabaseService
   private readonly db: Firestore
-
   private constructor() { this.db = getFirestore(app) }
 
   public static getInstance(): DatabaseService {
     if (!DatabaseService.instance) { DatabaseService.instance = new DatabaseService() }
     return DatabaseService.instance
   }
-
   /**
    * Crea las credenciales de un usuario en la base de datos de firebase.
-   * @param user - El usuario autenticado a registrar, consta de su email, nombre de usuario y uid.
-   * @param credentials - Corresponde a las credenciales del usuario, contiene el rol del usuario en validacion.
-  */
+   * @param {UserFirebase} user - El usuario autenticado a registrar, consta de su email, nombre de usuario y uid.
+   * @param {UserCredentialsFB} credentials - Corresponde a las credenciales del usuario, contiene el rol del usuario en validacion.
+   */
   async registerUserCredentials(user: UserFirebase, credentials: UserCredentialsFB): Promise<Result<void>> {
     return handler(async () => {
       return await setDoc(doc(this.getSubCollection('users'), user.uid), {
@@ -200,19 +191,24 @@ class DatabaseService implements IDatabase {
       })
     }, 'crear credenciales de usuario (Firebase Database)')
   }
-
   /**
-   * Obtiene una referencia a una subcolección de la colección principal.
-   * @param name - El nombre de la subcolección.
-   * @returns Una referencia a la subcolección.
+   * Obtiene una referencia a una subcolección.
+   * @param {string} name - El nombre de la subcolección.
+   * @returns {CollectionReference} Una referencia a la subcolección.
   */
   getSubCollection(name: string): CollectionReference {
-    return collection(this.getCollection(), name)
+    return collection(this.getAuthCollection(), name)
   }
-
+  /**
+   * Obtiene una referencia a la colección de autenticación.
+   * @returns {CollectionReference} Una referencia a la colección de autenticación.
+  */
+  getAuthCollection(): CollectionReference {
+    return collection(this.getCollection(), 'auth')
+  }
   /**
    * Obtiene una referencia a la colección principal.
-   * @returns Una referencia a la colección principal.
+   * @returns {CollectionReference} Una referencia a la colección principal.
   */
   getCollection(): CollectionReference {
     return collection(this.db, 'gestion_salud')
@@ -223,8 +219,8 @@ class DatabaseService implements IDatabase {
 /*--------------------------------------------------tools--------------------------------------------------*/
 /**
  * Construye los metadatos del archivo para Firebase Storage.
- * @param file - El archivo a subir. @example file: "imagen.png"
- * @returns Los metadatos del archivo con su configuración para Firebase Storage.
+ * @param {File} file - El archivo a subir. @example file: "imagen.png"
+ * @returns {object} Los metadatos del archivo con su configuración para Firebase Storage.
  */
 const buildStorageMetadata = (file: File): object => {
   return {

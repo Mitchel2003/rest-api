@@ -38,8 +38,7 @@ export interface StorageService {
 
 export interface DatabaseService {
   registerUserCredentials(user: UserFirebase, credentials: UserCredentialsFB): Promise<Result<void>>;
-  getSubCollection(name: string): CollectionReference;
-  getCollection(): CollectionReference;
+  getCollection(name: string): CollectionReference;
 }
 export interface UserCredentialsFB {
   email?: string;

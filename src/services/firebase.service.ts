@@ -183,7 +183,7 @@ class DatabaseService implements IDatabase {
    */
   async registerUserCredentials(user: UserFirebase, credentials: UserCredentialsFB): Promise<Result<void>> {
     return handler(async () => {
-      return await setDoc(doc(this.getSubCollection('users'), user.uid), {
+      return await setDoc(doc(this.getCollection('users'), user.uid), {
         username: user.displayName,
         role: credentials.role,
         email: user.email,
@@ -192,27 +192,13 @@ class DatabaseService implements IDatabase {
     }, 'crear credenciales de usuario (Firebase Database)')
   }
   /**
-   * Obtiene una referencia a una subcolección.
-   * @param {string} name - El nombre de la subcolección.
+   * Obtiene una referencia a una subcolección desde la colección principal (auth).
+   * La abreviatura de la colección es 'gs' (gestion_salud).
+   * @param {string} name - El nombre de la subcolección a obtener.
    * @returns {CollectionReference} Una referencia a la subcolección.
   */
-  getSubCollection(name: string): CollectionReference {
-    return collection(this.getAuthCollection(), name)
-  }
-  /**
-   * Obtiene una referencia a la colección de autenticación.
-   * @returns {CollectionReference} Una referencia a la colección de autenticación.
-  */
-  getAuthCollection(): CollectionReference {
-    return collection(this.getCollection(), 'auth')
-  }
-  /**
-   * Obtiene una referencia a la colección principal.
-   * La abreviatura de la colección es 'gs' (gestion_salud).
-   * @returns {CollectionReference} Una referencia a la colección principal.
-  */
-  getCollection(): CollectionReference {
-    return collection(this.db, 'gs')
+  getCollection(name: string): CollectionReference {
+    return collection(this.db, 'gs', 'auth', name)
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/

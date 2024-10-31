@@ -66,7 +66,7 @@ class AuthService implements IAuth {
   async sendEmailVerification(): Promise<Result<void>> {
     return handler(async () => {
       if (!this.auth.currentUser) throw new Error('No se encontró un usuario (auth)')
-      const url = `${config.frontendUrl}/auth/verify-action?uid=${this.auth.currentUser.uid}`
+      const url = `${config.frontendUrl}/auth/verify-action/uid=${this.auth.currentUser.uid}`
       await sendEmailVerification(this.auth.currentUser, { url })
     }, 'enviar correo de verificación')
   }

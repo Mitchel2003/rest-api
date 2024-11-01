@@ -64,7 +64,7 @@ export const logout = (req: Request, res: Response): void => {
  * @param {Response} res - Objeto de respuesta Express.
  * @param {string} token - Token de autenticación a establecer en las cookies.
  */
-function setCookies(res: Response, token: string) {
+export const setCookies = (res: Response, token: string) => {
   res.cookie('token', token, {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',

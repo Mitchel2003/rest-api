@@ -16,7 +16,7 @@ export interface User extends Document {
 export interface UserService {
   createUser(user: User): Promise<User>
   findUsers(query?: Query): Promise<User[]>
-  findOneUser(query: Query): Promise<User>
+  findOneUser(query: Query): Promise<User | null>
   findUserById(id: string): Promise<User | null>
   updateUser(id: string, user: Partial<User>): Promise<User | null>
   deleteUser(id: string): Promise<boolean>

@@ -1,8 +1,8 @@
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
+import { db } from "@/services/mongodb/database.service"
 import { handlerResponse } from "@/errors/handler";
 import ErrorAPI from "@/errors";
 
-import User from "@/models/user/user.model"
 import { Response } from "express"
 /**
  * Verifica el token de acceso del usuario (autenticación).
@@ -12,9 +12,8 @@ import { Response } from "express"
  */
 export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    //TODO: implementar servicio de mongodb para obtener los datos del usuario (findById)
-    const userFound = await User.findById(req.user?.id);
-    if (!userFound) throw new ErrorAPI({ message: 'No autorizado', code: 'UNAUTHORIZED' });
-    send(res, 200, userFound);
+    const user = await db.findUserById(req.user?.id as string);
+    if (!user.success) throw new ErrorAPI(user.error);
+    send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "verificar token autenticación") }
 }

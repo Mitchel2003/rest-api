@@ -1,8 +1,7 @@
-import { SchemaID } from "@/interfaces/db.interface"
 import { Request, Response } from "express"
 
 /*--------------- request ---------------*/
-export interface ExtendsRequest extends Request { user?: { id?: SchemaID } }
+export interface ExtendsRequest extends Request { user?: { id?: string } }
 
 /*--------------- response ---------------*/
 export type Error = string

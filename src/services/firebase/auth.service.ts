@@ -3,7 +3,7 @@ import { handlerService as handler } from "@/errors/handler"
 import { Result } from "@/interfaces/api.interface"
 import config from "@/utils/config"
 import { firebaseApp } from "@/db"
-import ErrorAPI from "@/errors"
+import { NotFound } from "@/errors"
 
 import {
   createUserWithEmailAndPassword,
@@ -63,12 +63,11 @@ class AuthService implements IAuth {
    */
   async sendEmailVerification(): Promise<Result<void>> {
     return handler(async () => {
-      if (!this.auth.currentUser) throw new ErrorAPI({ message: 'No se encontró un usuario (auth)', code: 'NOT_FOUND' })
+      if (!this.auth.currentUser) throw new NotFound({ message: 'Usuario (auth)' })
       const url = `${config.frontendUrl}/auth/verify-action/uid=${this.auth.currentUser.uid}`
       await sendEmailVerification(this.auth.currentUser, { url })
     }, 'enviar correo de verificación')
   }
-
   /**
    * Envia un correo de restablecimiento de contraseña al correo suministrado por el usuario.
    * Enlace de redireccion esta definido en el archivo de configuracion de firebase (templates).
@@ -77,7 +76,6 @@ class AuthService implements IAuth {
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
     return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')
   }
-
   /**
    * Actualiza la contraseña del usuario mediante un token de restablecimiento (oobCode) generado por firebase.
    * @param {string} oobCode - El token de restablecimiento de contraseña.

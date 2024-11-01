@@ -3,14 +3,15 @@ import { User as UserMongo } from "@/types/user/user.type";
 import { UserCredential } from "firebase/auth";
 
 import { Result } from "@/interfaces/api.interface";
-import { Schema } from "mongoose";
+import { Query } from "@/types/repository.type";
 
 /*--------------------------------------------------MongoDB--------------------------------------------------*/
-export type SchemaID = Schema.Types.ObjectId;
-
 export interface IDatabase {
   createUser(user: UserMongo): Promise<Result<UserMongo>>;
-  isUserFound(email: string): Promise<Result<boolean>>;
+  findUsers(query: Query): Promise<Result<UserMongo[]>>;
+  findUserById(id: string): Promise<Result<UserMongo | null>>;
+  updateUser(id: string, data: Partial<UserMongo>): Promise<Result<boolean>>;
+  deleteUser(id: string): Promise<Result<boolean>>;
 }
 /*---------------------------------------------------------------------------------------------------------*/
 

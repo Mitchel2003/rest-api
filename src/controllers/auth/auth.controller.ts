@@ -22,7 +22,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = await generateAccessToken({ id: result.data.user.uid });
     setCookies(res, token);
     send(res, 200, result.data);
-  } catch (e) { handlerResponse(res, e, "iniciar sesión") }
+  } catch (e: unknown) { handlerResponse(res, e, "iniciar sesión") }
 }
 
 /**
@@ -57,7 +57,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
 
     send(res, 200, { message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación' });
-  } catch (e) { handlerResponse(res, e, "registrarse") }
+  } catch (e: unknown) { handlerResponse(res, e, "registrarse") }
 }
 
 /**

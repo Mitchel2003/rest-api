@@ -15,10 +15,8 @@ import { Response } from 'express';
  * @param {string} context: contexto del error
  */
 export function handlerResponse(res: Response, e: unknown, context: string): void {
-  console.log(e)
-  const { message, statusCode, code, details } = normalizeError(e, context);
-  console.log(message, statusCode, code, details)
-  send(res, statusCode, { message, code, details });
+  const { message, code, details, statusCode } = normalizeError(e, context);
+  send(res, statusCode, { message, code, details })
 }
 
 /**
@@ -58,5 +56,6 @@ export async function handlerService<T>(operation: () => Promise<T>, context: st
 function normalizeError(e: unknown, context: string): ErrorAPI {
   if (e instanceof FirebaseError) return HandlerErrorsFB(e)
   if (e instanceof MongooseError) return HandlerErrorsMDB(e)
+  if (e instanceof ErrorAPI) return e
   return new ErrorAPI({ message: `Error al ${context}: ${e instanceof Error ? e.message : String(e)}` })
 }

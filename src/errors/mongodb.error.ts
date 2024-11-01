@@ -1,10 +1,10 @@
-import ErrorAPI, { Conflict, Validation, ErrorRecord, defaultRecord } from '@/errors'
+import ErrorAPI, { Conflict, Validation, NotFound, defaultRecord, ErrorRecord } from '@/errors'
 import { MongooseError } from 'mongoose';
 
 class HandlerErrors {
   /**
    * Crea un error personalizado basado en el código y mensaje de MongoDB
-   * @param {FirebaseError} e: error de tipo MongooseError
+   * @param {MongooseError} e: error de tipo MongooseError
    * @returns {ErrorAPI} retorna un error de tipo ErrorAPI
    */
   public static get(e: MongooseError): ErrorAPI {
@@ -13,19 +13,34 @@ class HandlerErrors {
     return new record.errorType(record.exception)
   }
 
-  /** Mapeo de errores de Firebase a errores personalizados */
+  /** Mapeo de errores de MongoDB a errores personalizados */
   private static readonly errorRecords: Record<string, ErrorRecord> = {
-    'auth/email-already-in-use': {
-      exception: { message: 'El correo electrónico ya está en uso' },
+    'CastError': {
+      exception: { message: 'Error de conversión de tipo de datos' },
+      errorType: Validation
+    },
+    'ValidationError': {
+      exception: { message: 'Error de validación de datos' },
+      errorType: Validation
+    },
+    'DocumentNotFoundError': {
+      exception: { message: 'Documento no encontrado' },
+      errorType: NotFound
+    },
+    'MongoServerError': {
+      exception: { message: 'Error del servidor de MongoDB' },
+      errorType: ErrorAPI
+    },
+    'DuplicateKeyError': {
+      exception: { message: 'Clave duplicada, el recurso ya existe' },
       errorType: Conflict
     },
-    'auth/invalid-email': {
-      exception: { message: 'El correo electrónico no es válido' },
+    'StrictModeError': {
+      exception: { message: 'Error de modo estricto' },
       errorType: Validation
     }
+    // Puedes seguir añadiendo más errores específicos de MongoDB aquí
   }
 }
-
-//Uso de bind() es para mantener el contexto de la clase; un ejemplo sería:
-//cuando se llama a un metodo de una clase, el contexto de la clase se pierde, por eso se usa bind()
+// Uso de bind() es para mantener el contexto de la clase
 export default HandlerErrors.get.bind(HandlerErrors)

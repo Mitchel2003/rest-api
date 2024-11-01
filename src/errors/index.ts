@@ -1,16 +1,14 @@
 /** Error base personalizado para la aplicación */
 export default class ErrorAPI extends Error {
-  constructor(
-    public readonly message: string,
-    public readonly statusCode: number = 500,
-    public readonly code?: string,
-    public readonly details?: unknown,
-  ) {
-    //Esto empieza a cobrar sentido cuando revisamos el extends Error
-    //super() llama al constructor de Error, estableciendo el mensaje base
-    //this.name asigna el nombre de la clase actual al interface Error
-    //Captura el stack trace, excluyendo el constructor
+  public readonly code?: string
+  public readonly details?: unknown
+  public readonly statusCode: number
+
+  constructor({ message, statusCode = 500, code, details }: ErrorProps) {
     super(message);
+    this.code = code
+    this.details = details
+    this.statusCode = statusCode
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
   }
@@ -18,35 +16,59 @@ export default class ErrorAPI extends Error {
 
 /** Error específico para operaciones no autorizadas */
 export class Unauthorized extends ErrorAPI {
-  constructor(message: string) { super(message, 401, 'UNAUTHORIZED') }
+  constructor({ message }: ErrorProps) {
+    super({ message, statusCode: 401, code: 'UNAUTHORIZED' })
+  }
 }
 
 /** Error específico para recursos no encontrados */
 export class NotFound extends ErrorAPI {
-  constructor(resource: string) { super(`${resource} no encontrado`, 404, 'NOT_FOUND') }
+  constructor({ message }: ErrorProps) {
+    super({ message: `${message} no encontrado`, statusCode: 404, code: 'NOT_FOUND' })
+  }
 }
 
 /** Error específico para validación de datos */
 export class Validation extends ErrorAPI {
-  constructor(message: string, details?: unknown) { super(message, 400, 'VALIDATION_ERROR', details) }
+  constructor({ message, details }: ErrorProps) {
+    super({ message, statusCode: 400, code: 'VALIDATION_ERROR', details })
+  }
 }
 
 /** Error específico para conflictos en operaciones */
 export class Conflict extends ErrorAPI {
-  constructor(message: string) { super(message, 409, 'CONFLICT') }
+  constructor({ message }: ErrorProps) {
+    super({ message, statusCode: 409, code: 'CONFLICT' })
+  }
 }
 
+/** Propiedades del error */
+export interface ErrorProps {
+  message: string,
+  code?: string,
+  details?: unknown,
+  statusCode?: number,
+}
+
+/** Registro de error Record<> */
 export interface ErrorRecord {
+  exception: ErrorProps;
   errorType:
   | typeof Unauthorized
   | typeof Validation
   | typeof Conflict
   | typeof NotFound
   | typeof ErrorAPI;
-  details?: unknown;
-  message: string;
 }
 
+/**
+ * Regresa un registro de error por defecto.
+ * La idea de definir "details" como un objeto de codigo es debido a que se desconoce la procedencia del error.
+ * Entonces en vez de mostrar directamente en "code", pasamos el codigo a traves de "details" para mayor flexibilidad.
+ * @param {string} message: mensaje del error
+ * @param {string} code: código del error
+ * @returns {ErrorRecord} retorna un registro de error predeterminado
+*/
 export function defaultRecord(message: string, code: string): ErrorRecord {
-  return { message, details: { code }, errorType: ErrorAPI }
+  return { exception: { message, details: { code } }, errorType: ErrorAPI }
 }

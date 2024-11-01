@@ -1,18 +1,19 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar curriculums (equipos) */
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
 import Curriculum from "@/models/form/curriculum.model"
-import { handlerResponse } from "@/utils/handler"
-import { Request, Response } from "express"
+import { handlerResponse } from "@/errors/handler"
+import ErrorAPI from "@/errors"
 
+import { Request, Response } from "express"
 /**
  * Obtiene un curriculum específico por su ID.
  * @param {Request} req - Objeto de solicitud Express. Se espera que contenga el ID del curriculum en params.id.
  * @returns {Promise<void>} - Envía el curriculum encontrado o un mensaje de error.
  */
 export const getCurriculum = async ({ params }: Request, res: Response): Promise<void> => {
-  try {
+  try {//TODO: implementar en mongodb.service las funciones respectivas
     const curriculum = await Curriculum.findById(params.id).populate('user');
-    if (!curriculum) return send(res, 404, 'Curriculum no encontrado');
+    if (!curriculum) throw new ErrorAPI({ message: 'Curriculum no encontrado', code: 'NOT_FOUND' });
     send(res, 200, curriculum);
   } catch (e) { handlerResponse(res, e, "obtener el curriculum") }
 }

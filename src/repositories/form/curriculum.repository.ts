@@ -3,6 +3,14 @@ import { Query, Repository } from "@/types/repository.type";
 import { Curriculum } from "@/types/form/curriculum.type";
 
 export class CurriculumRepository implements Repository<Curriculum> {
+  private static instance: CurriculumRepository;
+  private constructor() { }
+
+  public static getInstance(): CurriculumRepository {
+    if (!CurriculumRepository.instance) CurriculumRepository.instance = new CurriculumRepository()
+    return CurriculumRepository.instance;
+  }
+
   async create(data: Curriculum): Promise<Curriculum> {
     const cv = new CurriculumModel(data)
     return await cv.save()
@@ -24,3 +32,5 @@ export class CurriculumRepository implements Repository<Curriculum> {
     return res !== null
   }
 }
+
+export default CurriculumRepository.getInstance()

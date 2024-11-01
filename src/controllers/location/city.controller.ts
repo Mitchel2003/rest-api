@@ -1,4 +1,4 @@
-import { handlerErrorResponse } from "@/utils/handler"
+import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
 import City from "@/models/location/city.model"
 
@@ -14,7 +14,7 @@ export const getCity = async ({ params }: Request, res: Response): Promise<void>
     const city = await City.findById(params.id).populate('state');
     if (!city) return send(res, 404, 'Ciudad no encontrada');
     send(res, 200, city);
-  } catch (e) { handlerErrorResponse(res, e, "obtener la ciudad") }
+  } catch (e) { handlerResponse(res, e, "obtener la ciudad") }
 }
 
 /**
@@ -28,7 +28,7 @@ export const getCities = async ({ body }: Request, res: Response): Promise<void>
     // const cities = await City.find({ state: req.userReferences.state }).populate('state');
     const cities = await City.find({ state: body.state }).populate('state');
     send(res, 200, cities);
-  } catch (e) { handlerErrorResponse(res, e, "obtener las ciudades") }
+  } catch (e) { handlerResponse(res, e, "obtener las ciudades") }
 }
 
 /**
@@ -43,7 +43,7 @@ export const createCity = async ({ body }: Request, res: Response): Promise<void
     const cityForm = new City({ ...body });
     const city = await cityForm.save();
     send(res, 201, city);
-  } catch (e) { handlerErrorResponse(res, e, "crear la ciudad") }
+  } catch (e) { handlerResponse(res, e, "crear la ciudad") }
 }
 
 /**
@@ -56,7 +56,7 @@ export const updateCity = async ({ params, body }: Request, res: Response): Prom
     const city = await City.findByIdAndUpdate(params.id, body, { new: true });
     if (!city) return send(res, 404, 'Ciudad no encontrada');
     send(res, 200, city);
-  } catch (e) { handlerErrorResponse(res, e, "actualizar la ciudad") }
+  } catch (e) { handlerResponse(res, e, "actualizar la ciudad") }
 }
 
 /**
@@ -69,5 +69,5 @@ export const deleteCity = async ({ params }: Request, res: Response): Promise<vo
     const city = await City.findByIdAndDelete(params.id);
     if (!city) return send(res, 404, 'Ciudad no encontrada');
     send(res, 200, 'Eliminado correctamente');
-  } catch (e) { handlerErrorResponse(res, e, "eliminar la ciudad") }
+  } catch (e) { handlerResponse(res, e, "eliminar la ciudad") }
 }

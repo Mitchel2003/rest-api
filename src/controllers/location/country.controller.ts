@@ -1,9 +1,8 @@
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
-import { handlerErrorResponse } from "@/utils/handler"
 import Country from "@/models/location/country.model"
+import { handlerResponse } from "@/errors/handler"
 
 import { Request, Response } from "express"
-
 /**
  * Obtiene un país específico por su ID.
  * @param {Request} req - Objeto de solicitud Express. Se espera que contenga el ID del país en params.id.
@@ -14,7 +13,7 @@ export const getCountry = async ({ params }: Request, res: Response): Promise<vo
     const country = await Country.findById(params.id);
     if (!country) return send(res, 404, 'País no encontrado');
     send(res, 200, country);
-  } catch (e) { handlerErrorResponse(res, e, "obtener el país") }
+  } catch (e) { handlerResponse(res, e, "obtener el país") }
 }
 
 /**
@@ -29,7 +28,7 @@ export const getCountries = async (req: ExtendsRequest, res: Response): Promise<
     const user = req.user;
     const countries = await Country.find();
     send(res, 200, { countries, user });
-  } catch (e) { handlerErrorResponse(res, e, "obtener los países") }
+  } catch (e) { handlerResponse(res, e, "obtener los países") }
 }
 
 /**
@@ -42,7 +41,7 @@ export const createCountry = async ({ body }: Request, res: Response): Promise<v
     const countryForm = new Country({ ...body });
     const country = await countryForm.save();
     send(res, 201, country);
-  } catch (e) { handlerErrorResponse(res, e, "crear el país") }
+  } catch (e) { handlerResponse(res, e, "crear el país") }
 }
 
 /**
@@ -55,7 +54,7 @@ export const updateCountry = async ({ params, body }: Request, res: Response): P
     const country = await Country.findByIdAndUpdate(params.id, body, { new: true });
     if (!country) return send(res, 404, 'País no encontrado');
     send(res, 200, country);
-  } catch (e) { handlerErrorResponse(res, e, "actualizar el país") }
+  } catch (e) { handlerResponse(res, e, "actualizar el país") }
 }
 
 /**
@@ -68,5 +67,5 @@ export const deleteCountry = async ({ params }: Request, res: Response): Promise
     const country = await Country.findByIdAndDelete(params.id);
     if (!country) return send(res, 404, 'País no encontrado');
     send(res, 200, 'Eliminado correctamente');
-  } catch (e) { handlerErrorResponse(res, e, "eliminar el país") }
+  } catch (e) { handlerResponse(res, e, "eliminar el país") }
 }

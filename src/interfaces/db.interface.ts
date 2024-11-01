@@ -1,6 +1,6 @@
 import { CollectionReference } from "firebase/firestore";
 import { User as UserMongo } from "@/types/user/user.type";
-import { User as UserFirebase } from "firebase/auth";
+import { UserCredential } from "firebase/auth";
 
 import { Result } from "@/interfaces/api.interface";
 import { Schema } from "mongoose";
@@ -9,17 +9,24 @@ import { Schema } from "mongoose";
 export type SchemaID = Schema.Types.ObjectId;
 
 export interface IDatabase {
-  createUser(user: UserCredentialsFB): Promise<Result<UserMongo>>;
+  createUser(user: UserMongo): Promise<Result<UserMongo>>;
   isUserFound(email: string): Promise<Result<boolean>>;
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
+export interface UserDatabaseFB {
+  access?: boolean;
+  email?: string;
+  username?: string;
+  role?: 'engineer' | 'admin';
+}
+
 export interface AuthService {
   //registration
-  registerAccount(username: string, email: string, password: string): Promise<Result<UserFirebase>>;
+  registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>>;
   //verification
-  verifyCredentials(email: string, password: string): Promise<Result<UserFirebase>>
+  verifyCredentials(email: string, password: string): Promise<Result<UserCredential>>
   //authentication
   sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
@@ -35,13 +42,7 @@ export interface StorageService {
 }
 
 export interface DatabaseService {
-  registerUserCredentials(user: UserFirebase, credentials: UserCredentialsFB): Promise<Result<void>>;
+  registerUserCredentials(auth: UserCredential, credentials: UserDatabaseFB): Promise<Result<void>>;
   getCollection(name: string): CollectionReference;
-}
-export interface UserCredentialsFB {
-  email?: string;
-  username?: string;
-  access?: boolean;
-  role?: 'engineer' | 'admin';
 }
 /*---------------------------------------------------------------------------------------------------------*/

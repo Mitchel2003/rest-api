@@ -1,12 +1,12 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { authService as authFB, databaseService as databaseFB } from "@/services/firebase.service"
-import { generateAccessToken } from "@/services/jwt.service"
-
+import { databaseService as databaseFB } from "@/services/firebase/database.service"
+import { authService as authFB } from "@/services/firebase/auth.service"
+import { generateAccessToken } from "@/services/jwt"
+import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
-import { handlerResponse } from "@/utils/handler"
-import { Request, Response } from "express"
 import ErrorAPI from "@/errors"
 
+import { Request, Response } from "express"
 /*--------------------------------------------------Authentication--------------------------------------------------*/
 /**
  * Maneja el proceso de inicio de sesión del usuario.
@@ -16,11 +16,12 @@ import ErrorAPI from "@/errors"
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
-    const user = await authFB.verifyCredentials(email, password);
-    if (!user.success) throw new ErrorAPI(user.error.message);
-    const token = await generateAccessToken({ id: user.data.uid });
+    const result = await authFB.verifyCredentials(email, password);
+    if (!result.success) throw new ErrorAPI(result.error);
+
+    const token = await generateAccessToken({ id: result.data.user.uid });
     setCookies(res, token);
-    send(res, 200, user.data);
+    send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "iniciar sesión") }
 }
 
@@ -33,13 +34,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, username, role } = req.body;
     const result = await authFB.registerAccount(username, email, password);
-    if (!result.success) throw new ErrorAPI(result.error.message, 400, result.error.code);
+    if (!result.success) throw new ErrorAPI(result.error);
 
     const register = await databaseFB.registerUserCredentials(result.data, { role });
-    if (!register.success) throw new ErrorAPI(register.error.message);
+    if (!register.success) throw new ErrorAPI(register.error);
 
     const sendEmail = await authFB.sendEmailVerification();
-    if (!sendEmail.success) throw new ErrorAPI(sendEmail.error.message);
+    if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
 
     send(res, 200, { message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación' });
   } catch (e) { handlerResponse(res, e, "registrarse") }

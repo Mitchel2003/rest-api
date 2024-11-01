@@ -8,19 +8,19 @@ class HandlerErrors {
    * @returns {ErrorAPI} retorna un error de tipo ErrorAPI
    */
   public static get(e: MongooseError): ErrorAPI {
-    const defaultMessage = 'Error interno del servidor (mongoDB)'
-    const record = this.errorRecords[e.name] || defaultRecord(defaultMessage, e.name)
-    return new record.errorType(record.message, undefined, e.name)
+    const message = 'Error interno del servidor (mongoDB)'
+    const record = this.errorRecords[e.name] || defaultRecord(message, e.name)
+    return new record.errorType(record.exception)
   }
 
   /** Mapeo de errores de Firebase a errores personalizados */
   private static readonly errorRecords: Record<string, ErrorRecord> = {
     'auth/email-already-in-use': {
-      message: 'El correo electrónico ya está en uso',
+      exception: { message: 'El correo electrónico ya está en uso' },
       errorType: Conflict
     },
     'auth/invalid-email': {
-      message: 'El correo electrónico no es válido',
+      exception: { message: 'El correo electrónico no es válido' },
       errorType: Validation
     }
   }

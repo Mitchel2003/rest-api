@@ -1,4 +1,4 @@
-import { handlerErrorResponse } from "@/utils/handler"
+import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
 import State from "@/models/location/state.model"
 
@@ -14,7 +14,7 @@ export const getState = async ({ params }: Request, res: Response): Promise<void
     const state = await State.findById(params.id);
     if (!state) return send(res, 404, 'Departamento no encontrado');
     send(res, 200, state);
-  } catch (e) { handlerErrorResponse(res, e, "obtener el departamento") }
+  } catch (e) { handlerResponse(res, e, "obtener el departamento") }
 }
 
 /**
@@ -31,7 +31,7 @@ export const getStates = async ({ body }: Request, res: Response): Promise<void>
     const usePopulate = body.country ? { country: body.country } : {};
     const states = await State.find(usePopulate).populate('country');
     send(res, 200, states);
-  } catch (e) { handlerErrorResponse(res, e, "obtener los departamentos") }
+  } catch (e) { handlerResponse(res, e, "obtener los departamentos") }
 }
 
 /**
@@ -44,7 +44,7 @@ export const createState = async ({ body }: Request, res: Response): Promise<voi
     const stateForm = new State({ ...body });
     const state = await stateForm.save();
     send(res, 201, state);
-  } catch (e) { handlerErrorResponse(res, e, "crear departamento") }
+  } catch (e) { handlerResponse(res, e, "crear departamento") }
 }
 
 /**
@@ -57,7 +57,7 @@ export const updateState = async ({ params, body }: Request, res: Response): Pro
     const state = await State.findByIdAndUpdate(params.id, body, { new: true });
     if (!state) return send(res, 404, 'Departamento no encontrado');
     send(res, 200, state);
-  } catch (e) { handlerErrorResponse(res, e, "actualizar el departamento") }
+  } catch (e) { handlerResponse(res, e, "actualizar el departamento") }
 }
 
 /**
@@ -70,5 +70,5 @@ export const deleteState = async ({ params }: Request, res: Response): Promise<v
     const state = await State.findByIdAndDelete(params.id);
     if (!state) return send(res, 404, 'Departamento no encontrado');
     send(res, 200, 'Eliminado correctamente');
-  } catch (e) { handlerErrorResponse(res, e, "eliminar el departamento") }
+  } catch (e) { handlerResponse(res, e, "eliminar el departamento") }
 }

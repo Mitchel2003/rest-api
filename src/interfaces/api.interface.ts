@@ -26,6 +26,11 @@ export type Result<T> = Success<T> | Failure //Result either
 interface Success<T> { success: true, data: T }
 export const success = <T>(data: T): Success<T> => ({ success: true, data })
 
-type IError = { message: string, code?: string, details?: unknown }
+type IError = {
+  message: string,
+  code?: string,
+  details?: unknown,
+  statusCode?: number
+}
 interface Failure { success: false; error: IError }
 export const failure = (error: IError): Failure => ({ success: false, error })

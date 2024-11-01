@@ -34,6 +34,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, username, role } = req.body;
     const result = await authFB.registerAccount(username, email, password);
+    console.log(result);
     if (!result.success) throw new ErrorAPI(result.error);
 
     const register = await databaseFB.registerUserCredentials(result.data, { role });

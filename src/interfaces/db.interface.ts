@@ -18,10 +18,8 @@ export interface IDatabase {
 export interface AuthService {
   //registration
   registerAccount(username: string, email: string, password: string): Promise<Result<UserFirebase>>;
-
   //verification
   verifyCredentials(email: string, password: string): Promise<Result<UserFirebase>>
-
   //authentication
   sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>

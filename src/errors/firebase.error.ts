@@ -25,7 +25,7 @@ class HandlerErrors {
 
   private static default(code: string): unknown {
     return {
-      message: 'Error interno del servidor',
+      message: 'Error interno del servidor (firebase)',
       errorType: ErrorAPI,
       details: { code }
     }

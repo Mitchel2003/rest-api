@@ -1,13 +1,13 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { authService as authFB, databaseService as database_FB } from "@/services/firebase.service"
+import { authService as authFB, databaseService as databaseFB } from "@/services/firebase.service"
 import { generateAccessToken } from "@/services/jwt.service"
 
-import { handlerErrorResponse } from "@/utils/handler"
 import { send } from "@/interfaces/api.interface"
-
-import ErrorAPI from "@/errors"
+import { handlerResponse } from "@/utils/handler"
 import { Request, Response } from "express"
-/*--------------------------------------------------Essentials--------------------------------------------------*/
+import ErrorAPI from "@/errors"
+
+/*--------------------------------------------------Authentication--------------------------------------------------*/
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
@@ -17,12 +17,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     const user = await authFB.verifyCredentials(email, password);
-    if ('error' in user) throw new ErrorAPI(user.error, 401);
-
-    const token = await generateAccessToken({ id: user.value.uid });
+    if (!user.success) throw new ErrorAPI(user.error.message);
+    const token = await generateAccessToken({ id: user.data.uid });
     setCookies(res, token);
-    send(res, 200, user.value);
-  } catch (e) { handlerErrorResponse(res, e, "iniciar sesión") }
+    send(res, 200, user.data);
+  } catch (e) { handlerResponse(res, e, "iniciar sesión") }
 }
 
 /**
@@ -33,34 +32,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, username, role } = req.body;
+    const result = await authFB.registerAccount(username, email, password);
+    if (!result.success) throw new ErrorAPI(result.error.message, 400, result.error.code);
 
-    // Registrar cuenta
-    const authResult = await authFB.registerAccount(username, email, password);
-    if (!authResult.success) {
-      throw new ErrorAPI(authResult.error.message, 400, authResult.error.code);
-    }
+    const register = await databaseFB.registerUserCredentials(result.data, { role });
+    if (!register.success) throw new ErrorAPI(register.error.message);
 
-    // Registrar credenciales
-    const registerResult = await database_FB.registerUserCredentials(
-      authResult.data, 
-      { role }
-    );
-    if (!registerResult.success) {
-      throw new ErrorAPI(registerResult.error.message);
-    }
+    const sendEmail = await authFB.sendEmailVerification();
+    if (!sendEmail.success) throw new ErrorAPI(sendEmail.error.message);
 
-    // Enviar email de verificación
-    const emailResult = await authFB.sendEmailVerification();
-    if (!emailResult.success) {
-      throw new ErrorAPI(emailResult.error.message);
-    }
-
-    send(res, 200, {
-      message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación'
-    });
-  } catch (e) {
-    handlerErrorResponse(res, e, "registrarse");
-  }
+    send(res, 200, { message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación' });
+  } catch (e) { handlerResponse(res, e, "registrarse") }
 }
 
 /**

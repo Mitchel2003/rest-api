@@ -1,6 +1,6 @@
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
+import { handlerResponse } from "@/utils/handler";
 import User from "@/models/user/user.model"
-import { handlerErrorResponse } from "@/utils/handler";
 import { Response } from "express"
 
 /**
@@ -15,5 +15,5 @@ export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<vo
     const userFound = await User.findById(req.user?.id);
     if (!userFound) return send(res, 401, 'No autorizado');
     send(res, 200, userFound);
-  } catch (e) { handlerErrorResponse(res, e, "Verificar token autenticación") }
+  } catch (e) { handlerResponse(res, e, "verificar token autenticación") }
 }

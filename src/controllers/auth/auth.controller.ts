@@ -32,9 +32,22 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  */
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
+    /*
+    {
+      success: false,
+      error: Conflict: El correo electrónico ya está en uso
+      at HandlerErrors.get (/opt/render/project/src/dist/errors/firebase.error.js:16:12)
+      at normalizeError (/opt/render/project/src/dist/errors/handler.js:73:77)
+      at handlerService (/opt/render/project/src/dist/errors/handler.js:54:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async register (/opt/render/project/src/dist/controllers/auth/auth.controller.js:56:20) {
+      code: 'CONFLICT',
+      details: undefined,
+      statusCode: 409
+    }
+    */
     const { email, password, username, role } = req.body;
     const result = await authFB.registerAccount(username, email, password);
-    console.log(result);
     if (!result.success) throw new ErrorAPI(result.error);
 
     const register = await databaseFB.registerUserCredentials(result.data, { role });

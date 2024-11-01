@@ -10,33 +10,33 @@ class HandlerErrors {
   public static get(e: MongooseError): ErrorAPI {
     const message = 'Error interno del servidor (mongoDB)'
     const record = this.errorRecords[e.name] || defaultRecord(message, e.name)
-    return new record.errorType(record.exception)
+    return new record.errorType({ message: record.message })
   }
 
   /** Mapeo de errores de MongoDB a errores personalizados */
   private static readonly errorRecords: Record<string, ErrorRecord> = {
     'CastError': {
-      exception: { message: 'Error de conversión de tipo de datos' },
+      message: 'Error de conversión de tipo de datos',
       errorType: Validation
     },
     'ValidationError': {
-      exception: { message: 'Error de validación de datos' },
+      message: 'Error de validación de datos',
       errorType: Validation
     },
     'DocumentNotFoundError': {
-      exception: { message: 'Documento no encontrado' },
+      message: 'Documento no encontrado',
       errorType: NotFound
     },
     'MongoServerError': {
-      exception: { message: 'Error del servidor de MongoDB' },
+      message: 'Error del servidor de MongoDB',
       errorType: ErrorAPI
     },
     'DuplicateKeyError': {
-      exception: { message: 'Clave duplicada, el recurso ya existe' },
+      message: 'Clave duplicada, el recurso ya existe',
       errorType: Conflict
     },
     'StrictModeError': {
-      exception: { message: 'Error de modo estricto' },
+      message: 'Error de modo estricto',
       errorType: Validation
     }
     // Puedes seguir añadiendo más errores específicos de MongoDB aquí

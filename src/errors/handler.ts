@@ -15,7 +15,9 @@ import { Response } from 'express';
  * @param {string} context: contexto del error
  */
 export function handlerResponse(res: Response, e: unknown, context: string): void {
+  console.log(e)
   const { message, statusCode, code, details } = normalizeError(e, context);
+  console.log(message, statusCode, code, details)
   send(res, statusCode, { message, code, details });
 }
 

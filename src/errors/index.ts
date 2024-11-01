@@ -52,7 +52,7 @@ export interface ErrorProps {
 
 /** Registro de error Record<> */
 export interface ErrorRecord {
-  exception: ErrorProps;
+  message: string;
   errorType:
   | typeof Unauthorized
   | typeof Validation
@@ -65,10 +65,9 @@ export interface ErrorRecord {
  * Regresa un registro de error por defecto.
  * La idea de definir "details" como un objeto de codigo es debido a que se desconoce la procedencia del error.
  * Entonces en vez de mostrar directamente en "code", pasamos el codigo a traves de "details" para mayor flexibilidad.
- * @param {string} message: mensaje del error
- * @param {string} code: código del error
- * @returns {ErrorRecord} retorna un registro de error predeterminado
+ * @param {string} message: mensaje del error (Error interno del servidor)
+ * @param {string} code: código del error (UNAUTHORIZED, NOT_FOUND, VALIDATION_ERROR, CONFLICT)
 */
-export function defaultRecord(message: string, code: string): ErrorRecord {
-  return { exception: { message, details: { code } }, errorType: ErrorAPI }
+export function defaultRecord(message: string, code: string): unknown {
+  return { message, details: { code }, errorType: ErrorAPI }
 }

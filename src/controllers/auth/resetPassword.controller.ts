@@ -4,7 +4,6 @@ import { send } from "@/interfaces/api.interface"
 import ErrorAPI from "@/errors"
 
 import { Request, Response } from "express"
-
 /**
  * Maneja el proceso de restablecimiento de contraseña.
  * Establece un token de restablecimiento de contraseña para el usuario

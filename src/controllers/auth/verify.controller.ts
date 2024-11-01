@@ -4,7 +4,6 @@ import ErrorAPI from "@/errors";
 
 import User from "@/models/user/user.model"
 import { Response } from "express"
-
 /**
  * Verifica el token de acceso del usuario (autenticación).
  * Extrae las credenciales del token (id_user), en caso de que token sea invalido, no se permitirá el acceso.

@@ -11,8 +11,8 @@ export interface City extends Document {
 export interface CityService {
   createCity(city: City): Promise<City>
   findCitys(query?: Query): Promise<City[]>
-  findOneCity(query: Query): Promise<City>
+  findOneCity(query: Query): Promise<City | null>
   findCityById(id: string): Promise<City | null>
   updateCity(id: string, cv: Partial<City>): Promise<City | null>
-  DeleteCity(id: string): Promise<boolean>
+  deleteCity(id: string): Promise<boolean>
 }

@@ -1,6 +1,6 @@
-import CurriculumModel from "@/models/form/curriculum.model";
+import CurriculumModel from "@/models/form/cv.model";
 import { Query, Repository } from "@/types/repository.type";
-import { Curriculum } from "@/types/form/curriculum.type";
+import { Curriculum } from "form/curriculum/curriculum.type";
 
 export class CurriculumRepository implements Repository<Curriculum> {
   private static instance: CurriculumRepository;

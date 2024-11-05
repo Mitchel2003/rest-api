@@ -14,7 +14,7 @@ import countryRoutes from "@/routes/location/country.routes"
 import stateRoutes from "@/routes/location/state.routes"
 import cityRoutes from "@/routes/location/city.routes"
 
-import curriculumRoutes from "@/routes/form/curriculum.routes"
+import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
 
 const app = express();
 app.use(cors({ origin: config.frontendUrl, credentials: true }));

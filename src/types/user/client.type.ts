@@ -16,5 +16,5 @@ export interface ClientService {
   findOneClient(query: Query): Promise<Client>
   findClientById(id: string): Promise<Client | null>
   updateClient(id: string, Client: Partial<Client>): Promise<Client | null>
-  DeleteClient(id: string): Promise<boolean>
+  deleteClient(id: string): Promise<boolean>
 }

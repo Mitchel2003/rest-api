@@ -13,8 +13,8 @@ export interface Headquarter extends Document {
 export interface HeadquarterService {
   createHeadquarter(cv: Headquarter): Promise<Headquarter>
   findHeadquarters(query?: Query): Promise<Headquarter[]>
-  findOneHeadquarter(query: Query): Promise<Headquarter>
+  findOneHeadquarter(query: Query): Promise<Headquarter | null>
   findHeadquarterById(id: string): Promise<Headquarter | null>
   updateHeadquarter(id: string, cv: Partial<Headquarter>): Promise<Headquarter | null>
-  DeleteHeadquarter(id: string): Promise<boolean>
+  deleteHeadquarter(id: string): Promise<boolean>
 }

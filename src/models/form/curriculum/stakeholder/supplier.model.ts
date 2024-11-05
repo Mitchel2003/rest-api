@@ -1,8 +1,8 @@
-import { Client } from "@/types/user/client.type";
+import { Supplier } from "@/types/form/curriculum/stakeholder/supplier.type";
 import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
-const clientSchema: Schema<Client> = new Schema({
+const supplierSchema: Schema<Supplier> = new Schema({
   name: {
     type: String,
     required: true
@@ -10,12 +10,17 @@ const clientSchema: Schema<Client> = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     trim: true
   },
   phone: {
-    type: Number,
+    type: String,
     required: true,
+    trim: true
+  },
+  address: {
+    type: String,
+    required: true,
+    unique: true,
     trim: true
   },
   nit: {
@@ -26,4 +31,4 @@ const clientSchema: Schema<Client> = new Schema({
   }
 }, configSchema)
 
-export default mongoose.model('client', clientSchema)
+export default mongoose.model('supplier', supplierSchema)

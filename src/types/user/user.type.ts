@@ -3,15 +3,24 @@ import { Query } from "@/types/repository.type"
 import { Document } from "mongoose";
 
 export interface User extends Document {
-  //standard
-  email: string,
-  username: string,
-  access: boolean,
-  role: 'engineer' | 'admin',
+  email: string;
+  username: string;
+  permissions: Permissions;
+  role: 'engineer' | 'admin';
 
-  //defautls mongoDB
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface Permissions {
+  overwrite: { read: boolean; create: boolean; update: boolean; delete: boolean };
+  headquarters: string[];
+}
+export const Overwrite = {
+  read: { type: Boolean, default: false },
+  create: { type: Boolean, default: false },
+  update: { type: Boolean, default: false },
+  delete: { type: Boolean, default: false }
 }
 
 export interface UserService {

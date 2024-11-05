@@ -11,8 +11,8 @@ export interface UserHeadquarter extends Document {//relationship between user a
 export interface UserHeadquarterService {
   createUserHeadquarter(cv: UserHeadquarter): Promise<UserHeadquarter>
   findUserHeadquarters(query?: Query): Promise<UserHeadquarter[]>
-  findOneUserHeadquarter(query: Query): Promise<UserHeadquarter>
+  findOneUserHeadquarter(query: Query): Promise<UserHeadquarter | null>
   findUserHeadquarterById(id: string): Promise<UserHeadquarter | null>
-  updateUserHeadquarter(id: string, cv: Partial<UserHeadquarter>): Promise<UserHeadquarter | null>
-  DeleteUserHeadquarter(id: string): Promise<boolean>
+  updateUserHeadquarter(id: string, userHeadquarter: Partial<UserHeadquarter>): Promise<UserHeadquarter | null>
+  deleteUserHeadquarter(id: string): Promise<boolean>
 }

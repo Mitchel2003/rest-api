@@ -1,4 +1,4 @@
-import { UserHeadquarter } from "@/types/relation/userHeadquarter.type";
+import { UserHeadquarter } from "@/types/relation/engineer/userHeadquarter.type";
 import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
@@ -10,8 +10,8 @@ const userHeadquarterSchema: Schema<UserHeadquarter> = new Schema({
   },
   headquarter: {
     type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'headquarter'
+    ref: 'headquarter',
+    required: true
   }
 }, configSchema);
 

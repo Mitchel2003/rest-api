@@ -10,8 +10,8 @@ export interface Country extends Document {
 export interface CountryService {
   createCountry(country: Country): Promise<Country>
   findCountrys(query?: Query): Promise<Country[]>
-  findOneCountry(query: Query): Promise<Country>
+  findOneCountry(query: Query): Promise<Country | null>
   findCountryById(id: string): Promise<Country | null>
   updateCountry(id: string, cv: Partial<Country>): Promise<Country | null>
-  DeleteCountry(id: string): Promise<boolean>
+  deleteCountry(id: string): Promise<boolean>
 }

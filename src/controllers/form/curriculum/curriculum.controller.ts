@@ -1,6 +1,6 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar curriculums (equipos) */
+import Curriculum from "@/models/form/curriculum/curriculum.model"
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
-import Curriculum from "@/models/form/curriculum.model"
 import { handlerResponse } from "@/errors/handler"
 import ErrorAPI from "@/errors"
 

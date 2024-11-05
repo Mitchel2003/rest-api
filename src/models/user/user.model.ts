@@ -25,6 +25,7 @@ const userSchema: Schema<User> = new Schema({
     trim: true
   },
   permissions: {
+    required: true,
     type: permissionsSchema,
     default: () => ({
       overwrite: { read: true, create: false, update: false, delete: false },
@@ -39,4 +40,4 @@ const userSchema: Schema<User> = new Schema({
   }
 }, configSchema);
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model('user', userSchema);

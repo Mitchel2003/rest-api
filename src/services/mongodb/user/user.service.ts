@@ -1,8 +1,7 @@
-import { UserService as IUser } from "@/types/user/user.type";
+import { User, UserService as IUser } from "@/types/user/user.type";
 import { handlerService as handler } from "@/errors/handler";
 import { Result } from "@/interfaces/api.interface";
 import { Query } from "@/types/repository.type";
-import { User } from "@/types/user/user.type";
 
 import userRepository from "@/repositories/user/user.repository";
 

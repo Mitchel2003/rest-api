@@ -1,7 +1,8 @@
-/** Este módulo proporciona funciones para crear, leer, actualizar y eliminar clientes (entidades)*/
+/** Este módulo proporciona funciones para crear, leer, actualizar y eliminar clientes */
+import { clientService } from "@/services/mongodb/user/client.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
-import { handlerResponse } from "@/errors/handler"
-import Client from "@/models/user/client.model"
+import { handlerResponse } from "@/errors/handler";
+import ErrorAPI, { NotFound } from "@/errors";
 
 import { Request, Response } from "express"
 
@@ -12,34 +13,36 @@ import { Request, Response } from "express"
  */
 export const getClient = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const client = await Client.findById(params.id);
-    if (!client) return send(res, 404, 'Cliente no encontrado');
-    send(res, 200, client);
+    const client = await clientService.findClientById(params.id);
+    if (!client.success) throw new NotFound({ message: 'Cliente no encontrado' });
+    send(res, 200, client.data);
   } catch (e) { handlerResponse(res, e, "obtener el cliente") }
 }
 
 /**
  * Obtiene todos los clientes.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express extendido.
  * @returns {Promise<void>} - Envía un objeto con los clientes.
  */
 export const getClients = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const user = req.user;
-    const clients = await Client.find();
-    send(res, 200, { clients, user });
+    const engineer = req.user?.id;
+    const clients = await clientService.findClients();
+    if (!clients.success) throw new ErrorAPI(clients.error);
+    send(res, 200, { clients: clients.data, engineer });
   } catch (e) { handlerResponse(res, e, "obtener los clientes") }
 }
 
 /**
  * Crear un nuevo cliente
- * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener los datos del cliente en el body. 
+ * @param {Request} req - Objeto de solicitud Express. Se espera que contenga los datos del cliente en el body. 
  * @returns {Promise<void>} - Envía el cliente creado o un mensaje de error.
  */
-export const createClient = async (req: ExtendsRequest, res: Response): Promise<void> => {
+export const createClient = async (req: Request, res: Response): Promise<void> => {
   try {
-    const clientFormat = new Client({ ...req.body });
-    const client = await clientFormat.save();
-    send(res, 201, client);
+    const client = await clientService.createClient(req.body);
+    if (!client.success) throw new ErrorAPI(client.error);
+    send(res, 201, client.data);
   } catch (e) { handlerResponse(res, e, "crear el cliente") }
 }
 
@@ -50,9 +53,9 @@ export const createClient = async (req: ExtendsRequest, res: Response): Promise<
  */
 export const updateClient = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
-    const client = await Client.findByIdAndUpdate(params.id, body, { new: true });
-    if (!client) return send(res, 404, 'Cliente no encontrado');
-    send(res, 200, client);
+    const client = await clientService.updateClient(params.id, body);
+    if (!client.success) throw new ErrorAPI(client.error);
+    send(res, 200, client.data);
   } catch (e) { handlerResponse(res, e, "actualizar el cliente") }
 }
 
@@ -63,8 +66,8 @@ export const updateClient = async ({ params, body }: Request, res: Response): Pr
  */
 export const deleteClient = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const client = await Client.findByIdAndDelete(params.id);
-    if (!client) return send(res, 404, 'Cliente no encontrado');
-    send(res, 200, client);
+    const client = await clientService.deleteClient(params.id);
+    if (!client.success) throw new ErrorAPI(client.error);
+    send(res, 200, client.data);
   } catch (e) { handlerResponse(res, e, "eliminar el cliente") }
 }

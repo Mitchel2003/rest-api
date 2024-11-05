@@ -14,13 +14,10 @@ import { Response } from 'express';
  * @param {string} context - Representa el contexto en el que ocurrió el error, suele referirse a la operación.
  * @returns {Promise<Result<T>>} - Un resultado que puede ser exitoso o fallido.
  * @example
- * const result = await handlerService(async () => {})
  * if (!result.success) throw new ErrorAPI(result.error)
  * const data = result.data
  */
-type HandlerServiceProps = <T>(operation: () => Promise<T>, context: string) => Promise<Result<T>>
-
-export const handlerService: HandlerServiceProps = async (operation, context) => {
+export const handlerService = async <T>(operation: () => Promise<T>, context: string): Promise<Result<T>> => {
   try { const result = await operation(); return success(result) }
   catch (e: unknown) { const error = normalizeError(e, context); return failure(error) }
 }
@@ -32,9 +29,7 @@ export const handlerService: HandlerServiceProps = async (operation, context) =>
  * @param {unknown} e: error a normalizar
  * @param {string} context: contexto del error
  */
-type HandlerResponseProps = (res: Response, e: unknown, context: string) => void
-
-export const handlerResponse: HandlerResponseProps = (res, e, context) => {
+export const handlerResponse = (res: Response, e: unknown, context: string) => {
   const { message, code, details, statusCode } = normalizeError(e, context);
   send(res, statusCode, { message, code, details })
 }
@@ -49,9 +44,7 @@ export const handlerResponse: HandlerResponseProps = (res, e, context) => {
  * @returns {ErrorAPI} - El error normalizado al formato de ErrorAPI, si pertenece a ninguna instancia, se crea uno nuevo.
  * @example if (!result.success) throw new ErrorAPI({ message: 'Error de prueba', statusCode: 500 })
  */
-type NormalizeErrorProps = (e: unknown, context: string) => ErrorAPI
-
-export const normalizeError: NormalizeErrorProps = (e, context) => {
+export const normalizeError = (e: unknown, context: string): ErrorAPI => {
   if (e instanceof FirebaseError) return HandlerErrorsFB(e)
   if (e instanceof MongooseError) return HandlerErrorsMDB(e)
   if (e instanceof ErrorAPI) return e

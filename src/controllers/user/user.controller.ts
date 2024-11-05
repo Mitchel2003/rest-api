@@ -1,27 +1,73 @@
+/** Este módulo proporciona funciones para crear, leer, actualizar y eliminar usuarios */
+import { userService } from "@/services/mongodb/user/user.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
-import User from "@/models/user/user.model"
-import { Response } from "express"
+import { handlerResponse } from "@/errors/handler";
+import ErrorAPI, { NotFound } from "@/errors";
+
+import { Request, Response } from "express"
 
 /**
- * Obtiene el perfil del usuario autenticado.
- * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del usuario en user.id.
- * @returns {Promise<void>} - Envía los datos del perfil del usuario o un mensaje de error.
+ * Obtiene un usuario específico por su ID.
+ * @param {Request} req - Objeto de solicitud Express. Se espera que contenga el ID del usuario en params.id.
+ * @returns {Promise<void>} - Envía el usuario encontrado o un mensaje de error.
  */
-export const profile = async (req: ExtendsRequest, res: Response): Promise<void> => {
-  const document = await User.findById(req.user?.id);
-  if (!document) return send(res, 401, 'Usuario no encontrado');
-  send(res, 200, document);
+export const getUser = async ({ params }: Request, res: Response): Promise<void> => {
+  try {
+    const user = await userService.findUserById(params.id);
+    if (!user.success) throw new NotFound({ message: 'Usuario no encontrado' });
+    send(res, 200, user.data);
+  } catch (e) { handlerResponse(res, e, "obtener el usuario") }
 }
 
-export const deleteUser = async (req: ExtendsRequest, res: Response): Promise<void> => {
-  //first search user in mongoDB
-  //if exist so extract uid_firebase
-  //then delete user in auth and database on firebase
-  //finally delete user in mongoDB
+/**
+ * Obtiene todos los usuarios.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express extendido.
+ * @returns {Promise<void>} - Envía un objeto con los usuarios.
+ */
+export const getUsers = async (req: ExtendsRequest, res: Response): Promise<void> => {
+  try {
+    const engineer = req.user?.id;
+    const users = await userService.findUsers();
+    if (!users.success) throw new ErrorAPI(users.error);
+    send(res, 200, { users: users.data, engineer });
+  } catch (e) { handlerResponse(res, e, "obtener los usuarios") }
+}
 
-  //we need delete all related data in database (mongoDB and firebase)
+/**
+ * Crear un nuevo usuario
+ * @param {Request} req - Objeto de solicitud Express. Se espera que contenga los datos del usuario en el body. 
+ * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
+ */
+export const createUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = await userService.createUser(req.body);
+    if (!user.success) throw new ErrorAPI(user.error);
+    send(res, 201, user.data);
+  } catch (e) { handlerResponse(res, e, "crear el usuario") }
+}
 
-  const document = await User.findByIdAndDelete(req.user?.id);
-  if (!document) return send(res, 401, 'Usuario no encontrado');
-  send(res, 200, document);
+/**
+ * Actualiza un usuario existente.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del usuario en params.id y los datos actualizados en el body.
+ * @returns {Promise<void>} - Envía el usuario actualizado o un mensaje de error.
+ */
+export const updateUser = async ({ params, body }: Request, res: Response): Promise<void> => {
+  try {
+    const user = await userService.updateUser(params.id, body);
+    if (!user.success) throw new ErrorAPI(user.error);
+    send(res, 200, user.data);
+  } catch (e) { handlerResponse(res, e, "actualizar el usuario") }
+}
+
+/**
+ * Elimina un usuario existente.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del usuario a eliminar en params.id.
+ * @returns {Promise<void>} - Envía un mensaje de confirmación o error.
+ */
+export const deleteUser = async ({ params }: Request, res: Response): Promise<void> => {
+  try {
+    const user = await userService.deleteUser(params.id);
+    if (!user.success) throw new ErrorAPI(user.error);
+    send(res, 200, user.data);
+  } catch (e) { handlerResponse(res, e, "eliminar el usuario") }
 }

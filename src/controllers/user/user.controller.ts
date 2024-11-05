@@ -13,7 +13,7 @@ import { Request, Response } from "express"
  */
 export const getUser = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const user = await userService.findUserById(params.id);
+    const user = await userService.findById(params.id);
     if (!user.success) throw new NotFound({ message: 'Usuario no encontrado' });
     send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "obtener el usuario") }
@@ -27,7 +27,7 @@ export const getUser = async ({ params }: Request, res: Response): Promise<void>
 export const getUsers = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
     const engineer = req.user?.id;
-    const users = await userService.findUsers();
+    const users = await userService.find();
     if (!users.success) throw new ErrorAPI(users.error);
     send(res, 200, { users: users.data, engineer });
   } catch (e) { handlerResponse(res, e, "obtener los usuarios") }
@@ -40,7 +40,7 @@ export const getUsers = async (req: ExtendsRequest, res: Response): Promise<void
  */
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user = await userService.createUser(req.body);
+    const user = await userService.create(req.body);
     if (!user.success) throw new ErrorAPI(user.error);
     send(res, 201, user.data);
   } catch (e) { handlerResponse(res, e, "crear el usuario") }
@@ -53,7 +53,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
  */
 export const updateUser = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
-    const user = await userService.updateUser(params.id, body);
+    const user = await userService.update(params.id, body);
     if (!user.success) throw new ErrorAPI(user.error);
     send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "actualizar el usuario") }
@@ -66,7 +66,7 @@ export const updateUser = async ({ params, body }: Request, res: Response): Prom
  */
 export const deleteUser = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const user = await userService.deleteUser(params.id);
+    const user = await userService.delete(params.id);
     if (!user.success) throw new ErrorAPI(user.error);
     send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "eliminar el usuario") }

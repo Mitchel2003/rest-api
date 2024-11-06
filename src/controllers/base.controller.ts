@@ -1,5 +1,5 @@
-import { MongoDBService as MongoDB } from "@/services/mongodb/mongodb.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface";
+import MongoDB from "@/services/mongodb/mongodb.service";
 import { handlerResponse } from "@/errors/handler";
 import ErrorAPI, { NotFound } from "@/errors";
 

@@ -1,9 +1,9 @@
-import { MongoDBService as MongoDB } from "@/services/mongodb/mongodb.service";
-import { Repository } from "@/repositories/mongodb/mongodb.repository";
+import Repository from "@/repositories/mongodb.repository";
+import MongoDB from "@/services/mongodb/mongodb.service";
 import clientModel from "@/models/user/client.model";
 import { User } from "@/types/user/user.type";
 
-export class UserService extends MongoDB<User> {
+class UserService extends MongoDB<User> {
   private static instance: UserService;
 
   private constructor() {

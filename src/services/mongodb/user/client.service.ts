@@ -1,5 +1,5 @@
-import { MongoDBService as MongoDB } from "@/services/mongodb/mongodb.service";
-import { Repository } from "@/repositories/repository";
+import Repository from "@/repositories/mongodb.repository";
+import MongoDB from "@/services/mongodb/mongodb.service";
 import clientModel from "@/models/user/client.model";
 import { Client } from "@/types/user/client.type";
 

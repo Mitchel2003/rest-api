@@ -1,4 +1,3 @@
-import { Query } from "@/types/repository.type"
 import { Document, Schema } from "mongoose"
 
 export interface Headquarter extends Document {
@@ -8,13 +7,4 @@ export interface Headquarter extends Document {
   client: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
-}
-
-export interface HeadquarterService {
-  createHeadquarter(cv: Headquarter): Promise<Headquarter>
-  findHeadquarters(query?: Query): Promise<Headquarter[]>
-  findOneHeadquarter(query: Query): Promise<Headquarter | null>
-  findHeadquarterById(id: string): Promise<Headquarter | null>
-  updateHeadquarter(id: string, cv: Partial<Headquarter>): Promise<Headquarter | null>
-  deleteHeadquarter(id: string): Promise<boolean>
 }

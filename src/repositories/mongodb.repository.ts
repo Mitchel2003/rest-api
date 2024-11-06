@@ -1,9 +1,13 @@
-import { Repository as RepositoryType, Doc, Query } from "@/types/repository.type";
+import { Repository, Doc, Query } from "@/types/repository.type";
 import { Document, Model } from "mongoose";
 
-export class Repository {
-  /** Crea una instancia de un modelo database */
-  static create<T>(model: Model<T & Document>): RepositoryType<T> {
+class MongoDBRepository {
+  /**
+   * Crea una instancia de un modelo database (Factory)
+   * @param {Model<T & Document>} model - Corresponde al modelo en contexto
+   * @returns {Repository<T>} Retorna las propiedades CRUD del modelo en cuestion
+   */
+  static create<T>(model: Model<T & Document>): Repository<T> {
     return {
       /** Permite crear un nuevo registro en la base de datos */
       create: async (data: T) => {
@@ -29,3 +33,5 @@ export class Repository {
     }
   }
 }
+
+export default MongoDBRepository;

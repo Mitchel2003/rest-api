@@ -1,4 +1,3 @@
-import { Query } from "@/types/repository.type"
 import { Document, Schema } from "mongoose"
 
 export interface TechnicalCharacteristic extends Document {
@@ -15,13 +14,4 @@ export interface TechnicalCharacteristic extends Document {
   curriculum: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
-}
-
-export interface TechnicalCharacteristicService {
-  createTechnicalCharacteristic(technicalCharacteristic: TechnicalCharacteristic): Promise<TechnicalCharacteristic>
-  findTechnicalCharacteristics(query?: Query): Promise<TechnicalCharacteristic[]>
-  findOneTechnicalCharacteristic(query: Query): Promise<TechnicalCharacteristic | null>
-  findTechnicalCharacteristicById(id: string): Promise<TechnicalCharacteristic | null>
-  updateTechnicalCharacteristic(id: string, technicalCharacteristic: Partial<TechnicalCharacteristic>): Promise<TechnicalCharacteristic | null>
-  deleteTechnicalCharacteristic(id: string): Promise<boolean>
 }

@@ -1,4 +1,3 @@
-import { Query } from "@/types/repository.type"
 import { Document, Schema } from "mongoose"
 
 export interface State extends Document {
@@ -6,13 +5,4 @@ export interface State extends Document {
   country: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
-}
-
-export interface StateService {
-  createState(state: State): Promise<State>
-  findStates(query?: Query): Promise<State[]>
-  findOneState(query: Query): Promise<State | null>
-  findStateById(id: string): Promise<State | null>
-  updateState(id: string, cv: Partial<State>): Promise<State | null>
-  deleteState(id: string): Promise<boolean>
 }

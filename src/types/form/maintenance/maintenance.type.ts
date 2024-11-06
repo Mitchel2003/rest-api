@@ -1,4 +1,3 @@
-import { Query } from "@/types/repository.type"
 import { Document, Schema } from "mongoose"
 
 export interface Maintenance extends Document {
@@ -22,13 +21,4 @@ export interface Maintenance extends Document {
   headquarter: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
-}
-
-export interface MaintenanceService {
-  createMaintenance(maintenance: Maintenance): Promise<Maintenance>
-  findMaintenances(query?: Query): Promise<Maintenance[]>
-  findOneMaintenance(query: Query): Promise<Maintenance | null>
-  findMaintenanceById(id: string): Promise<Maintenance | null>
-  updateMaintenance(id: string, maintenance: Partial<Maintenance>): Promise<Maintenance | null>
-  deleteMaintenance(id: string): Promise<boolean>
 }

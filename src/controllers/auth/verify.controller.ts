@@ -1,5 +1,5 @@
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
-import { userService as userMDB } from "@/services/mongodb/user/user.service"
+import { userService } from "@/services/mongodb/user/user.service"
 import { handlerResponse } from "@/errors/handler";
 import ErrorAPI from "@/errors";
 
@@ -12,7 +12,7 @@ import { Response } from "express"
  */
 export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const user = await userMDB.findUserById(req.user?.id as string);
+    const user = await userService.findById(req.user?.id || '');
     if (!user.success) throw new ErrorAPI(user.error);
     send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "verificar token autenticación") }

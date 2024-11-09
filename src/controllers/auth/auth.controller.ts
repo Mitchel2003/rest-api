@@ -1,5 +1,4 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { databaseService as databaseFB } from "@/services/firebase/database.service"
 import { authService as authFB } from "@/services/firebase/auth.service"
 import { generateAccessToken } from "@/services/jwt"
 import { handlerResponse } from "@/errors/handler"
@@ -36,10 +35,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const result = await authFB.registerAccount(username, email, password);
     if (!result.success) throw new ErrorAPI(result.error);
 
-    const register = await databaseFB.registerUserCredentials(result.data, { role });
-    if (!register.success) throw new ErrorAPI(register.error);
-
-    const sendEmail = await authFB.sendEmailVerification();
+    const sendEmail = await authFB.sendEmailVerification(email, username, role);
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
 
     send(res, 200, { message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación' });

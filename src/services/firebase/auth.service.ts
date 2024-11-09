@@ -61,10 +61,10 @@ class AuthService implements IAuth {
    * El enlace de redireccion (url) lo definimos en el metodo dado que necesitamos el uid del usuario.
    * @link https://github.com/Mitchel2003/rest-api/blob/main/README.md#004
    */
-  async sendEmailVerification(): Promise<Result<void>> {
+  async sendEmailVerification(email: string, username: string, role: string): Promise<Result<void>> {
     return handler(async () => {
       if (!this.auth.currentUser) throw new NotFound({ message: 'Usuario (auth)' })
-      const url = `${config.frontendUrl}/auth/verify-action/uid=${this.auth.currentUser.uid}`
+      const url = `${config.frontendUrl}/auth/verify-action/email=${email}&username=${username}&role=${role}`
       await sendEmailVerification(this.auth.currentUser, { url })
     }, 'enviar correo de verificación')
   }

@@ -16,7 +16,7 @@ export interface AuthService {
   //verification
   verifyCredentials(email: string, password: string): Promise<Result<UserCredential>>
   //authentication
-  sendEmailVerification(): Promise<Result<void>>
+  sendEmailVerification(email: string, username: string, role: string): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
   validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>>
 }

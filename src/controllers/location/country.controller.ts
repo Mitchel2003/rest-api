@@ -1,8 +1,11 @@
-import { ExtendsRequest, send } from "@/interfaces/api.interface"
-import Country from "@/models/location/country.model"
+/** Este módulo proporciona funciones para crear, leer, actualizar y eliminar paises */
+import { countryService } from "@/services/mongodb/location/country.service";
 import { handlerResponse } from "@/errors/handler"
+import { send } from "@/interfaces/api.interface"
+import ErrorAPI from "@/errors";
 
 import { Request, Response } from "express"
+
 /**
  * Obtiene un país específico por su ID.
  * @param {Request} req - Objeto de solicitud Express. Se espera que contenga el ID del país en params.id.
@@ -10,24 +13,22 @@ import { Request, Response } from "express"
  */
 export const getCountry = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const country = await Country.findById(params.id);
-    if (!country) return send(res, 404, 'País no encontrado');
-    send(res, 200, country);
+    const country = await countryService.findById(params.id);
+    if (!country.success) throw new ErrorAPI(country.error);
+    send(res, 200, country.data);
   } catch (e) { handlerResponse(res, e, "obtener el país") }
 }
 
 /**
  * Obtiene todos los países.
- * @param {ExtendsRequest} req - Objeto de solicitud Express extendido. Debe contener el ID del usuario en user.id.
+ * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
  * @returns {Promise<void>} - Envía todos los países encontrados o un mensaje de error.
- * @example
- * { countries: [...], currentUser: {...} }
  */
-export const getCountries = async (req: ExtendsRequest, res: Response): Promise<void> => {
+export const getCountries = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const user = req.user;
-    const countries = await Country.find();
-    send(res, 200, { countries, user });
+    const country = await countryService.find(body.query);
+    if (!country.success) throw new ErrorAPI(country.error);
+    send(res, 200, country.data);
   } catch (e) { handlerResponse(res, e, "obtener los países") }
 }
 
@@ -36,11 +37,11 @@ export const getCountries = async (req: ExtendsRequest, res: Response): Promise<
  * @param {Request} req - Objeto de solicitud Express. Se espera que contenga los datos del país en el cuerpo de la solicitud.
  * @returns {Promise<void>} - Envía el país creado o un mensaje de error.
  */
-export const createCountry = async ({ body }: Request, res: Response): Promise<void> => {
+export const createCountry = async (req: Request, res: Response): Promise<void> => {
   try {
-    const countryForm = new Country({ ...body });
-    const country = await countryForm.save();
-    send(res, 201, country);
+    const country = await countryService.create(req.body);
+    if (!country.success) throw new ErrorAPI(country.error);
+    send(res, 201, country.data);
   } catch (e) { handlerResponse(res, e, "crear el país") }
 }
 
@@ -51,9 +52,9 @@ export const createCountry = async ({ body }: Request, res: Response): Promise<v
  */
 export const updateCountry = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
-    const country = await Country.findByIdAndUpdate(params.id, body, { new: true });
-    if (!country) return send(res, 404, 'País no encontrado');
-    send(res, 200, country);
+    const country = await countryService.update(params.id, body);
+    if (!country.success) throw new ErrorAPI(country.error);
+    send(res, 200, country.data);
   } catch (e) { handlerResponse(res, e, "actualizar el país") }
 }
 
@@ -64,8 +65,8 @@ export const updateCountry = async ({ params, body }: Request, res: Response): P
  */
 export const deleteCountry = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const country = await Country.findByIdAndDelete(params.id);
-    if (!country) return send(res, 404, 'País no encontrado');
-    send(res, 200, 'Eliminado correctamente');
+    const country = await countryService.delete(params.id);
+    if (!country.success) throw new ErrorAPI(country.error);
+    send(res, 200, country.data);
   } catch (e) { handlerResponse(res, e, "eliminar el país") }
 }

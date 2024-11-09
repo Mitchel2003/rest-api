@@ -1,4 +1,4 @@
-import { Manufacturer } from "@/types/form/curriculum/stakeholder/manufacturer.model";
+import { Manufacturer } from "form/curriculum/stakeholder/manufacturer.type";
 import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 

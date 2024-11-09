@@ -15,8 +15,8 @@ class MongoDBRepository {
         return await instance.save() as Doc<T>;
       },
       /** Permite buscar todos los registros en la base de datos, parametro opcional para filtrar los registros */
-      find: async (query?: Query) => {
-        return await model.find(query || {}).exec() as Doc<T>[]
+      find: async (query?: Query, populate?: string) => {
+        return await model.find(query || {}).populate(populate || '').exec() as Doc<T>[]
       },
       /** Permite buscar un registro por su id */
       findById: async (id: string) => {

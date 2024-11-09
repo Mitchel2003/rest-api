@@ -1,8 +1,8 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar usuarios */
 import { userService } from "@/services/mongodb/user/user.service";
-import { ExtendsRequest, send } from "@/interfaces/api.interface"
 import { handlerResponse } from "@/errors/handler";
-import ErrorAPI, { NotFound } from "@/errors";
+import { send } from "@/interfaces/api.interface"
+import ErrorAPI from "@/errors";
 
 import { Request, Response } from "express"
 
@@ -14,22 +14,21 @@ import { Request, Response } from "express"
 export const getUser = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const user = await userService.findById(params.id);
-    if (!user.success) throw new NotFound({ message: 'Usuario no encontrado' });
+    if (!user.success) throw new ErrorAPI(user.error);
     send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "obtener el usuario") }
 }
 
 /**
  * Obtiene todos los usuarios.
- * @param {ExtendsRequest} req - Objeto de solicitud Express extendido.
+ * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
  * @returns {Promise<void>} - Envía un objeto con los usuarios.
  */
-export const getUsers = async (req: ExtendsRequest, res: Response): Promise<void> => {
+export const getUsers = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const engineer = req.user?.id;
-    const users = await userService.find();
+    const users = await userService.find(body.query);
     if (!users.success) throw new ErrorAPI(users.error);
-    send(res, 200, { users: users.data, engineer });
+    send(res, 200, users.data);
   } catch (e) { handlerResponse(res, e, "obtener los usuarios") }
 }
 

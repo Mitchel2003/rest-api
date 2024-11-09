@@ -1,6 +1,8 @@
+/** Este módulo proporciona funciones para crear, leer, actualizar y eliminar departamentos */
+import { stateService } from "@/services/mongodb/location/state.service";
 import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
-import State from "@/models/location/state.model"
+import ErrorAPI from "@/errors";
 
 import { Request, Response } from "express"
 
@@ -11,39 +13,36 @@ import { Request, Response } from "express"
  */
 export const getState = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const state = await State.findById(params.id);
-    if (!state) return send(res, 404, 'Departamento no encontrado');
-    send(res, 200, state);
+    const state = await stateService.findById(params.id);
+    if (!state.success) throw new ErrorAPI(state.error);
+    send(res, 200, state.data);
   } catch (e) { handlerResponse(res, e, "obtener el departamento") }
 }
 
 /**
  * Obtiene todos los departamentos.
- * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del país en country.id.
- * @argument usePopulate - Respecto al body obtenido, podemos mimificar el rango de busqueda de departamentos mediante country.id.
- * @example
- * if req.body.country => usePopulate = { country }
- * default usePopulate = {} => search all states
+ * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
+ * @argument usePopulate - Respecto al body obtenido, podemos mimificar el rango de busqueda de departamentos mediante country.id
  * @returns {Promise<void>} - Envía todos los departamentos encontrados o un mensaje de error.
  */
 export const getStates = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const usePopulate = body.country ? { country: body.country } : {};
-    const states = await State.find(usePopulate).populate('country');
-    send(res, 200, states);
+    const states = await stateService.find(body.query, body.populate);
+    if (!states.success) throw new ErrorAPI(states.error);
+    send(res, 200, states.data);
   } catch (e) { handlerResponse(res, e, "obtener los departamentos") }
 }
 
 /**
  * Crea un nuevo departamento.
- * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del departamento en el body y el ID del país en country.id.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener los datos del departamento en el body.
  * @returns {Promise<void>} - Envía el departamento creado o un mensaje de error.
  */
-export const createState = async ({ body }: Request, res: Response): Promise<void> => {
+export const createState = async (req: Request, res: Response): Promise<void> => {
   try {
-    const stateForm = new State({ ...body });
-    const state = await stateForm.save();
-    send(res, 201, state);
+    const state = await stateService.create(req.body);
+    if (!state.success) throw new ErrorAPI(state.error);
+    send(res, 201, state.data);
   } catch (e) { handlerResponse(res, e, "crear departamento") }
 }
 
@@ -54,9 +53,9 @@ export const createState = async ({ body }: Request, res: Response): Promise<voi
  */
 export const updateState = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
-    const state = await State.findByIdAndUpdate(params.id, body, { new: true });
-    if (!state) return send(res, 404, 'Departamento no encontrado');
-    send(res, 200, state);
+    const state = await stateService.update(params.id, body);
+    if (!state.success) throw new ErrorAPI(state.error);
+    send(res, 200, state.data);
   } catch (e) { handlerResponse(res, e, "actualizar el departamento") }
 }
 
@@ -67,8 +66,8 @@ export const updateState = async ({ params, body }: Request, res: Response): Pro
  */
 export const deleteState = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    const state = await State.findByIdAndDelete(params.id);
-    if (!state) return send(res, 404, 'Departamento no encontrado');
-    send(res, 200, 'Eliminado correctamente');
+    const state = await stateService.delete(params.id);
+    if (!state.success) throw new ErrorAPI(state.error);
+    send(res, 200, state.data);
   } catch (e) { handlerResponse(res, e, "eliminar el departamento") }
 }

@@ -13,7 +13,7 @@ const technicalCharacteristicSchema: Schema<TechnicalCharacteristic> = new Schem
   humidity: { type: String, required: false },
   frequency: { type: String, required: false },
   temperature: { type: String, required: false },
-  curriculum: { type: String, required: true }
+  curriculum: { type: Schema.Types.ObjectId, required: true },
 }, configSchema);
 
 export default mongoose.model('technical_characteristic', technicalCharacteristicSchema);

@@ -14,8 +14,8 @@ abstract class MongoDBService<T> {
     return handler(async () => await this.repository.create(data), "crear");
   }
   /** Busca todos los documentos en la base de datos */
-  async find(query?: Query): Promise<Result<T[]>> {
-    return handler(async () => await this.repository.find(query), "buscar todos");
+  async find(query?: Query, populate?: string): Promise<Result<T[]>> {
+    return handler(async () => await this.repository.find(query, populate), "buscar todos");
   }
   /** Busca un documento por su id en la base de datos */
   async findById(id: string): Promise<Result<T | null>> {

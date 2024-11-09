@@ -1,4 +1,4 @@
-import { Manufacturer } from "form/curriculum/stakeholder/manufacturer.type";
+import { Manufacturer } from "@/types/form/curriculum/stakeholder/manufacturer.type";
 import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
@@ -7,9 +7,11 @@ const manufacturerSchema: Schema<Manufacturer> = new Schema({
     type: String,
     required: true
   },
-  city: {
+  email: {
     type: String,
-    required: true
+    required: true,
+    unique: true,
+    trim: true
   },
   phone: {
     type: String,

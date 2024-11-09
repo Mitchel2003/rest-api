@@ -9,9 +9,9 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   serie: { type: String, required: true },
   modelEquip: { type: String, required: true },
   healthRecord: { type: String, required: true },
-  photoUrl: { type: String, required: true },
   characteristics: { type: String, required: true },
-  recommendationsManufacturer: { type: String, required: true },
+  photoUrl: { type: String, required: false, default: null },
+  recommendationsManufacturer: { type: String, required: false, default: null },
 
   //details
   datePurchase: { type: Date, required: true },

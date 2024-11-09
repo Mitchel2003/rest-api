@@ -41,7 +41,7 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
     requerid: true
   },
 
-  //references
+  //received
   receivedBy: {
     type: String,
     requerid: true
@@ -54,6 +54,8 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
     type: String,
     requerid: true
   },
+
+  //references
   equipment: {
     type: Schema.Types.ObjectId,
     required: true

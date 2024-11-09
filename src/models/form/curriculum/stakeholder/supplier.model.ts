@@ -10,17 +10,12 @@ const supplierSchema: Schema<Supplier> = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
     trim: true
   },
   phone: {
     type: String,
     required: true,
-    trim: true
-  },
-  address: {
-    type: String,
-    required: true,
-    unique: true,
     trim: true
   },
   nit: {

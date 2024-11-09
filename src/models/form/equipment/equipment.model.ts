@@ -3,7 +3,9 @@ import mongoose, { Schema } from "mongoose";
 import configSchema from "@/utils/schema";
 
 const EquipmentSchema: Schema<Equipment> = new Schema({
-  status: { type: String, requerid: true },
+  status: { type: String, required: true },
+  dateNextMaintenance: { type: Date, required: false },
+  dateLastMaintenance: { type: Date, required: false },
   curriculum: {
     type: Schema.Types.ObjectId,
     ref: 'curriculum',

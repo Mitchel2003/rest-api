@@ -2,7 +2,7 @@ import { Document } from "mongoose";
 
 export interface Representative extends Document {
   name: string;
-  city: string;
+  email: string;
   phone: string;
 
   createdAt?: Date;

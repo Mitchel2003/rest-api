@@ -19,4 +19,4 @@ const CheckMaintenanceSchema: Schema<CheckMaintenance> = new Schema({
   }
 }, configSchema);
 
-export default mongoose.model('calibration_equipment', CheckMaintenanceSchema);
+export default mongoose.model('check_maintenance', CheckMaintenanceSchema);

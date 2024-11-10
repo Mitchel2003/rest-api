@@ -37,4 +37,4 @@ export const verifyAction = async ({ body, params }: Request, res: Response): Pr
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "verificar acción") }
-}//working here...
+}

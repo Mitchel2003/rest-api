@@ -1,13 +1,13 @@
 import Repository from "@/repositories/mongodb.repository";
 import MongoDB from "@/services/mongodb/mongodb.service";
-import clientModel from "@/models/user/client.model";
+import userModel from "@/models/user/user.model";
 import { User } from "@/types/user/user.type";
 
 class UserService extends MongoDB<User> {
   private static instance: UserService;
 
   private constructor() {
-    super(Repository.create(clientModel))
+    super(Repository.create(userModel))
   }
 
   public static getInstance(): UserService {

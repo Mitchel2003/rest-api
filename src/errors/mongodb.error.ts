@@ -9,8 +9,6 @@ class HandlerErrors {
    */
   public static get(e: MongooseError): ErrorAPI {
     const message = 'Error interno del servidor (mongoDB)'
-    console.log(e.name);
-    
     const record = this.errorRecords[e.name] || defaultRecord(message, e.name)
     return new record.errorType({ message: record.message })
   }
@@ -33,7 +31,7 @@ class HandlerErrors {
       message: 'Error del servidor de MongoDB',
       errorType: ErrorAPI
     },
-    'duplicate key error': {
+    'DuplicateKeyError': {
       message: 'Clave duplicada, el recurso ya existe',
       errorType: Conflict
     },

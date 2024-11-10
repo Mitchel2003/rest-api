@@ -48,6 +48,6 @@ export const normalizeError = (e: unknown, context: string): ErrorAPI => {
   if (e instanceof FirebaseError) return HandlerErrorsFB(e)
   if (e instanceof MongooseError) return HandlerErrorsMDB(e)
   if (e instanceof ErrorAPI) return e
-  return new ErrorAPI({ message: `Error al ${context}: ${e instanceof Error ? e.message : String(e)}` })
+  return new ErrorAPI({ message: `Error al ${context}: ${e instanceof Error ? e.name : String(e)}` })
 }
 /*---------------------------------------------------------------------------------------------------------*/

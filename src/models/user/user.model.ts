@@ -13,11 +13,6 @@ const permissionsSchema: Schema<Permissions> = new Schema({
 
 //Schema user
 const userSchema: Schema<User> = new Schema({
-  uid: {
-    type: String,
-    required: true,
-    unique: true
-  },
   username: {
     type: String,
     required: true,

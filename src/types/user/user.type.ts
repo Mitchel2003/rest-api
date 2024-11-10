@@ -1,7 +1,6 @@
 import { Document } from "mongoose";
 
 export interface User extends Document {
-  uid: string;
   email: string;
   username: string;
   permissions: Permissions;

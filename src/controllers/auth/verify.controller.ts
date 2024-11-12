@@ -22,10 +22,12 @@ export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<vo
 /**
  * Verifica la acción del usuario (registro).
  * La solicitud puede ser de tipo verificación de correo electrónico o de cambio de contraseña.
- * En caso de que la solicitud sea de tipo verificación de correo electrónico, se esperan los datos de email, username y role.
- * En caso de que la solicitud sea de tipo restablecimiento de contraseña, se esperan los datos de oobCode y newPassword.s
  * @param {Request} req - Objeto de solicitud Express. Debe contener los datos de la solicitud en body y el modo de verificación en params.
  * @returns {Promise<void>} - Envía un mensaje de confirmación.
+ * @example
+ * "verifyEmail" => email, username y role.
+ * "resetPassword" => oobCode y password.
+ * @link https://github.com/Mitchel2003/rest-api/blob/main/README.md#005
  */
 export const verifyAction = async ({ body, params }: Request, res: Response): Promise<void> => {
   try {
@@ -33,7 +35,6 @@ export const verifyAction = async ({ body, params }: Request, res: Response): Pr
     const result = params.mode === 'verifyEmail'
       ? await userService.create({ ...body })
       : await authFB.validateResetPassword(body.oobCode, body.password);
-
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "verificar acción") }

@@ -479,3 +479,10 @@ Tenemos las siguientes situaciones
   como un parametro de busqueda (userSearchParam), y es usado desde el frontend para consultar las credenciales y
   crear este usuario en mongoDB, recuerda que (authentication user) es realizado por firebase con sus servicios de
   resetPassword y sendEmailVerification, sin embargo, la base de datos standar es mongoDB.
+
+#### 005
+  Email verification: aqui encontramos  un punto clave y es que la comprobacion de email se realiza en firebase, por tanto, en caso de que exista el email, firebase/auth se encargara de enviar el error respectivo,
+
+  anteriormente presentaba errores cuando manualmente eliminaba la cuenta de firebase/auth e intentaba registrar ese correo nuevamente; el detalle es que como se halla en mi base de datos mongoDB y este es "unique" entonces obtenemos ese error.
+
+  recuerda que para eliminar cuenta debemos tener presente este enfoque. (eliminar tanto en FB como en MDB)

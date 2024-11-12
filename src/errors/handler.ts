@@ -3,8 +3,8 @@ import HandlerErrorsMDB from '@/errors/mongodb.error';
 import HandlerErrorsFB from '@/errors/firebase.error';
 import ErrorAPI from '@/errors';
 
-import { MongooseError, Error as MongoDBError } from 'mongoose';
 import { FirebaseError } from 'firebase/app';
+import { MongooseError } from 'mongoose';
 import { Response } from 'express';
 
 /*--------------------------------------------------handlers--------------------------------------------------*/
@@ -45,8 +45,7 @@ export const handlerResponse = (res: Response, e: unknown, context: string) => {
  * @example if (!result.success) throw new ErrorAPI({ message: 'Error de prueba', statusCode: 500 })
  */
 export const normalizeError = (e: unknown, context: string): ErrorAPI => {
-  //Error al crear: MongoServerError = e.name'
-  if (e instanceof MongooseError || e instanceof MongoDBError) return HandlerErrorsMDB(e)
+  if (e instanceof MongooseError) return HandlerErrorsMDB(e)
   if (e instanceof FirebaseError) return HandlerErrorsFB(e)
   if (e instanceof ErrorAPI) return e
   return new ErrorAPI({ message: `Error al ${context}: ${e instanceof Error ? e.message : String(e)}` })

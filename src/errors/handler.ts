@@ -18,8 +18,13 @@ import { Response } from 'express';
  * const data = result.data
  */
 export const handlerService = async <T>(operation: () => Promise<T>, context: string): Promise<Result<T>> => {
-  try { const result = await operation(); return success(result) }
-  catch (e: unknown) { const error = normalizeError(e, context); return failure(error) }
+  try {
+    const result = await operation();
+    return success(result)
+  } catch (e: unknown) {
+    const error = normalizeError(e, context);
+    return failure(error)
+  }
 }
 
 /**

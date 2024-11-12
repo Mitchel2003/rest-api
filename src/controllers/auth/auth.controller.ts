@@ -6,7 +6,6 @@ import { send } from "@/interfaces/api.interface"
 import ErrorAPI from "@/errors"
 
 import { Request, Response } from "express"
-/*--------------------------------------------------Authentication--------------------------------------------------*/
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
@@ -34,7 +33,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const { email, password, username, role } = req.body;
     const result = await authFB.registerAccount(username, email, password);
     if (!result.success) throw new ErrorAPI(result.error);
-    
+
     const sendEmail = await authFB.sendEmailVerification(email, username, role);
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
 

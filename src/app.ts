@@ -6,7 +6,6 @@ import cors from "cors"
 //auth routes
 import authRoutes from "@/routes/auth/auth.routes"
 import verifyRoutes from "@/routes/auth/verify.routes"
-import resetPasswordRoutes from "@/routes/auth/resetPassword.routes"
 
 //user routes
 import userRoutes from "@/routes/user/user.routes"
@@ -46,7 +45,6 @@ app.use(cookieParser());
 //auth routes
 app.use('/api/auth', authRoutes);
 app.use('/api/auth', verifyRoutes);
-app.use('/api/auth', resetPasswordRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------user routes--------------------------------------------------*/

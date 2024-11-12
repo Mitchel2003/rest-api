@@ -35,7 +35,7 @@ export const verifyAction = async ({ body, params }: Request, res: Response): Pr
     if (!params.mode) return;
     const result = params.mode !== 'verifyEmail'
       ? await authFB.validateResetPassword(body.oobCode, body.password)
-      : await authFB.validateEmailVerification().then(() => userServiceMDB.create(body))
+      : await authFB.applyReload().then(() => userServiceMDB.create(body))
 
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, { result: result.data, authFirebase: authFB.getUser() });

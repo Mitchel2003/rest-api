@@ -1,4 +1,4 @@
-import { UserCredential } from "firebase/auth";
+import { UserCredential, User } from "firebase/auth";
 import { Result } from "@/interfaces/api.interface";
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
@@ -9,6 +9,9 @@ export interface UserCredentialsDB {
 }
 
 export interface AuthService {
+  getUser(): User | null
+  applyReload(): Promise<Result<void>>
+
   //registration
   registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>>;
   //verification

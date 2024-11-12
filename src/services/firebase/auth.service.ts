@@ -52,7 +52,7 @@ class AuthService implements IAuth {
   async registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await this.updateProfile(res.user, { displayName: username })
+      await this.updateProfile(res.user, { displayName: username, isAnonymous: true })
       return res
     }, 'crear usuario (Firebase Auth)')
   }
@@ -97,7 +97,7 @@ class AuthService implements IAuth {
   /** Actualiza el estado de verificación de correo electrónico del usuario actual. */
   async validateEmailVerification(): Promise<Result<void>> {
     if (!this.auth.currentUser) throw new NotFound({ message: 'Usuario (auth)' })
-    return await this.updateProfile(this.auth.currentUser, { emailVerified: true })
+    return await this.updateProfile(this.auth.currentUser, { isAnonymous: false })
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/

@@ -33,20 +33,12 @@ export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<vo
 export const verifyAction = async ({ body, params }: Request, res: Response): Promise<void> => {
   try {
     if (!params.mode) return;
-    //reset password
-    if (params.mode !== 'verifyEmail') {
-      const result = await authFB.validateResetPassword(body.oobCode, body.password);
-      if (!result.success) throw new ErrorAPI(result.error);
-      return send(res, 200, result.data);
-    }
-    //validate email
-    const result = await authFB.validateEmailVerification();
-    if (!result.success) throw new ErrorAPI(result.error);
+    const result = params.mode !== 'verifyEmail'
+      ? await authFB.validateResetPassword(body.oobCode, body.password)
+      : await authFB.validateEmailVerification().then(() => userServiceMDB.create(body))
 
-    //create user
-    const user = await userServiceMDB.create(body);
-    if (!user.success) throw new ErrorAPI(user.error);
-    send(res, 200, user.data);
+    if (!result.success) throw new ErrorAPI(result.error);
+    send(res, 200, { result: result.data, authFirebase: authFB.getUser() });
   } catch (e) { handlerResponse(res, e, "verificar acción") }
 }
 

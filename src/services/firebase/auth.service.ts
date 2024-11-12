@@ -30,6 +30,7 @@ class AuthService implements IAuth {
     return AuthService.instance
   }
   /*---------------> verification <---------------*/
+  getUser(): User | null { return this.auth.currentUser }
   /**
    * Verifica las credenciales del usuario.
    * @param {string} email - El email del usuario.

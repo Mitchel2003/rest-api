@@ -1,5 +1,6 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
 import { authService as authFB } from "@/services/firebase/auth.service"
+import { userService } from "@/services/mongodb/user/user.service"
 import { generateAccessToken } from "@/services/jwt"
 import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
@@ -9,6 +10,7 @@ import { Request, Response } from "express"
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
+ * @argument photoURL - Hace parte del profile del usuario autenticado (lo usamos para la verificacion de email)
  * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
  */
 export const login = async (req: Request, res: Response): Promise<void> => {
@@ -16,12 +18,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const result = await authFB.verifyCredentials(email, password);
     if (!result.success) throw new ErrorAPI(result.error);
+    if (!result.data.user.photoURL) throw new Unauthorized({ message: 'Email no verificado' });
 
-    const user = result.data.user;//user found
-    if (!user.emailVerified) throw new Unauthorized({ message: 'Email no verificado' });
-    const token = await generateAccessToken({ id: user.uid });
+    const found = await userService.find({ email });
+    if (!found.success) throw new ErrorAPI(found.error);
+
+    const userDB = found.data[0];
+    const token = await generateAccessToken({ id: userDB._id });
     setCookies(res, token);
-    send(res, 200, user);
+    send(res, 200, userDB);
   } catch (e: unknown) { handlerResponse(res, e, "iniciar sesión") }
 }
 

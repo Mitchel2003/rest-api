@@ -13,6 +13,7 @@ import {
   confirmPasswordReset,
   UserCredential,
   updateProfile,
+  UserProfile,
   getAuth,
   Auth,
   User
@@ -28,14 +29,8 @@ class AuthService implements IAuth {
     if (!AuthService.instance) { AuthService.instance = new AuthService() }
     return AuthService.instance
   }
-  /*---------------> verification <---------------*/
-  /** Retorna las credenciales (firebase) del usuario autenticado */
-  getUser(): User | null { return this.auth.currentUser }
 
-  /** Aplica un refresh a la autenticación actual para que las credenciales como emailVerified sean actualizadas */
-  async applyReload(): Promise<Result<void>> {
-    return handler(async () => await this.auth.currentUser?.reload(), 'aplicar refresh a la autenticación')
-  }
+  /*---------------> verification <---------------*/
   /**
    * Verifica las credenciales del usuario.
    * @param {string} email - El email del usuario.
@@ -46,7 +41,7 @@ class AuthService implements IAuth {
     return handler(async () => await signInWithEmailAndPassword(this.auth, email, password), 'verificar credenciales')
   }
 
-  /*---------------> registration <---------------*/
+  /*---------------> registration and update <---------------*/
   /**
    * Crea un usuario con credenciales en Firebase.
    * @param {string} username - El nombre de usuario.
@@ -57,9 +52,18 @@ class AuthService implements IAuth {
   async registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await updateProfile(res.user, { displayName: username })
+      await this.updateProfile(res.user, { displayName: username })
       return res
     }, 'crear usuario (Firebase Auth)')
+  }
+  /**
+   * Actualiza el perfil del usuario en Firebase.
+   * Los campos editables son limitados: displayName, photoURL;
+   * @param {User} user - El usuario de firebase, representa la autenticación.
+   * @param {Partial<UserProfile>} profile - El campo a actualizar.
+   */
+  async updateProfile(user: User, profile: Partial<UserProfile>): Promise<Result<void>> {
+    return handler(async () => await updateProfile(user, profile), 'actualizar perfil (Firebase Auth)')
   }
 
   /*---------------> authentication <---------------*/
@@ -91,6 +95,16 @@ class AuthService implements IAuth {
   async validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>> {
     return handler(async () => await confirmPasswordReset(this.auth, oobCode, newPassword), 'validar restablecimiento de contraseña')
   }
+  /**
+   * Actualiza el estado de verificación de correo electrónico del usuario actual.
+   * Este metodo de vericacion usa credenciales del usuario autenticado;
+   * Utilizamos photoURL para manejar el estado de verificacion de email.
+   */
+  async validateEmailVerification(): Promise<void> {
+    if (!this.auth.currentUser) throw new NotFound({ message: 'Usuario (auth)' })
+    await this.updateProfile(this.auth.currentUser, { photoURL: 'authenticated' })
+  }
+
 }
 /*---------------------------------------------------------------------------------------------------------*/
 export const authService = AuthService.getInstance()

@@ -472,7 +472,7 @@ Tenemos las siguientes situaciones
   - Eliminar el folder (path) en cuestion.
   - Subir el nuevo archivo en esa direccion.
 
-#### 005
+#### 004
   Email verification: aqui encontramos  un punto clave y es que la comprobacion de email se realiza en firebase, por tanto, en caso de que exista el email, firebase/auth se encargara de enviar el error respectivo,
 
   anteriormente presentaba errores cuando manualmente eliminaba la cuenta de firebase/auth e intentaba registrar ese correo nuevamente; el detalle es que como se halla en mi base de datos mongoDB y este es "unique" entonces obtenemos ese error.

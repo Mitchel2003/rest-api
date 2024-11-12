@@ -3,7 +3,7 @@ import { authService as authFB } from "@/services/firebase/auth.service"
 import { generateAccessToken } from "@/services/jwt"
 import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
-import ErrorAPI from "@/errors"
+import ErrorAPI, { Unauthorized } from "@/errors"
 
 import { Request, Response } from "express"
 /**
@@ -17,9 +17,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const result = await authFB.verifyCredentials(email, password);
     if (!result.success) throw new ErrorAPI(result.error);
 
-    const token = await generateAccessToken({ id: result.data.user.uid });
+    const user = result.data.user;//user found
+    if (!user.emailVerified) throw new Unauthorized({ message: 'Email no verificado' });
+    const token = await generateAccessToken({ id: user.uid });
     setCookies(res, token);
-    send(res, 200, result.data);
+    send(res, 200, user);
   } catch (e: unknown) { handlerResponse(res, e, "iniciar sesión") }
 }
 
@@ -34,7 +36,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const result = await authFB.registerAccount(username, email, password);
     if (!result.success) throw new ErrorAPI(result.error);
 
-    const sendEmail = await authFB.sendEmailVerification(email, username, role);
+    const credentials = { email, username, role };
+    const sendEmail = await authFB.sendEmailVerification(credentials);
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
 
     send(res, 200, { message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación' });

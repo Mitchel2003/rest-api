@@ -472,14 +472,6 @@ Tenemos las siguientes situaciones
   - Eliminar el folder (path) en cuestion.
   - Subir el nuevo archivo en esa direccion.
 
-#### 004
-  Dado que las credenciales del usuario previamente registrado en el database de firestore (pre-registro)
-  estan ubicadas en la siguiente ruta "gestion_salud/users/{uid}"; se nos complica el crear un usuario (mongoDB)
-  por el hecho de que no tenemos metodos para obtener la autenticacion de firestore (uid); por ello pasamos el "uid"
-  como un parametro de busqueda (userSearchParam), y es usado desde el frontend para consultar las credenciales y
-  crear este usuario en mongoDB, recuerda que (authentication user) es realizado por firebase con sus servicios de
-  resetPassword y sendEmailVerification, sin embargo, la base de datos standar es mongoDB.
-
 #### 005
   Email verification: aqui encontramos  un punto clave y es que la comprobacion de email se realiza en firebase, por tanto, en caso de que exista el email, firebase/auth se encargara de enviar el error respectivo,
 

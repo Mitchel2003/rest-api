@@ -1,13 +1,11 @@
-import { CollectionReference } from "firebase/firestore";
 import { UserCredential } from "firebase/auth";
 import { Result } from "@/interfaces/api.interface";
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
-export interface UserDatabaseFB {
-  access?: boolean;
-  email?: string;
-  username?: string;
-  role?: 'engineer' | 'admin';
+export interface UserCredentialsDB {
+  email: string;
+  username: string;
+  role: string;
 }
 
 export interface AuthService {
@@ -16,7 +14,7 @@ export interface AuthService {
   //verification
   verifyCredentials(email: string, password: string): Promise<Result<UserCredential>>
   //authentication
-  sendEmailVerification(email: string, username: string, role: string): Promise<Result<void>>
+  sendEmailVerification(user: UserCredentialsDB): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
   validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>>
 }
@@ -27,10 +25,5 @@ export interface StorageService {
   getFiles(path: string): Promise<Result<string[]>>;
   updateFile(path: string, file: File): Promise<Result<string>>;
   deleteFile(path: string): Promise<Result<void>>;
-}
-
-export interface DatabaseService {
-  registerUserCredentials(auth: UserCredential, credentials: UserDatabaseFB): Promise<Result<void>>;
-  getCollection(name: string): CollectionReference;
 }
 /*---------------------------------------------------------------------------------------------------------*/

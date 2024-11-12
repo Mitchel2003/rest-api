@@ -1,5 +1,6 @@
+import { userService as userServiceMDB } from "@/services/mongodb/user/user.service"
 import { authService as authFB } from "@/services/firebase/auth.service";
-import { userService } from "@/services/mongodb/user/user.service"
+
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
 import { handlerResponse } from "@/errors/handler";
 import ErrorAPI from "@/errors";
@@ -13,7 +14,7 @@ import { Response, Request } from "express"
  */
 export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const user = await userService.findById(req.user?.id || '');
+    const user = await userServiceMDB.findById(req.user?.id || '');
     if (!user.success) throw new ErrorAPI(user.error);
     send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "verificar token autenticación") }
@@ -25,16 +26,16 @@ export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<vo
  * @param {Request} req - Objeto de solicitud Express. Debe contener los datos de la solicitud en body y el modo de verificación en params.
  * @returns {Promise<void>} - Envía un mensaje de confirmación.
  * @example
- * "verifyEmail" => email, username y role.
+ * "verifyEmail" => uid, email, username y role.
  * "resetPassword" => oobCode y password.
- * @link https://github.com/Mitchel2003/rest-api/blob/main/README.md#005
+ * @link https://github.com/Mitchel2003/rest-api/blob/main/README.md#004
  */
 export const verifyAction = async ({ body, params }: Request, res: Response): Promise<void> => {
   try {
     if (!params.mode) return;
-    const result = params.mode === 'verifyEmail'
-      ? await userService.create({ ...body })
-      : await authFB.validateResetPassword(body.oobCode, body.password);
+    const result = params.mode !== 'verifyEmail'
+      ? await authFB.validateResetPassword(body.oobCode, body.password)
+      : await authFB.validateEmailVerification().then(() => userServiceMDB.create(body))
     //validation
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, result.data);

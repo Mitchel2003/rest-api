@@ -18,7 +18,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     if (!result.success) throw new ErrorAPI(result.error);
 
     const user = result.data.user;//user found
-    if (user.isAnonymous) throw new Unauthorized({ message: 'Email no verificado' });
+    if (!user.emailVerified) throw new Unauthorized({ message: 'Email no verificado' });
     const token = await generateAccessToken({ id: user.uid });
     setCookies(res, token);
     send(res, 200, user);

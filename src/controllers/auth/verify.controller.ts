@@ -1,9 +1,9 @@
 import { userService as userService } from "@/services/mongodb/user/user.service"
-import { authService as authFB } from "@/services/firebase/auth.service";
+import { authService as authFB } from "@/services/firebase/auth.service"
 
 import { ExtendsRequest, send } from "@/interfaces/api.interface"
-import { handlerResponse } from "@/errors/handler";
-import ErrorAPI from "@/errors";
+import { handlerResponse } from "@/errors/handler"
+import ErrorAPI from "@/errors"
 
 import { Response, Request } from "express"
 /**
@@ -14,7 +14,7 @@ import { Response, Request } from "express"
  */
 export const verifyAuth = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const user = await userService.findById(req.user?.id || '');
+    const user = await userService.findById(req.user?.id as string);
     if (!user.success) throw new ErrorAPI(user.error);
     send(res, 200, user.data);
   } catch (e) { handlerResponse(res, e, "verificar token autenticación") }

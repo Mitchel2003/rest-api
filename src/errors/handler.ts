@@ -19,8 +19,8 @@ import { Response } from 'express';
  */
 export const handlerService = async <T>(operation: () => Promise<T>, context: string): Promise<Result<T>> => {
   try {
-    const result = await operation();
-    return success(result)
+    const res = await operation();
+    return success(res)
   } catch (e: unknown) {
     const error = normalizeError(e, context);
     return failure(error)

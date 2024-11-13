@@ -10,7 +10,7 @@ class UserService extends MongoDB<User> {
     super(Repository.create(userModel))
   }
 
-  static getInstance(): UserService {
+  public static getInstance(): UserService {
     if (!UserService.instance) UserService.instance = new UserService()
     return UserService.instance;
   }

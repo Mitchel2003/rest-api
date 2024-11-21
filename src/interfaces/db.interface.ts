@@ -1,5 +1,5 @@
+import { User, UserCredential, UserProfile } from "firebase/auth";
 import { Result } from "@/interfaces/api.interface";
-import { UserCredential } from "firebase/auth";
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface UserCredentialsDB {
@@ -9,11 +9,13 @@ export interface UserCredentialsDB {
 }
 
 export interface AuthService {
-  //verification
-  verifyCredentials(email: string, password: string): Promise<Result<UserCredential>>
-  //registration and update
-  registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>>;
   //authentication
+  login(email: string, password: string): Promise<Result<UserCredential>>
+  logout(): Promise<Result<void>>
+  //create and update
+  registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>>
+  updateProfile(user: User, profile: Partial<UserProfile>): Promise<Result<void>>
+  //verification
   sendEmailVerification(user: UserCredentialsDB): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
   validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>>

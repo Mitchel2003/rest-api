@@ -14,9 +14,10 @@ import {
   UserCredential,
   updateProfile,
   UserProfile,
+  signOut,
   getAuth,
   Auth,
-  User
+  User,
 } from "firebase/auth"
 
 /*--------------------------------------------------Auth--------------------------------------------------*/
@@ -30,24 +31,28 @@ class AuthService implements IAuth {
     return AuthService.instance
   }
 
-  /*---------------> verification <---------------*/
+  /*---------------> authentication <---------------*/
   /**
-   * Verifica las credenciales del usuario.
+   * Crea una autenticación por medio de la verificación de credenciales.
    * @param {string} email - El email del usuario.
    * @param {string} password - La contraseña del usuario.
-   * @returns {Promise<Result<UserAuthFB>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
+   * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
-  async verifyCredentials(email: string, password: string): Promise<Result<UserCredential>> {
+  async login(email: string, password: string): Promise<Result<UserCredential>> {
     return handler(async () => await signInWithEmailAndPassword(this.auth, email, password), 'verificar credenciales')
   }
+  /** Permite cerrar la sessión del usuario en contexto */
+  async logout(): Promise<Result<void>> {
+    return handler(async () => await signOut(this.auth), 'cerrar sesión')
+  }
 
-  /*---------------> registration and update <---------------*/
+  /*---------------> create and update <---------------*/
   /**
    * Crea un usuario con credenciales en Firebase.
    * @param {string} username - El nombre de usuario.
    * @param {string} email - El correo del usuario.
    * @param {string} password - La contraseña del usuario.
-   * @returns {Promise<Result<UserAuthFB>>} El usuario auth de firebase creado.
+   * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
   async registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>> {
     return handler(async () => {
@@ -66,7 +71,7 @@ class AuthService implements IAuth {
     return handler(async () => await updateProfile(user, profile), 'actualizar perfil (Firebase Auth)')
   }
 
-  /*---------------> authentication <---------------*/
+  /*---------------> verification <---------------*/
   /**
    * Envia un correo de verificación de cuenta al correo suministrado por el usuario.
    * El enlace de redireccion (url) lo definimos en el metodo dado que necesitamos las credenciales del usuario a crear en mongodb.

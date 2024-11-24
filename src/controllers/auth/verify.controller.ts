@@ -34,7 +34,7 @@ export const verifyAction = async ({ body, params }: Request, res: Response): Pr
   try {
     if (!params.mode) return;
     const result = params.mode !== 'verifyEmail'
-      ? await authFB.validateResetPassword(body.oobCode, body.password)
+      ? await authFB.validateResetPassword(body.oobCode, body.newPassword)
       : await authFB.validateEmailVerification().then(() => userService.create(body))
     //send response
     if (!result.success) throw new ErrorAPI(result.error);

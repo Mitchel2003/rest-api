@@ -6,6 +6,6 @@ import app from "@/app";
 
 mongoDB()
 //healthRoute
-app.get('/api/health', (req, res) => { res.status(200).send('OK') })
+app.get('/api/health', (req, res) => { !req.params ?? res.status(200).send('OK') })
 
 app.listen(config.port, () => console.log(`Server initialized on port ${config.port}`))

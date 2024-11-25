@@ -7,6 +7,7 @@ import { send } from "@/interfaces/api.interface"
 import ErrorAPI, { Unauthorized } from "@/errors"
 
 import { Request, Response } from "express"
+import config from "@/utils/config"
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
@@ -74,8 +75,8 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 export const setCookies = (res: Response, token: string) => {
   res.cookie('token', token, {
     httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: config.nodeEnv === 'production',
+    sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 horas
   })
 }

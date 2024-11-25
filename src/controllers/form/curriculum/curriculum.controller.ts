@@ -26,7 +26,7 @@ export const getCurriculum = async ({ params }: Request, res: Response): Promise
  */
 export const getCurriculums = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const curriculums = await curriculumService.find(body.query);
+    const curriculums = await curriculumService.find(body.query || undefined, body.populate || undefined);
     if (!curriculums.success) throw new ErrorAPI(curriculums.error);
     send(res, 200, curriculums.data);
   } catch (e) { handlerResponse(res, e, "obtener los curriculums") }

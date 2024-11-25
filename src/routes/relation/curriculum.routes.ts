@@ -11,35 +11,35 @@ import { createManufacturerHeadquarter, getManufacturerHeadquarters, getManufact
 
 const router = Router();
 
-//service office routes (relation/cv)
+//service office routes (relation/cv/service-office)
 router.post('/service-office', authRequired, validateSchema(serviceOfficeSchema), createServiceOffice);
 router.get('/service-offices', authRequired, getServiceOffices);
 router.get('/service-office/:id', authRequired, getServiceOffice);
 router.put('/service-office/:id', authRequired, updateServiceOffice);
 router.delete('/service-office/:id', authRequired, deleteServiceOffice);
 
-//inspection headquarter routes (relation/cv)
+//inspection headquarter routes (relation/cv/inspection-headquarter)
 router.post('/inspection-headquarter', authRequired, validateSchema(inspectionHeadquarterSchema), createInspectionHeadquarter);
 router.get('/inspection-headquarters', authRequired, getInspectionHeadquarters);
 router.get('/inspection-headquarter/:id', authRequired, getInspectionHeadquarter);
 router.put('/inspection-headquarter/:id', authRequired, updateInspectionHeadquarter);
 router.delete('/inspection-headquarter/:id', authRequired, deleteInspectionHeadquarter);
 
-//representative headquarter routes (relation/cv)
+//representative headquarter routes (relation/cv/representative-headquarter)
 router.post('/representative-headquarter', authRequired, validateSchema(representativeHeadquarterSchema), createRepresentativeHeadquarter);
 router.get('/representative-headquarters', authRequired, getRepresentativeHeadquarters);
 router.get('/representative-headquarter/:id', authRequired, getRepresentativeHeadquarter);
 router.put('/representative-headquarter/:id', authRequired, updateRepresentativeHeadquarter);
 router.delete('/representative-headquarter/:id', authRequired, deleteRepresentativeHeadquarter);
 
-//supplier headquarter routes (relation/cv)
+//supplier headquarter routes (relation/cv/supplier-headquarter)
 router.post('/supplier-headquarter', authRequired, validateSchema(supplierHeadquarterSchema), createSupplierHeadquarter);
 router.get('/supplier-headquarters', authRequired, getSupplierHeadquarters);
 router.get('/supplier-headquarter/:id', authRequired, getSupplierHeadquarter);
 router.put('/supplier-headquarter/:id', authRequired, updateSupplierHeadquarter);
 router.delete('/supplier-headquarter/:id', authRequired, deleteSupplierHeadquarter);
 
-//manufacturer headquarter routes (relation/cv)
+//manufacturer headquarter routes (relation/cv/manufacturer-headquarter)
 router.post('/manufacturer-headquarter', authRequired, validateSchema(manufacturerHeadquarterSchema), createManufacturerHeadquarter);
 router.get('/manufacturer-headquarters', authRequired, getManufacturerHeadquarters);
 router.get('/manufacturer-headquarter/:id', authRequired, getManufacturerHeadquarter);

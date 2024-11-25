@@ -9,25 +9,25 @@ import { createPresetInspection, getPresetInspections, getPresetInspection, upda
 
 const router = Router();
 
-//inspection routes (cv/inspection)
-router.post('', authRequired, validateSchema(inspectionSchema), createInspection);
-router.get('', authRequired, getInspections);
-router.get('/:id', authRequired, getInspection);
-router.put('/:id', authRequired, updateInspection);
-router.delete('/:id', authRequired, deleteInspection);
+//inspection routes (form/cv/inspection)
+router.post('/inspection', authRequired, validateSchema(inspectionSchema), createInspection);
+router.get('/inspections', authRequired, getInspections);
+router.get('/inspection/:id', authRequired, getInspection);
+router.put('/inspection/:id', authRequired, updateInspection);
+router.delete('/inspection/:id', authRequired, deleteInspection);
 
-//type inspection routes (cv/inspection/type)
-router.post('/type', authRequired, validateSchema(typeInspectionSchema), createTypeInspection);
-router.get('/types', authRequired, getTypeInspections);
-router.get('/type/:id', authRequired, getTypeInspection);
-router.put('/type/:id', authRequired, updateTypeInspection);
-router.delete('/type/:id', authRequired, deleteTypeInspection);
+//type inspection routes (form/cv/inspection/type)
+router.post('/inspection/type', authRequired, validateSchema(typeInspectionSchema), createTypeInspection);
+router.get('/inspection/types', authRequired, getTypeInspections);
+router.get('/inspection/type/:id', authRequired, getTypeInspection);
+router.put('/inspection/type/:id', authRequired, updateTypeInspection);
+router.delete('/inspection/type/:id', authRequired, deleteTypeInspection);
 
-//preset inspection routes (cv/inspection/preset)
-router.post('/preset', authRequired, validateSchema(presetInspectionSchema), createPresetInspection);
-router.get('/presets', authRequired, getPresetInspections);
-router.get('/preset/:id', authRequired, getPresetInspection);
-router.put('/preset/:id', authRequired, updatePresetInspection);
-router.delete('/preset/:id', authRequired, deletePresetInspection);
+//preset inspection routes (form/cv/inspection/preset)
+router.post('/inspection/preset', authRequired, validateSchema(presetInspectionSchema), createPresetInspection);
+router.get('/inspection/presets', authRequired, getPresetInspections);
+router.get('/inspection/preset/:id', authRequired, getPresetInspection);
+router.put('/inspection/preset/:id', authRequired, updatePresetInspection);
+router.delete('/inspection/preset/:id', authRequired, deletePresetInspection);
 
 export default router;

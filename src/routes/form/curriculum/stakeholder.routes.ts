@@ -9,25 +9,25 @@ import { createSupplier, getSuppliers, getSupplier, updateSupplier, deleteSuppli
 
 const router = Router();
 
-//representative routes
-router.post('/representative', authRequired, validateSchema(representativeSchema), createRepresentative);
-router.get('/representatives', authRequired, getRepresentatives);
-router.get('/representative/:id', authRequired, getRepresentative);
-router.put('/representative/:id', authRequired, updateRepresentative);
-router.delete('/representative/:id', authRequired, deleteRepresentative);
+//representative routes (form/cv/stakeholder/representative)
+router.post('/stakeholder/representative', authRequired, validateSchema(representativeSchema), createRepresentative);
+router.get('/stakeholder/representatives', authRequired, getRepresentatives);
+router.get('/stakeholder/representative/:id', authRequired, getRepresentative);
+router.put('/stakeholder/representative/:id', authRequired, updateRepresentative);
+router.delete('/stakeholder/representative/:id', authRequired, deleteRepresentative);
 
-//supplier routes
-router.post('/supplier', authRequired, validateSchema(supplierSchema), createSupplier);
-router.get('/suppliers', authRequired, getSuppliers);
-router.get('/supplier/:id', authRequired, getSupplier);
-router.put('/supplier/:id', authRequired, updateSupplier);
-router.delete('/supplier/:id', authRequired, deleteSupplier);
+//supplier routes (form/cv/stakeholder/supplier)
+router.post('/stakeholder/supplier', authRequired, validateSchema(supplierSchema), createSupplier);
+router.get('/stakeholder/suppliers', authRequired, getSuppliers);
+router.get('/stakeholder/supplier/:id', authRequired, getSupplier);
+router.put('/stakeholder/supplier/:id', authRequired, updateSupplier);
+router.delete('/stakeholder/supplier/:id', authRequired, deleteSupplier);
 
-//manufacturer routes
-router.post('/manufacturer', authRequired, validateSchema(manufacturerSchema), createManufacturer);
-router.get('/manufacturers', authRequired, getManufacturers);
-router.get('/manufacturer/:id', authRequired, getManufacturer);
-router.put('/manufacturer/:id', authRequired, updateManufacturer);
-router.delete('/manufacturer/:id', authRequired, deleteManufacturer);
+//manufacturer routes (form/cv/stakeholder/manufacturer)
+router.post('/stakeholder/manufacturer', authRequired, validateSchema(manufacturerSchema), createManufacturer);
+router.get('/stakeholder/manufacturers', authRequired, getManufacturers);
+router.get('/stakeholder/manufacturer/:id', authRequired, getManufacturer);
+router.put('/stakeholder/manufacturer/:id', authRequired, updateManufacturer);
+router.delete('/stakeholder/manufacturer/:id', authRequired, deleteManufacturer);
 
 export default router; 

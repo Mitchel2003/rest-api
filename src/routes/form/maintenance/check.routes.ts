@@ -7,7 +7,7 @@ import { createCheck, getChecks, getCheck, updateCheck, deleteCheck } from "@/co
 
 const router = Router();
 
-//check routes (maintenance/check)
+//check routes (form/maintenance/check)
 router.post('/check', authRequired, validateSchema(checkSchema), createCheck);
 router.get('/checks', authRequired, getChecks);
 router.get('/check/:id', authRequired, getCheck);

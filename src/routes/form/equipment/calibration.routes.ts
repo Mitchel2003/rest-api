@@ -7,11 +7,11 @@ import { createCalibration, getCalibrations, getCalibration, updateCalibration, 
 
 const router = Router();
 
-//calibration routes (equipment/calibration)
-router.post('/calibration', authRequired, validateSchema(calibrationSchema), createCalibration);
-router.get('/calibrations', authRequired, getCalibrations);
-router.get('/calibration/:id', authRequired, getCalibration);
-router.put('/calibration/:id', authRequired, updateCalibration);
-router.delete('/calibration/:id', authRequired, deleteCalibration);
+//calibration routes (form/equipment/calibration)
+router.post('/equipment/calibration', authRequired, validateSchema(calibrationSchema), createCalibration);
+router.get('/equipment/calibrations', authRequired, getCalibrations);
+router.get('/equipment/calibration/:id', authRequired, getCalibration);
+router.put('/equipment/calibration/:id', authRequired, updateCalibration);
+router.delete('/equipment/calibration/:id', authRequired, deleteCalibration);
 
 export default router;

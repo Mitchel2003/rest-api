@@ -7,11 +7,11 @@ import { createEquipment, getEquipments, getEquipment, updateEquipment, deleteEq
 
 const router = Router();
 
-//equipment routes (equipment)
-router.post('', authRequired, validateSchema(equipmentSchema), createEquipment);
-router.get('', authRequired, getEquipments);
-router.get('/:id', authRequired, getEquipment);
-router.put('/:id', authRequired, updateEquipment);
-router.delete('/:id', authRequired, deleteEquipment);
+//equipment routes (form/equipment)
+router.post('/equipment', authRequired, validateSchema(equipmentSchema), createEquipment);
+router.get('/equipments', authRequired, getEquipments);
+router.get('/equipment/:id', authRequired, getEquipment);
+router.put('/equipment/:id', authRequired, updateEquipment);
+router.delete('/equipment/:id', authRequired, deleteEquipment);
 
 export default router; 

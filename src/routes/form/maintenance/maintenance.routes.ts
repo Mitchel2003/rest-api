@@ -7,11 +7,11 @@ import { createMaintenance, getMaintenances, getMaintenance, updateMaintenance, 
 
 const router = Router();
 
-//maintenance routes (maintenance)
-router.post('', authRequired, validateSchema(maintenanceSchema), createMaintenance);
-router.get('', authRequired, getMaintenances);
-router.get('/:id', authRequired, getMaintenance);
-router.put('/:id', authRequired, updateMaintenance);
-router.delete('/:id', authRequired, deleteMaintenance);
+//maintenance routes (form/maintenance)
+router.post('/maintenance', authRequired, validateSchema(maintenanceSchema), createMaintenance);
+router.get('/maintenances', authRequired, getMaintenances);
+router.get('/maintenance/:id', authRequired, getMaintenance);
+router.put('/maintenance/:id', authRequired, updateMaintenance);
+router.delete('/maintenance/:id', authRequired, deleteMaintenance);
 
 export default router; 

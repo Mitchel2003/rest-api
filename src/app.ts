@@ -63,17 +63,17 @@ app.use('/api', clientRoutes);
 
 /*--------------------------------------------------form routes--------------------------------------------------*/
 //form curriculum routes
-app.use('/api/form/cv', curriculumRoutes);
-app.use('/api/form/cv/inspection', inspectionRoutes);
-app.use('/api/form/cv/stakeholder', stakeholderRoutes);
+app.use('/api/form', curriculumRoutes);
+app.use('/api/form/cv', inspectionRoutes);
+app.use('/api/form/cv', stakeholderRoutes);
 
 //form equipment routes
-app.use('/api/form/equipment', equipmentRoutes);
-app.use('/api/form/equipment', calibrationRoutes);
-app.use('/api/form/equipment', reminderRoutes);
+app.use('/api/form', equipmentRoutes);
+app.use('/api/form', calibrationRoutes);
+app.use('/api/form', reminderRoutes);
 
 //form maintenance routes
-app.use('/api/form/maintenance', maintenanceRoutes);
+app.use('/api/form', maintenanceRoutes);
 app.use('/api/form/maintenance', checkRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 

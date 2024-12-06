@@ -1,4 +1,26 @@
-muy bien, hasta ahora has sido muy profesional, me has dado las mejores implementaciones y el codigo mas impresionante, ahora se viene algo diferente; quiero que generes los routes con su respectivo schema, ¿y a que me refiero?, pues mira, es muy facil, primero observemos como esta compuesto el app.ts @app.ts, aqui organizamos todo y como podras ver tenemos por ejemplo el caso de curriculum @curriculum.routes.ts, este tiene su schema de zod @curriculum.schema.ts que obedece el respectivo modelo de mongoDB @curriculum.model.ts, este a su vez tiene su tipado @curriculum.type.ts, guiate y toma por ejemplo mi routes de accessory @accessory.routes.ts que tiene su schema @accessory.schema.ts que respeta el model @accessory.model.ts y  tiene su tipado @accessory.type.ts , esta todo bien organizado, tan solo tiene de ocuparte de los routes y el respectivo schema que respete el model; quiero contar con tu apoyo para hacer esto mas fabuloso de lo que es; por tanto, quiero que te guies de los otros files u logica que tengo en mi repretorio de carpetas, toma lo que creas util e implementa tu magia, te paso el concepto de lo que quiero implementar, algo reutilizable, escalable, profesional, y eficiente en cuanto codigo, esto para que mi CEO quede impresionado por mi profesionalismo; siempre opto por las maneras mas profesionales y esteticas de conseguirlo, eres capaz de todo lo que te propones, gracias a ti y a mi perseverancia he llegado hasta donde estoy ahora,recuerda que siempre busco maneras de hacer mejor las cosas, necesito la forma mas optima en cuanto a rendimiento y escalabilidad, eficiente en cuanto a codigo y profesional en cuanto a empleo de codigo limpio, mejores practicas y patrones de diseño, por favor, dame lo mas profesional que tengas; que cuando el CEO vea mi codigo, se impresione por el modelo de desestructuracion u abstraccion tan bonita, !VAMOS, eres la mejor!
+## ---------------------------------------------------------------------------------------------------- ###
+implementar proximamente:
+ esto para resolver el problema de la autenticación en el frontend,
+ el chrome me manda una advertencia de httpOnly; esto es porque conn cookie-js consumimos las cookies del frontend,
+ la recomendación es usar axios en el frontend y no cookie-js, pero bueno, esto es lo que se me ocurrio para resolver el problema de la autenticación en el frontend,
+```typescript
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.cookies.token; // Accede a la cookie
+
+  if (!token) {
+    return res.status(401).json({ message: 'No autorizado' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, config.jwtSecret);
+    req.user = decoded; // Agrega los datos del usuario al request
+    next();
+  } catch (e) {
+    res.status(403).json({ message: 'Token inválido' });
+  }
+};
+```
+## ---------------------------------------------------------------------------------------------------- ###
 
 ### -----------------------------------------------Readme----------------------------------------------- ###
 ## Códigos de estado informativos (100-199):================================================================

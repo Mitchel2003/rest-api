@@ -3,7 +3,7 @@ import { Router, Request, Response } from "express"
 const router = Router()
 
 const getHealth = (req: Request, res: Response) => {
-  if (req.params.id) console.log('params inecesary')
+  if (req.params.id) console.log('params inecesaries')
   res.status(200).send('ok')
 }
 

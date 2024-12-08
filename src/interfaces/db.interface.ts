@@ -1,25 +1,18 @@
-import { User, UserCredential, UserProfile } from "firebase/auth";
+import { User as UserCredentials } from "user/user.type";
 import { Result } from "@/interfaces/api.interface";
+import { User, UserInfo } from "firebase/auth";
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
-export interface UserCredentialsDB {
-  email: string;
-  username: string;
-  role: string;
-}
-
 export interface AuthService {
-  //authentication
-  login(email: string, password: string): Promise<Result<UserCredential>>
+  /*-----------------> authentication <-----------------*/
+  login(email: string, password: string): Promise<Result<User>>
   logout(): Promise<Result<void>>
-  //create and update
-  registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>>
-  updateProfile(user: User, profile: Partial<UserProfile>): Promise<Result<void>>
-  //verification
-  sendEmailVerification(user: UserCredentialsDB): Promise<Result<void>>
+  /*-----------------> create and update <-----------------*/
+  registerAccount(credentials: UserCredentials & { password: string }): Promise<Result<User>>
+  updateProfile(user: User, profile: Partial<UserInfo>): Promise<Result<void>>
+  /*-----------------> verification <-----------------*/
+  sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
-  validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>>
-  validateEmailVerification(): Promise<void>
 }
 
 export interface StorageService {

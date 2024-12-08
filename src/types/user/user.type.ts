@@ -3,7 +3,7 @@ import { Document } from "mongoose";
 export interface User extends Document {
   email: string;
   username: string;
-  permissions: Permissions;
+  permissions?: Permissions;
   role: 'engineer' | 'admin';
 
   createdAt?: Date;
@@ -14,6 +14,7 @@ export interface Permissions {
   overwrite: { read: boolean; create: boolean; update: boolean; delete: boolean };
   headquarters: string[];
 }
+
 export const Overwrite = {
   read: { type: Boolean, default: false },
   create: { type: Boolean, default: false },

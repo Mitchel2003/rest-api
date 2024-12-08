@@ -1,23 +1,21 @@
-import { AuthService as IAuth, UserCredentialsDB } from "@/interfaces/db.interface"
+import { AuthService as IAuth } from "@/interfaces/db.interface"
 import { handlerService as handler } from "@/errors/handler"
+import { User as UserCredentials } from "user/user.type"
 import { Result } from "@/interfaces/api.interface"
-import config from "@/utils/config"
-import { firebaseApp } from "@/db"
 import { NotFound } from "@/errors"
+import { firebaseApp } from "@/db"
 
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
-  confirmPasswordReset,
-  UserCredential,
   updateProfile,
-  UserProfile,
-  signOut,
+  UserInfo,
   getAuth,
+  signOut,
   Auth,
-  User,
+  User
 } from "firebase/auth"
 
 /*--------------------------------------------------Auth--------------------------------------------------*/
@@ -36,10 +34,10 @@ class AuthService implements IAuth {
    * Crea una autenticación por medio de la verificación de credenciales.
    * @param {string} email - El email del usuario.
    * @param {string} password - La contraseña del usuario.
-   * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
+   * @returns {Promise<Result<User>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
-  async login(email: string, password: string): Promise<Result<UserCredential>> {
-    return handler(async () => await signInWithEmailAndPassword(this.auth, email, password), 'verificar credenciales')
+  async login(email: string, password: string): Promise<Result<User>> {
+    return handler(async () => (await signInWithEmailAndPassword(this.auth, email, password)).user, 'verificar credenciales')
   }
   /** Permite cerrar la sessión del usuario en contexto */
   async logout(): Promise<Result<void>> {
@@ -49,67 +47,47 @@ class AuthService implements IAuth {
   /*---------------> create and update <---------------*/
   /**
    * Crea un usuario con credenciales en Firebase.
-   * @param {string} username - El nombre de usuario.
-   * @param {string} email - El correo del usuario.
-   * @param {string} password - La contraseña del usuario.
+   * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario.
    * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
-  async registerAccount(username: string, email: string, password: string): Promise<Result<UserCredential>> {
+  async registerAccount({ email, password, username, role }: UserCredentials & { password: string }): Promise<Result<User>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await this.updateProfile(res.user, { displayName: username })
-      return res
+      await this.updateProfile(res.user, { displayName: username, photoURL: role })
+      return res.user
     }, 'crear usuario (Firebase Auth)')
   }
   /**
    * Actualiza el perfil del usuario en Firebase.
    * Los campos editables son limitados: displayName, photoURL;
    * @param {User} user - El usuario de firebase, representa la autenticación.
-   * @param {Partial<UserProfile>} profile - El campo a actualizar.
+   * @param {Partial<UserInfo>} profile - El campo a actualizar, suele ser un object con los atributos.
+   * @returns {Promise<Result<void>>} - Ejecuta la peticion y retorna un state (sucess or failure).
    */
-  async updateProfile(user: User, profile: Partial<UserProfile>): Promise<Result<void>> {
+  async updateProfile(user: User, profile: Partial<UserInfo>): Promise<Result<void>> {
     return handler(async () => await updateProfile(user, profile), 'actualizar perfil (Firebase Auth)')
   }
 
   /*---------------> verification <---------------*/
   /**
-   * Envia un correo de verificación de cuenta al correo suministrado por el usuario.
-   * El enlace de redireccion (url) lo definimos en el metodo dado que necesitamos las credenciales del usuario a crear en mongodb.
-   * @param {UserCredentialsDB} user - Credenciales del usuario.
+   * Envia un correo de verificación de cuenta al correo en contexto de authetication.
+   * @returns {Promise<Result<void>>} - Ejecuta la peticion y retorna un state (sucess or failure).
    */
-  async sendEmailVerification({ email, username, role }: UserCredentialsDB): Promise<Result<void>> {
+  async sendEmailVerification(): Promise<Result<void>> {
     return handler(async () => {
       if (!this.auth.currentUser) throw new NotFound({ message: 'Usuario (auth)' })
-      const url = `${config.frontendUrl}/auth/verify-action/email=${email}&username=${username}&role=${role}`
-      await sendEmailVerification(this.auth.currentUser, { url })
+      await sendEmailVerification(this.auth.currentUser)
     }, 'enviar correo de verificación')
   }
   /**
    * Envia un correo de restablecimiento de contraseña al correo suministrado por el usuario.
    * Enlace de redireccion esta definido en el archivo de configuracion de firebase (templates).
    * @param {string} email - El email del usuario.
+   * @returns {Promise<Result<void>>} - Ejecuta la peticion y retorna un state (sucess or failure).
    */
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
     return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')
   }
-  /**
-   * Actualiza la contraseña del usuario mediante un token de restablecimiento (oobCode) generado por firebase.
-   * @param {string} oobCode - El token de restablecimiento de contraseña.
-   * @param {string} newPassword - La contraseña de la solicitud de restablecimiento (forgot password).
-   */
-  async validateResetPassword(oobCode: string, newPassword: string): Promise<Result<void>> {
-    return handler(async () => await confirmPasswordReset(this.auth, oobCode, newPassword), 'validar restablecimiento de contraseña')
-  }
-  /**
-   * Actualiza el estado de verificación de correo electrónico del usuario actual.
-   * Este metodo de vericacion usa credenciales del usuario autenticado;
-   * Utilizamos photoURL para manejar el estado de verificacion de email.
-   */
-  async validateEmailVerification(): Promise<void> {
-    if (!this.auth.currentUser) throw new NotFound({ message: 'Usuario (auth)' })
-    await this.updateProfile(this.auth.currentUser, { photoURL: 'authenticated' })
-  }
-
 }
 /*---------------------------------------------------------------------------------------------------------*/
 export const authService = AuthService.getInstance()

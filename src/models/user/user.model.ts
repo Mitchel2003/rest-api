@@ -25,7 +25,7 @@ const userSchema: Schema<User> = new Schema({
     trim: true
   },
   permissions: {
-    required: true,
+    required: false,
     type: permissionsSchema,
     default: () => ({
       overwrite: { read: true, create: false, update: false, delete: false },

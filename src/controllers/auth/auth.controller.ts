@@ -8,6 +8,8 @@ import ErrorAPI, { Unauthorized } from "@/errors"
 
 import { Request, Response } from "express"
 import config from "@/utils/config"
+
+/*--------------------------------------------------controllers--------------------------------------------------*/
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
@@ -17,12 +19,13 @@ import config from "@/utils/config"
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
-    const result = await authFB.login(email, password);
-    if (!result.success) throw new ErrorAPI(result.error);
-    if (!result.data.user.photoURL) throw new Unauthorized({ message: 'Email no verificado' });
+    const auth = await authFB.login(email, password);
+    if (!auth.success) throw new ErrorAPI(auth.error);
+    if (!auth.data.emailVerified) throw new Unauthorized({ message: 'Email no verificado' });
 
     const found = await userService.find({ email });
     if (!found.success) throw new ErrorAPI(found.error);
+    if (found.data.length === 0) userService.create({ email, role: auth.data.photoURL, username: auth.data.displayName } as any);
 
     const userDB = found.data[0];
     const token = await generateAccessToken({ id: userDB._id });
@@ -37,14 +40,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  */
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password, username, role } = req.body;
-    const result = await authFB.registerAccount(username, email, password);
+    const result = await authFB.registerAccount(req.body);
     if (!result.success) throw new ErrorAPI(result.error);
 
-    const credentials = { email, username, role };
-    const sendEmail = await authFB.sendEmailVerification(credentials);
+    const sendEmail = await authFB.sendEmailVerification();
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
-
     send(res, 200, { message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación' });
   } catch (e: unknown) { handlerResponse(res, e, "registrarse") }
 }

@@ -13,4 +13,4 @@ router.get('/states', authRequired, getStates)
 router.put('/state/:id', authRequired, updateState)
 router.delete('/state/:id', authRequired, deleteState)
 
-export default router //on checking
+export default router

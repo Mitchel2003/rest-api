@@ -13,4 +13,4 @@ router.get('/countries', authRequired, getCountries)
 router.put('/country/:id', authRequired, updateCountry)
 router.delete('/country/:id', authRequired, deleteCountry)
 
-export default router //this works
+export default router

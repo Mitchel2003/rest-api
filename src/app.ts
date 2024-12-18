@@ -37,6 +37,7 @@ import maintenanceRelationRoutes from "@/routes/relation/maintenance.routes";
 import countryRoutes from "@/routes/location/country.routes"
 import stateRoutes from "@/routes/location/state.routes"
 import cityRoutes from "@/routes/location/city.routes"
+import headquarterRoutes from "@/routes/location/headquarter.routes"
 
 //config express
 const app = express();
@@ -89,6 +90,7 @@ app.use('/api/relation/maintenance', maintenanceRelationRoutes);
 app.use('/api/location', countryRoutes);
 app.use('/api/location', stateRoutes);
 app.use('/api/location', cityRoutes);
+app.use('/api/location', headquarterRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 export default app;

@@ -19,5 +19,5 @@ export const registerSchema = z.object({
     .string({ required_error: "La contraseña es requerida" })
     .min(6, { message: "La contraseña es demasiado corta" }),
   role: z
-    .enum(['admin', 'engineer'], { required_error: "El rol es requerido" })
+    .enum(['admin', 'engineer', 'medical'], { required_error: "El rol es requerido" })
 })

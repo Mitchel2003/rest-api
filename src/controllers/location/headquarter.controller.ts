@@ -11,7 +11,7 @@ import { Request, Response } from "express"
  * @param {Request} req - Objeto de solicitud Express. Se espera que contenga el ID de la sede en params.id.
  * @returns {Promise<void>} - Envía el sede encontrado o un mensaje de error.
  */
-export const getheadquarter = async ({ params }: Request, res: Response): Promise<void> => {
+export const getHeadquarter = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const headquarter = await headquarterService.findById(params.id);
     if (!headquarter.success) throw new ErrorAPI(headquarter.error);
@@ -24,7 +24,7 @@ export const getheadquarter = async ({ params }: Request, res: Response): Promis
  * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
  * @returns {Promise<void>} - Envía un objeto con las sedes.
  */
-export const getheadquarters = async ({ body }: Request, res: Response): Promise<void> => {
+export const getHeadquarters = async ({ body }: Request, res: Response): Promise<void> => {
   try {
     const headquarters = await headquarterService.find(body.query, body.populate);
     if (!headquarters.success) throw new ErrorAPI(headquarters.error);
@@ -37,7 +37,7 @@ export const getheadquarters = async ({ body }: Request, res: Response): Promise
  * @param {Request} req - Objeto de solicitud Express. Se espera que contenga los datos de la sede en el body. 
  * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
  */
-export const createheadquarter = async (req: Request, res: Response): Promise<void> => {
+export const createHeadquarter = async (req: Request, res: Response): Promise<void> => {
   try {
     const headquarter = await headquarterService.create(req.body);
     if (!headquarter.success) throw new ErrorAPI(headquarter.error);
@@ -50,7 +50,7 @@ export const createheadquarter = async (req: Request, res: Response): Promise<vo
  * @param {Request} req - Objeto de solicitud Express. Debe contener el ID de la sede en params.id y los datos actualizados en el body.
  * @returns {Promise<void>} - Envía la sede actualizada o un mensaje de error.
  */
-export const updateheadquarter = async ({ params, body }: Request, res: Response): Promise<void> => {
+export const updateHeadquarter = async ({ params, body }: Request, res: Response): Promise<void> => {
   try {
     const headquarter = await headquarterService.update(params.id, body);
     if (!headquarter.success) throw new ErrorAPI(headquarter.error);
@@ -63,7 +63,7 @@ export const updateheadquarter = async ({ params, body }: Request, res: Response
  * @param {Request} req - Objeto de solicitud Express. Debe contener el ID de la sede a eliminar en params.id.
  * @returns {Promise<void>} - Envía un mensaje de confirmación o error.
  */
-export const deleteheadquarter = async ({ params }: Request, res: Response): Promise<void> => {
+export const deleteHeadquarter = async ({ params }: Request, res: Response): Promise<void> => {
   try {
     const headquarter = await headquarterService.delete(params.id);
     if (!headquarter.success) throw new ErrorAPI(headquarter.error);

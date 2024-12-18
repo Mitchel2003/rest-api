@@ -12,7 +12,8 @@ class MongoDBRepository {
       /** Permite crear un nuevo registro en la base de datos */
       create: async (data: T) => {
         const instance = new model(data);
-        return await instance.save() as Doc<T>;
+        const doc = await instance.save();
+        return doc.toObject() as Doc<T>;
       },
       /** Permite buscar todos los registros en la base de datos, parametro opcional para filtrar los registros */
       find: async (query?: Query, populate?: string) => {

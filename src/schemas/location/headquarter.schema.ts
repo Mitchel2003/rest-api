@@ -1,0 +1,16 @@
+import { z } from "zod";
+
+const headquarterSchema = z.object({
+  name: z
+    .string({ required_error: "Nombre de sede requerido" })
+    .min(3, { message: "Nombre de sede debe tener al menos 3 caracteres" }),
+  address: z
+    .string({ required_error: "Dirección de sede requerida" })
+    .min(3, { message: "Dirección de sede debe tener al menos 3 caracteres" }),
+  city: z
+    .string({ required_error: "Ciudad de sede requerida" }),
+  client: z
+    .string({ required_error: "Cliente de sede requerido" }),
+})
+
+export default headquarterSchema

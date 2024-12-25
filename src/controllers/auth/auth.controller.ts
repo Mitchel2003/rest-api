@@ -46,7 +46,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const sendEmail = await authFB.sendEmailVerification();
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
-    send(res, 200, { message: 'Usuario registrado exitosamente, se ha enviado un correo de verificación' });
+    send(res, 200, result.data);
   } catch (e: unknown) { handlerResponse(res, e, "registrarse") }
 }
 /**

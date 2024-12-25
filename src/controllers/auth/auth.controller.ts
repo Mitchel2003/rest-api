@@ -29,6 +29,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     if (!found.success) throw new ErrorAPI(found.error);
     if (found.data.length === 0) userService.create(credentials(auth.data));
 
+    if(found.data.length > 0) return send(res, 200, found.data);
+
     const userDB = Array.isArray(found.data) ? found.data[0] : found.data;
     const token = await generateAccessToken({ id: userDB._id });
     setCookies(res, token);

@@ -59,11 +59,7 @@ class AuthService implements IAuth {
   async registerAccount({ email, password, username, role, permissions }: UserCredentials & { password: string }): Promise<Result<User>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await this.updateProfile(res.user, {
-        photoURL: role,
-        displayName: username,
-        phoneNumber: permissions?.headquarters.join(',') || ''
-      })
+      await this.updateProfile(res.user, { displayName: username, photoURL: `${role},${JSON.stringify(permissions?.headquarters || [])}` })
       return res.user
     }, 'crear usuario (Firebase Auth)')
   }

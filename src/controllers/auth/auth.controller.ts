@@ -29,9 +29,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     if (!found.success) throw new ErrorAPI(found.error);
     if (found.data.length === 0) userService.create(credentials(auth.data));
 
-    if(found.data.length > 0) send(res, 200, found.data); //lets see the data, usually is an array, but maybe is an object
-    
-    const userDB = found.data[0];
+    const userDB = Array.isArray(found.data) ? found.data[0] : found.data;
     const token = await generateAccessToken({ id: userDB._id });
     setCookies(res, token);
     send(res, 200, userDB);
@@ -86,8 +84,11 @@ export const setCookies = (res: Response, token: string) => {
 }
 
 /**
- * Nos permite construir las credenciales del usuario (mongoDB)
+ * Nos permite construir las credenciales del usuario (mongoDB).
  * @param {User} auth - El usuario de firebase, representa la autenticación.
+ * @argument photoURL - El string de photoURL es un string que contiene el rol y las sedes,
+ * su estructura es la siguiente:
+ * @example "engineer;headquarters1,headquarters2,headquarters3"
  * @returns {any} - Retornar las credenciales del usuario en el formato standar (model mongoDB)
  */
 const credentials = (auth: User): any => {

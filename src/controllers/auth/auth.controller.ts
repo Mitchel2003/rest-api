@@ -7,6 +7,7 @@ import { send } from "@/interfaces/api.interface"
 import ErrorAPI, { Unauthorized } from "@/errors"
 
 import { Request, Response } from "express"
+import { User } from "firebase/auth"
 import config from "@/utils/config"
 
 /*--------------------------------------------------controllers--------------------------------------------------*/
@@ -25,7 +26,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const found = await userService.find({ email });
     if (!found.success) throw new ErrorAPI(found.error);
-    if (found.data.length === 0) userService.create({ email, role: auth.data.photoURL, username: auth.data.displayName } as any);
+    if (found.data.length === 0) userService.create(credentials(email, auth.data));
 
     const userDB = found.data[0];
     const token = await generateAccessToken({ id: userDB._id });
@@ -79,5 +80,23 @@ export const setCookies = (res: Response, token: string) => {
     sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 horas
   })
+}
+
+/**
+ * Nos permite construir las credenciales del usuario (mongoDB)
+ * @param {string} email - El email del usuario.
+ * @param {User} auth - El usuario de firebase, representa la autenticación.
+ * @returns {any} - Retornar las credenciales del usuario en el formato standar (model mongoDB)
+ */
+const credentials = (email: string, auth: User): any => {//working here...
+  return {
+    email,
+    role: auth.photoURL,
+    username: auth.displayName,
+    permissions: auth.phoneNumber ? {
+      headquarters: auth.phoneNumber.split(','),
+      overwrite: { read: true, create: false, update: false, delete: false }
+    } : undefined
+  } as any
 }
 /*---------------------------------------------------------------------------------------------------------*/

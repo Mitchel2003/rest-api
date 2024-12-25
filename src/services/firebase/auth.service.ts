@@ -47,13 +47,23 @@ class AuthService implements IAuth {
   /*---------------> create and update <---------------*/
   /**
    * Crea un usuario con credenciales en Firebase.
-   * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario.
+   * usamos propiedades del usuario (UserInfo) para guardar el perfil,
+   * mas adelante podemos crear el perfil en la base de datos (mongoDB)
+   * @example
+   * phoneNumber: para guardar las sedes asociadas al usuario
+   * displayName: para guardar el nombre del usuario
+   * photoURL: para guardar el rol del usuario
+   * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario (form register)
    * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
-  async registerAccount({ email, password, username, role }: UserCredentials & { password: string }): Promise<Result<User>> {
+  async registerAccount({ email, password, username, role, permissions }: UserCredentials & { password: string }): Promise<Result<User>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await this.updateProfile(res.user, { displayName: username, photoURL: role })
+      await this.updateProfile(res.user, {
+        photoURL: role,
+        displayName: username,
+        phoneNumber: permissions?.headquarters.join(',') || ''
+      })
       return res.user
     }, 'crear usuario (Firebase Auth)')
   }

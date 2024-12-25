@@ -1,18 +1,18 @@
 import { Document } from "mongoose";
 
+export interface Permissions {
+  overwrite: { read: boolean; create: boolean; update: boolean; delete: boolean };
+  headquarters: string[];
+}
+
 export interface User extends Document {
   email: string;
   username: string;
   permissions?: Permissions;
-  role: 'engineer' | 'admin';
+  role: 'engineer' | 'admin' | 'medical';
 
   createdAt?: Date;
   updatedAt?: Date;
-}
-
-export interface Permissions {
-  overwrite: { read: boolean; create: boolean; update: boolean; delete: boolean };
-  headquarters: string[];
 }
 
 export const Overwrite = {

@@ -1,6 +1,6 @@
 import { User, Permissions, Overwrite } from "@/types/user/user.type";
-import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
+import configSchema from "@/utils/schema";
 
 //structuring permissions
 const permissionsSchema: Schema<Permissions> = new Schema({
@@ -35,8 +35,8 @@ const userSchema: Schema<User> = new Schema({
   role: {
     type: String,
     required: true,
-    default: 'engineer',
-    enum: ['engineer', 'admin']
+    default: 'medical',
+    enum: ['admin', 'engineer', 'medical']
   }
 }, configSchema);
 

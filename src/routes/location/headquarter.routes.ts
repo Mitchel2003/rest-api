@@ -9,7 +9,7 @@ const router = Router()
 
 router.post('/headquarter', authRequired, validateSchema(headquarterSchema), createHeadquarter)
 router.get('/headquarter/:id', authRequired, getHeadquarter)
-router.get('/headquarters', authRequired, getHeadquarters)
+router.get('/headquarters', getHeadquarters)//without authRequired to user-register form
 router.put('/headquarter/:id', authRequired, updateHeadquarter)
 router.delete('/headquarter/:id', authRequired, deleteHeadquarter)
 

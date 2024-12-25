@@ -1,6 +1,6 @@
+import { RegisterAccountProps } from "@/interfaces/props.interface"
 import { AuthService as IAuth } from "@/interfaces/db.interface"
 import { handlerService as handler } from "@/errors/handler"
-import { User as UserCredentials } from "user/user.type"
 import { Result } from "@/interfaces/api.interface"
 import { NotFound } from "@/errors"
 import { firebaseApp } from "@/db"
@@ -56,10 +56,10 @@ class AuthService implements IAuth {
    * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario (form register)
    * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
-  async registerAccount({ email, password, username, role, permissions }: UserCredentials & { password: string }): Promise<Result<User>> {
+  async registerAccount({ email, password, username, role, headquarters }: RegisterAccountProps): Promise<Result<User>> {
     return handler(async () => {
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await this.updateProfile(res.user, { displayName: username, photoURL: `${role},${JSON.stringify(permissions?.headquarters || [])}` })
+      await this.updateProfile(res.user, { displayName: username, photoURL: `${role};${headquarters.join(',')}` })
       return res.user
     }, 'crear usuario (Firebase Auth)')
   }

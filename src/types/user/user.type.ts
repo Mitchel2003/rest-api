@@ -21,3 +21,9 @@ export const Overwrite = {
   update: { type: Boolean, default: false },
   delete: { type: Boolean, default: false }
 }
+export const DefaultOverwrite = {
+  read: true,
+  create: false,
+  update: false,
+  delete: false
+}

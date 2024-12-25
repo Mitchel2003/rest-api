@@ -1,4 +1,4 @@
-import { User as UserCredentials } from "user/user.type";
+import { RegisterAccountProps } from "@/interfaces/props.interface";
 import { Result } from "@/interfaces/api.interface";
 import { User, UserInfo } from "firebase/auth";
 
@@ -8,7 +8,7 @@ export interface AuthService {
   login(email: string, password: string): Promise<Result<User>>
   logout(): Promise<Result<void>>
   /*-----------------> create and update <-----------------*/
-  registerAccount(credentials: UserCredentials & { password: string }): Promise<Result<User>>
+  registerAccount(credentials: RegisterAccountProps): Promise<Result<User>>
   updateProfile(user: User, profile: Partial<UserInfo>): Promise<Result<void>>
   /*-----------------> verification <-----------------*/
   sendEmailVerification(): Promise<Result<void>>

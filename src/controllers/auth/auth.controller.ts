@@ -1,6 +1,7 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
 import { authService as authFB } from "@/services/firebase/auth.service"
 import { userService } from "@/services/mongodb/user/user.service"
+import { DefaultOverwrite } from "@/types/user/user.type"
 import { generateAccessToken } from "@/services/jwt"
 import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
@@ -88,14 +89,16 @@ export const setCookies = (res: Response, token: string) => {
  * @returns {any} - Retornar las credenciales del usuario en el formato standar (model mongoDB)
  */
 const credentials = (auth: User): any => {
+  const [role, headquarters] = auth.photoURL?.split(';') || []
+  const array = headquarters ? headquarters.split(',') : []
+
   return {
+    role,
     email: auth.email,
-    role: auth.photoURL,
     username: auth.displayName,
-    permissions: auth.phoneNumber ? {
-      headquarters: auth.phoneNumber.split(','),
-      overwrite: { read: true, create: false, update: false, delete: false }
-    } : undefined
+    permissions: array.length > 0
+      ? { headquarters: array, overwrite: DefaultOverwrite }
+      : undefined
   } as any
 }
 /*---------------------------------------------------------------------------------------------------------*/

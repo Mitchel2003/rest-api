@@ -25,16 +25,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     if (!auth.success) throw new ErrorAPI(auth.error);
     if (!auth.data.emailVerified) throw new Unauthorized({ message: 'Email no verificado' });
 
-    const found = await userService.find({ email });
-    if (!found.success) throw new ErrorAPI(found.error);
-    if (found.data.length === 0) userService.create(credentials(auth.data));
-
-    if(found.data.length > 0) return send(res, 200, found.data);
-
-    const userDB = Array.isArray(found.data) ? found.data[0] : found.data;
-    const token = await generateAccessToken({ id: userDB._id });
+    const user = await getUserCredentials(auth.data);
+    const token = await generateAccessToken({ id: user._id });
     setCookies(res, token);
-    send(res, 200, userDB);
+    send(res, 200, user);
   } catch (e: unknown) { handlerResponse(res, e, "iniciar sesión") }
 }
 /**
@@ -54,14 +48,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 }
 /**
  * Maneja el proceso de cierre de sesión del usuario.
+ * tenemos metodos de verificacion como token 'jwt' o auth 'firebase'
  * @param {Request} req - Objeto de solicitud Express.
  * @returns {Response<any>} - Envía una respuesta de éxito.
  */
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.cookies.token) return send(res, 200, { message: 'Cierre de sesión exitoso' });
-
-    //cerrar sesión en firebase y eliminar cookie
     const result = await authFB.logout();
     if (!result.success) throw new ErrorAPI(result.error);
     res.cookie('token', '', { expires: new Date(0) });
@@ -83,6 +76,24 @@ export const setCookies = (res: Response, token: string) => {
     sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 horas
   })
+}
+
+/**
+ * Nos ayuda a formalizar los datos del usuario (mongoDB),
+ * recuerda que el usuario ya existe en firebase (auth).
+ * Esta función nos permite buscar un usuario existente
+ * o en su defecto crear uno nuevo basado en los datos (auth).
+ * @param auth - Datos de autenticación de Firebase
+ * @returns Promise con los datos del usuario
+ */
+const getUserCredentials = async (auth: User): Promise<any> => {
+  const found = await userService.find({ email: auth.email })
+  if (!found.success) throw new ErrorAPI(found.error)
+  if (found.data.length > 0) return found.data[0]
+
+  const result = await userService.create(credentials(auth))
+  if (!result.success) throw new ErrorAPI(result.error)
+  return result.data
 }
 
 /**

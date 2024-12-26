@@ -2,20 +2,18 @@
 import { authService as authFB } from "@/services/firebase/auth.service"
 import { userService } from "@/services/mongodb/user/user.service"
 import { DefaultOverwrite } from "@/types/user/user.type"
-import { generateAccessToken } from "@/services/jwt"
 import { handlerResponse } from "@/errors/handler"
 import { send } from "@/interfaces/api.interface"
 import ErrorAPI, { Unauthorized } from "@/errors"
 
 import { Request, Response } from "express"
 import { User } from "firebase/auth"
-import config from "@/utils/config"
 
 /*--------------------------------------------------controllers--------------------------------------------------*/
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
- * @argument photoURL - Hace parte del profile del usuario autenticado (lo usamos para la verificacion de email)
+ * @argument emailVerified - Hace parte del profile del usuario autenticado (lo usamos para la verificacion de email)
  * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
  */
 export const login = async (req: Request, res: Response): Promise<void> => {
@@ -24,10 +22,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const auth = await authFB.login(email, password);
     if (!auth.success) throw new ErrorAPI(auth.error);
     if (!auth.data.emailVerified) throw new Unauthorized({ message: 'Email no verificado' });
-
     const user = await getUserCredentials(auth.data);
-    const token = await generateAccessToken({ id: user._id });
-    setCookies(res, token);
     send(res, 200, user);
   } catch (e: unknown) { handlerResponse(res, e, "iniciar sesión") }
 }
@@ -54,30 +49,29 @@ export const register = async (req: Request, res: Response): Promise<void> => {
  */
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
-    if (!req.cookies.token) return send(res, 200, { message: 'Cierre de sesión exitoso' });
+    if (req.cookies.token) res.clearCookie('token');
     const result = await authFB.logout();
     if (!result.success) throw new ErrorAPI(result.error);
-    res.cookie('token', '', { expires: new Date(0) });
     send(res, 200, { message: 'Cierre de sesión exitoso' });
   } catch (e: unknown) { handlerResponse(res, e, "cerrar sesión") }
+}
+/**
+ * Maneja el proceso de restablecimiento de contraseña.
+ * Establece un token de restablecimiento de contraseña para el usuario
+ * Envia un email con el token de restablecimiento de contraseña el cual expirará en 1 hora.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el email en el body.
+ * @returns {Promise<void>} - Envía un mensaje de éxito si el email se envía correctamente.
+ */
+export const forgotPassword = async ({ body }: Request, res: Response): Promise<void> => {
+  try {
+    const result = await authFB.sendEmailResetPassword(body.email);
+    if (!result.success) throw new ErrorAPI(result.error);
+    send(res, 200, 'Email enviado correctamente');
+  } catch (e) { handlerResponse(res, e, "enviar email de restablecimiento de contraseña") }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------tools--------------------------------------------------*/
-/**
- * Establece las cookies de autenticación en la respuesta HTTP.
- * @param {Response} res - Objeto de respuesta Express.
- * @param {string} token - Token de autenticación a establecer en las cookies.
- */
-export const setCookies = (res: Response, token: string) => {
-  res.cookie('token', token, {
-    httpOnly: false,
-    secure: config.nodeEnv === 'production',
-    sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
-    maxAge: 24 * 60 * 60 * 1000 // 24 horas
-  })
-}
-
 /**
  * Nos ayuda a formalizar los datos del usuario (mongoDB),
  * recuerda que el usuario ya existe en firebase (auth).

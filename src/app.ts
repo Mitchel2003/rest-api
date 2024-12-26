@@ -1,14 +1,10 @@
-import cookieParser from "cookie-parser"
 import config from "@/utils/config"
 import express from "express"
 import cors from "cors"
 
-//health routes
+//auth and health routes
 import healthRoutes from "@/routes/auth/health.routes"
-
-//auth routes
 import authRoutes from "@/routes/auth/auth.routes"
-import verifyRoutes from "@/routes/auth/verify.routes"
 
 //user routes
 import userRoutes from "@/routes/user/user.routes"
@@ -43,17 +39,11 @@ import headquarterRoutes from "@/routes/location/headquarter.routes"
 const app = express();
 app.use(cors({ origin: config.frontendUrl, credentials: true }));
 app.use(express.json());
-app.use(cookieParser());
 
-/*--------------------------------------------------health routes--------------------------------------------------*/
+/*--------------------------------------------------health and auth routes--------------------------------------------------*/
 //to auto-refresh and uptime server
 app.use('/api', healthRoutes);
-/*---------------------------------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------auth routes--------------------------------------------------*/
-//auth routes
 app.use('/api/auth', authRoutes);
-app.use('/api/auth', verifyRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------user routes--------------------------------------------------*/

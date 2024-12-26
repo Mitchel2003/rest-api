@@ -1,12 +1,19 @@
+import { authService as authFB } from "@/services/firebase/auth.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface";
-import { verifyAccessToken } from "@/services/jwt";
 import { NextFunction, Response } from "express";
+import { User } from "firebase/auth";
 
 const authRequired = async (req: ExtendsRequest, res: Response, next: NextFunction) => {
-  const access = await verifyAccessToken(req.cookies.token);
-  if ('error' in access) return send(res, 401, access.error);
-  req.user = access;
-  next();
+  authFB.observeAuth((user: User | null) => {
+    if (!user) return send(res, 401, 'Unauthorized')
+    req.user = mapAuth(user)
+    next()
+  })
 }
+
+const mapAuth = (fbUser: User) => ({
+  id: fbUser.uid,
+  email: fbUser.email || ''
+})
 
 export default authRequired

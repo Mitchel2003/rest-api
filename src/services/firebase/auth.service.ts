@@ -10,15 +10,19 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
+  onAuthStateChanged,
   updateProfile,
   UserInfo,
   getAuth,
   signOut,
   Auth,
-  User
+  User,
 } from "firebase/auth"
 
-/*--------------------------------------------------Auth--------------------------------------------------*/
+/**
+ * Consist on a class that works above an instance auth
+ * Have various functions like observer, verification or overwrite data
+ */
 class AuthService implements IAuth {
   private static instance: AuthService
   private readonly auth: Auth
@@ -31,6 +35,14 @@ class AuthService implements IAuth {
 
   /*---------------> authentication <---------------*/
   /**
+   * Es un observador que ejecuta un callback cuando el estado de la sesion cambia.
+   * @param {(user: User | null) => void} callback - Accion a desencadenar tras el cambio en el estado del usuario
+   */
+  observeAuth(callback: (user: User | null) => void) {
+    onAuthStateChanged(this.auth, callback)
+  }
+
+  /**
    * Crea una autenticación por medio de la verificación de credenciales.
    * @param {string} email - El email del usuario.
    * @param {string} password - La contraseña del usuario.
@@ -39,20 +51,21 @@ class AuthService implements IAuth {
   async login(email: string, password: string): Promise<Result<User>> {
     return handler(async () => (await signInWithEmailAndPassword(this.auth, email, password)).user, 'verificar credenciales')
   }
-  /** Permite cerrar la sessión del usuario en contexto */
+
+  /**
+   * Permite cerrar la sessión del usuario en contexto
+   * @returns {Promise<Result<void>>} - Retorna un mensaje de éxito si la sesión se cierra correctamente.
+   */
   async logout(): Promise<Result<void>> {
     return handler(async () => await signOut(this.auth), 'cerrar sesión')
   }
+  /*----------------------------------------------------*/
 
   /*---------------> create and update <---------------*/
   /**
    * Crea un usuario con credenciales en Firebase.
    * usamos propiedades del usuario (UserInfo) para guardar el perfil,
    * mas adelante podemos crear el perfil en la base de datos (mongoDB)
-   * @example
-   * phoneNumber: para guardar las sedes asociadas al usuario
-   * displayName: para guardar el nombre del usuario
-   * photoURL: para guardar el rol del usuario
    * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario (form register)
    * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
@@ -73,6 +86,7 @@ class AuthService implements IAuth {
   async updateProfile(user: User, profile: Partial<UserInfo>): Promise<Result<void>> {
     return handler(async () => await updateProfile(user, profile), 'actualizar perfil (Firebase Auth)')
   }
+  /*----------------------------------------------------*/
 
   /*---------------> verification <---------------*/
   /**

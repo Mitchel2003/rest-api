@@ -21,3 +21,9 @@ export const registerSchema = z.object({
   role: z
     .enum(['admin', 'engineer', 'medical'], { required_error: "El rol es requerido" })
 })
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string({ required_error: "El correo electrónico es requerido" })
+    .email({ message: "Correo electrónico inválido" }),
+})

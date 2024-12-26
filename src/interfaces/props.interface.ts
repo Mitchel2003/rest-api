@@ -1,10 +1,9 @@
-import { JwtPayload } from "jsonwebtoken";
-
-/*--------------------------------------------------Dependencies--------------------------------------------------*/
-export interface CredentialsJWT extends JwtPayload { id?: string, error?: string }
-/*---------------------------------------------------------------------------------------------------------*/
-
 /*--------------------------------------------------Firebase--------------------------------------------------*/
+export interface Metadata {
+  name: string
+  url: string
+}
+
 export interface RegisterAccountProps {
   role: string;
   email: string;

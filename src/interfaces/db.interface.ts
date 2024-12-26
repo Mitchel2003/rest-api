@@ -5,7 +5,7 @@ import { User, UserInfo } from "firebase/auth";
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface AuthService {
   /*-----------------> authentication <-----------------*/
-  observeAuth(callback: (user: User | null) => void): void
+  observeAuth(): void
   login(email: string, password: string): Promise<Result<User>>
   logout(): Promise<Result<void>>
   /*-----------------> create and update <-----------------*/

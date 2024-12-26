@@ -25,8 +25,9 @@ import {
  * Have various functions like observer, verification or overwrite data
  */
 class AuthService implements IAuth {
-  private static instance: AuthService
   private readonly auth: Auth
+  private user: User | null = null
+  private static instance: AuthService
   private constructor() { this.auth = getAuth(firebaseApp) }
 
   public static getInstance(): AuthService {
@@ -34,15 +35,16 @@ class AuthService implements IAuth {
     return AuthService.instance
   }
 
+  /** Retorna el usuario actual */
+  public getUser(): User | null { return this.user }
   /*---------------> authentication <---------------*/
   /**
-   * Es un observador que ejecuta un callback cuando el estado de la sesion cambia.
-   * @param {(user: User | null) => void} callback - Accion a desencadenar tras el cambio en el estado del usuario
+   * Permite observar el estado de la sesión del usuario.
+   * @returns {void} - Al ejecutar la función, se observa el estado de la sesión del usuario.
    */
-  observeAuth(callback: (user: User | null) => void) {
-    onAuthStateChanged(this.auth, callback)
+  observeAuth(): void {
+    onAuthStateChanged(this.auth, (user) => this.user = user)
   }
-
   /**
    * Crea una autenticación por medio de la verificación de credenciales.
    * @param {string} email - El email del usuario.
@@ -52,7 +54,6 @@ class AuthService implements IAuth {
   async login(email: string, password: string): Promise<Result<User>> {
     return handler(async () => (await signInWithEmailAndPassword(this.auth, email, password)).user, 'verificar credenciales')
   }
-
   /**
    * Permite cerrar la sessión del usuario en contexto
    * @returns {Promise<Result<void>>} - Retorna un mensaje de éxito si la sesión se cierra correctamente.

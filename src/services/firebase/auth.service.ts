@@ -4,6 +4,7 @@ import { handlerService as handler } from "@/errors/handler"
 import { Result } from "@/interfaces/api.interface"
 import { NotFound } from "@/errors"
 import { firebaseApp } from "@/db"
+import admin from "firebase-admin"
 
 import {
   createUserWithEmailAndPassword,
@@ -107,6 +108,17 @@ class AuthService implements IAuth {
    */
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
     return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')
+  }
+  /**
+   * Verifica un token de autenticación.
+   * @param {string} token - El token a verificar.
+   * @returns {Promise<Result<any>>} - Retorna el token decodificado si es válido, o un error si no lo es.
+   */
+  async verifyToken(token: string): Promise<Result<any>> {
+    return handler(async () => {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      return decodedToken;
+    }, 'verificar token de ID');
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/

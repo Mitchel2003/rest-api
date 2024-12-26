@@ -14,6 +14,7 @@ export interface AuthService {
   /*-----------------> verification <-----------------*/
   sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
+  verifyToken(token: string): Promise<Result<any>>
 }
 
 export interface StorageService {

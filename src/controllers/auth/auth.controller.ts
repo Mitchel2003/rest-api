@@ -49,10 +49,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
  */
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
-    if (req.cookies.token) res.cookie('token', '', { maxAge: 0 });
     const result = await authFB.logout();
     if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, { message: 'Cierre de sesión exitoso' });
+    send(res, 200, req.headers.authorization);
   } catch (e: unknown) { handlerResponse(res, e, "cerrar sesión") }
 }
 /*---------------------------------------------------------------------------------------------------------*/

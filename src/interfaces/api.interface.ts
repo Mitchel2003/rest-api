@@ -4,15 +4,15 @@ import { User } from "firebase/auth"
 /*--------------- request ---------------*/
 export interface ExtendsRequest extends Request {
   user?: {
+    role?: string,
     email?: string,
-    photoURL?: string,
     username?: string,
     emailVerified?: boolean,
   }
 }
 export const mapAuth = (decodedToken: User): ExtendsRequest['user'] => ({
   email: decodedToken.email || '',
-  photoURL: decodedToken.photoURL || '',
+  role: decodedToken.photoURL || '',
   username: decodedToken.displayName || '',
   emailVerified: decodedToken.emailVerified,
 })

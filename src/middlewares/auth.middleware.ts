@@ -6,7 +6,7 @@ const authRequired = async (req: ExtendsRequest, res: Response, next: NextFuncti
   const authenticate = authFB.getAuthState()
   if (!authenticate) return send(res, 401, 'Usuario no autenticado')
   req.user = mapAuth(authenticate)
-  next();
+  next()
 }
 
 export default authRequired

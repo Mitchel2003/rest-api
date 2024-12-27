@@ -120,9 +120,7 @@ const credentials = (auth: User): any => {
     role,
     email: auth.email,
     username: auth.displayName,
-    permissions: array.length > 0
-      ? { headquarters: array, overwrite: DefaultOverwrite }
-      : undefined
+    permissions: array.length > 0 ? { headquarters: array, overwrite: DefaultOverwrite } : undefined
   } as any
 }
 /*---------------------------------------------------------------------------------------------------------*/

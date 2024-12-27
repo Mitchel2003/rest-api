@@ -58,6 +58,7 @@ class AuthService implements IAuth {
    * Crea un usuario con credenciales en Firebase.
    * usamos propiedades del usuario (UserInfo) para guardar el perfil,
    * mas adelante podemos crear el perfil en la base de datos (mongoDB)
+   * @argument photoURL - example: 'admin;sede_1,sede_2,sede_3,sede_4'
    * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario (form register)
    * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */

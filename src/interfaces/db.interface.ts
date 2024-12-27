@@ -5,16 +5,17 @@ import { User, UserInfo } from "firebase/auth";
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface AuthService {
   /*-----------------> authentication <-----------------*/
-  observeAuth(): void
   login(email: string, password: string): Promise<Result<User>>
   logout(): Promise<Result<void>>
   /*-----------------> create and update <-----------------*/
   registerAccount(credentials: RegisterAccountProps): Promise<Result<User>>
   updateProfile(user: User, profile: Partial<UserInfo>): Promise<Result<void>>
-  /*-----------------> verification <-----------------*/
+  /*-----------------> actions requests <-----------------*/
   sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
-  verifyToken(token: string): Promise<Result<any>>
+  /*-----------------> verification <-----------------*/
+  getAuthState(): User | null
+  observeAuth(): void
 }
 
 export interface StorageService {

@@ -1,7 +1,21 @@
 import { Request, Response } from "express"
+import { User } from "firebase/auth"
 
 /*--------------- request ---------------*/
-export interface ExtendsRequest extends Request { user?: { id?: string, email?: string } }
+export interface ExtendsRequest extends Request {
+  user?: {
+    email?: string,
+    photoURL?: string,
+    username?: string,
+    emailVerified?: boolean,
+  }
+}
+export const mapAuth = (decodedToken: User): ExtendsRequest['user'] => ({
+  email: decodedToken.email || '',
+  photoURL: decodedToken.photoURL || '',
+  username: decodedToken.displayName || '',
+  emailVerified: decodedToken.emailVerified,
+})
 
 /*--------------- response ---------------*/
 export type Error = string

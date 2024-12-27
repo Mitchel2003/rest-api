@@ -1,17 +1,6 @@
 import { initializeApp } from "firebase/app";
-import mongoose from "mongoose";
-import admin from "firebase-admin";
 import config from "@/utils/config";
-
-const serviceAccount: admin.ServiceAccount = {
-  projectId: config.firebaseConfig.projectId,
-  privateKey: config.privateKey
-}
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${config.firebaseConfig.projectId}.firebaseio.com`
-})
+import mongoose from "mongoose";
 
 export const mongoDB = async () => {
   try {

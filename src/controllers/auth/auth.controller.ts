@@ -3,13 +3,13 @@ import { authService as authFB } from "@/services/firebase/auth.service"
 import { userService } from "@/services/mongodb/user/user.service"
 import { DefaultOverwrite } from "@/types/user/user.type"
 import { handlerResponse } from "@/errors/handler"
-import { send } from "@/interfaces/api.interface"
 import ErrorAPI, { Unauthorized } from "@/errors"
+import { send } from "@/interfaces/api.interface"
 
 import { Request, Response } from "express"
 import { User } from "firebase/auth"
 
-/*--------------------------------------------------controllers--------------------------------------------------*/
+/*--------------------------------------------------auth--------------------------------------------------*/
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
@@ -55,6 +55,9 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     send(res, 200, { message: 'Cierre de sesión exitoso' });
   } catch (e: unknown) { handlerResponse(res, e, "cerrar sesión") }
 }
+/*---------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------verify--------------------------------------------------*/
 /**
  * Maneja el proceso de restablecimiento de contraseña.
  * Establece un token de restablecimiento de contraseña para el usuario
@@ -68,6 +71,19 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, 'Email enviado correctamente');
   } catch (e) { handlerResponse(res, e, "enviar email de restablecimiento de contraseña") }
+}
+/**
+ * Nos permite obtener el estado de la autenticación del usuario.
+ * @param {Request} req - Objeto de solicitud Express.
+ * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
+ */
+export const getOnAuth = async (req: Request, res: Response): Promise<void> => {
+  try {
+    authFB.observeAuth()
+    const user = authFB.getAuthState()
+    req.headers.authorization = `Bearer ${user?.email}`
+    send(res, 200, user)
+  } catch (e) { handlerResponse(res, e, "obtener usuario") }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
@@ -89,7 +105,6 @@ const getUserCredentials = async (auth: User): Promise<any> => {
   if (!result.success) throw new ErrorAPI(result.error)
   return result.data
 }
-
 /**
  * Nos permite construir las credenciales del usuario (mongoDB).
  * @param {User} auth - El usuario de firebase, representa la autenticación.

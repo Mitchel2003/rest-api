@@ -4,7 +4,6 @@ import { handlerService as handler } from "@/errors/handler"
 import { Result } from "@/interfaces/api.interface"
 import { NotFound } from "@/errors"
 import { firebaseApp } from "@/db"
-import admin from "firebase-admin"
 
 import {
   createUserWithEmailAndPassword,
@@ -17,7 +16,7 @@ import {
   getAuth,
   signOut,
   Auth,
-  User,
+  User
 } from "firebase/auth"
 
 /**
@@ -26,7 +25,7 @@ import {
  */
 class AuthService implements IAuth {
   private readonly auth: Auth
-  private user: User | null = null
+  private static user: User | null = null
   private static instance: AuthService
   private constructor() { this.auth = getAuth(firebaseApp) }
 
@@ -35,16 +34,7 @@ class AuthService implements IAuth {
     return AuthService.instance
   }
 
-  /** Retorna el usuario actual */
-  public getUser(): User | null { return this.user }
   /*---------------> authentication <---------------*/
-  /**
-   * Permite observar el estado de la sesión del usuario.
-   * @returns {void} - Al ejecutar la función, se observa el estado de la sesión del usuario.
-   */
-  observeAuth(): void {
-    onAuthStateChanged(this.auth, (user) => this.user = user)
-  }
   /**
    * Crea una autenticación por medio de la verificación de credenciales.
    * @param {string} email - El email del usuario.
@@ -90,7 +80,7 @@ class AuthService implements IAuth {
   }
   /*----------------------------------------------------*/
 
-  /*---------------> verification <---------------*/
+  /*---------------> actions requests <---------------*/
   /**
    * Envia un correo de verificación de cuenta al correo en contexto de authetication.
    * @returns {Promise<Result<void>>} - Ejecuta la peticion y retorna un state (sucess or failure).
@@ -110,17 +100,13 @@ class AuthService implements IAuth {
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
     return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')
   }
-  /**
-   * Verifica un token de autenticación.
-   * @param {string} token - El token a verificar.
-   * @returns {Promise<Result<any>>} - Retorna el token decodificado si es válido, o un error si no lo es.
-   */
-  async verifyToken(token: string): Promise<Result<any>> {
-    return handler(async () => {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      return decodedToken;
-    }, 'verificar token de ID');
-  }
+  /*----------------------------------------------------*/
+
+  /*---------------> verification <---------------*/
+  /** Obtiene el estado de autenticación del usuario */
+  getAuthState(): User | null { return AuthService.user }
+  /** Permite observar el estado de la sesión del usuario */
+  observeAuth(): void { onAuthStateChanged(this.auth, (user) => AuthService.user = user) }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 export const authService = AuthService.getInstance()

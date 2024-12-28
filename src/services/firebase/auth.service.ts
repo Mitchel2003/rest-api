@@ -36,6 +36,12 @@ class AuthService implements IAuth {
 
   /*---------------> authentication <---------------*/
   /**
+   * Obtiene el estado de autenticación del usuario
+   * consiste en un observador que se ejecuta cada vez que el usuario se autentica o desconecta
+   * @returns {User | null} - Retorna el usuario si esta autenticado, o null si no lo esta.
+   */
+  onAuth(): User | null { onAuthStateChanged(this.auth, (user) => AuthService.user = user); return AuthService.user }
+  /**
    * Crea una autenticación por medio de la verificación de credenciales.
    * @param {string} email - El email del usuario.
    * @param {string} password - La contraseña del usuario.
@@ -101,13 +107,6 @@ class AuthService implements IAuth {
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
     return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')
   }
-  /*----------------------------------------------------*/
-
-  /*---------------> verification <---------------*/
-  /** Obtiene el estado de autenticación del usuario */
-  getAuthState(): User | null { return AuthService.user }
-  /** Permite observar el estado de la sesión del usuario */
-  observeAuth(): void { onAuthStateChanged(this.auth, (user) => AuthService.user = user) }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 export const authService = AuthService.getInstance()

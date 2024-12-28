@@ -58,15 +58,21 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 
 /*--------------------------------------------------verify--------------------------------------------------*/
 /**
- * Nos permite obtener el estado de la autenticación del usuario.
+ * Ayuda a recuperar las userCredencials (mongoDB) de un usuario autenticado (firebase)
+ * Nos permite obtener el estado de la autenticación del usuario arrojando el "uid"
+ * con el cual podemos buscar las userCredencials (mongoDB)
  * @param {Request} req - Objeto de solicitud Express.
+ * @argument req.headers.authorization - Procuramos usar el "req" para evitar errores de (never read)
  * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
  */
 export const getOnAuth = async (req: Request, res: Response): Promise<void> => {
   try {
-    authFB.observeAuth();
-    const user = authFB.getAuthState();
-    req.headers.authorization = `Bearer ${user?.email}`; send(res, 200, user);
+    const result = authFB.onAuth();
+    if (!result) return send(res, 200, result);
+    const user = await userService.find({ uid: result.uid });
+    if (!user.success) throw new ErrorAPI(user.error);
+    req.headers.authorization = `Bearer ${user.data[0].uid}`;
+    send(res, 200, user.data[0]);
   } catch (e) { handlerResponse(res, e, "obtener estado de usuario") }
 }
 /**

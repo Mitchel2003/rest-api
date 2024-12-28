@@ -5,6 +5,7 @@ import { User, UserInfo } from "firebase/auth";
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface AuthService {
   /*-----------------> authentication <-----------------*/
+  onAuth(): User | null
   login(email: string, password: string): Promise<Result<User>>
   logout(): Promise<Result<void>>
   /*-----------------> create and update <-----------------*/
@@ -13,9 +14,6 @@ export interface AuthService {
   /*-----------------> actions requests <-----------------*/
   sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
-  /*-----------------> verification <-----------------*/
-  getAuthState(): User | null
-  observeAuth(): void
 }
 
 export interface StorageService {

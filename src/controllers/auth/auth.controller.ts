@@ -1,20 +1,20 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
+import { DefaultOverwrite, User as UserMDB } from "@/types/user/user.type"
 import { authService as authFB } from "@/services/firebase/auth.service"
 import { userService } from "@/services/mongodb/user/user.service"
-import { DefaultOverwrite } from "@/types/user/user.type"
 import { handlerResponse } from "@/errors/handler"
 import ErrorAPI, { Unauthorized } from "@/errors"
 import { send } from "@/interfaces/api.interface"
 
+import { User as UserFB } from "firebase/auth"
 import { Request, Response } from "express"
-import { User } from "firebase/auth"
 
 /*--------------------------------------------------auth--------------------------------------------------*/
 /**
  * Maneja el proceso de inicio de sesión del usuario.
  * @param {Request} req - Objeto de solicitud Express. Debe contener email y password en el body.
  * @argument emailVerified - Hace parte del profile del usuario autenticado (lo usamos para la verificacion de email)
- * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
+ * @returns {Promise<void>} - Envía el usuario autenticado (UserMDB) o un mensaje de error.
  */
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -58,6 +58,18 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
 
 /*--------------------------------------------------verify--------------------------------------------------*/
 /**
+ * Nos permite obtener el estado de la autenticación del usuario.
+ * @param {Request} req - Objeto de solicitud Express.
+ * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
+ */
+export const getOnAuth = async (req: Request, res: Response): Promise<void> => {
+  try {
+    authFB.observeAuth();
+    const user = authFB.getAuthState();
+    req.headers.authorization = `Bearer ${user?.email}`; send(res, 200, user);
+  } catch (e) { handlerResponse(res, e, "obtener estado de usuario") }
+}
+/**
  * Maneja el proceso de restablecimiento de contraseña.
  * Establece un token de restablecimiento de contraseña para el usuario
  * Envia un email con el token de restablecimiento de contraseña el cual expirará en 1 hora.
@@ -71,19 +83,6 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
     send(res, 200, 'Email enviado correctamente');
   } catch (e) { handlerResponse(res, e, "enviar email de restablecimiento de contraseña") }
 }
-/**
- * Nos permite obtener el estado de la autenticación del usuario.
- * @param {Request} req - Objeto de solicitud Express.
- * @returns {Promise<void>} - Envía el usuario autenticado o un mensaje de error.
- */
-export const getOnAuth = async (req: Request, res: Response): Promise<void> => {
-  try {
-    authFB.observeAuth()
-    const user = authFB.getAuthState()
-    req.headers.authorization = `Bearer ${user?.email}`
-    send(res, 200, user)
-  } catch (e) { handlerResponse(res, e, "obtener usuario") }
-}
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------tools--------------------------------------------------*/
@@ -95,8 +94,8 @@ export const getOnAuth = async (req: Request, res: Response): Promise<void> => {
  * @param auth - Datos de autenticación de Firebase
  * @returns Promise con los datos del usuario
  */
-const getUserCredentials = async (auth: User): Promise<any> => {
-  const found = await userService.find({ email: auth.email })
+const getUserCredentials = async (auth: UserFB): Promise<UserMDB> => {
+  const found = await userService.find({ uid: auth.uid })
   if (!found.success) throw new ErrorAPI(found.error)
   if (found.data.length > 0) return found.data[0]
 
@@ -106,21 +105,21 @@ const getUserCredentials = async (auth: User): Promise<any> => {
 }
 /**
  * Nos permite construir las credenciales del usuario (mongoDB).
- * @param {User} auth - El usuario de firebase, representa la autenticación.
- * @argument photoURL - El string de photoURL es un string que contiene el rol y las sedes,
- * su estructura es la siguiente:
+ * @param {UserFB} auth - El usuario de firebase, representa la autenticación.
+ * @argument photoURL - Es un string que contiene el rol y las sedes, su estructura es la siguiente:
  * @example "engineer;headquarters1,headquarters2,headquarters3"
  * @returns {any} - Retornar las credenciales del usuario en el formato standar (model mongoDB)
  */
-const credentials = (auth: User): any => {
+const credentials = (auth: UserFB): UserMDB => {
   const [role, headquarters] = auth.photoURL?.split(';') || []
   const array = headquarters ? headquarters.split(',') : []
 
   return {
     role,
+    uid: auth.uid,
     email: auth.email,
     username: auth.displayName,
     permissions: array.length > 0 ? { headquarters: array, overwrite: DefaultOverwrite } : undefined
-  } as any
+  } as UserMDB
 }
 /*---------------------------------------------------------------------------------------------------------*/

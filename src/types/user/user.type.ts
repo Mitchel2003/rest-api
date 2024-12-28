@@ -6,6 +6,7 @@ export interface Permissions {
 }
 
 export interface User extends Document {
+  uid: string; //uid de firebase
   email: string;
   username: string;
   permissions?: Permissions;

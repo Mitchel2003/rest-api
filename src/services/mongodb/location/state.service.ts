@@ -1,10 +1,9 @@
+import { Doc, Query, Populate } from "@/types/repository.type";
 import Repository from "@/repositories/mongodb.repository";
-import { Query, Populate } from "@/types/repository.type";
 import MongoDB from "@/services/mongodb/mongodb.service";
 import stateModel from "@/models/location/state.model";
 import { State } from "@/types/location/state.type";
 import { Result } from "@/interfaces/api.interface";
-import { Doc } from "@/types/repository.type";
 
 class StateService extends MongoDB<State> {
   private static instance: StateService;

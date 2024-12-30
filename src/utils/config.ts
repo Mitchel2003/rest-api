@@ -4,7 +4,8 @@ dotenv.config()
 export default {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || "development",
-  frontendUrl: process.env.FRONTEND_URL as string,
+  depUrl: process.env.PRODUCTION_URL as string,
+  devUrl: process.env.DEVELOPMENT_URL as string,
   privateKey: process.env.PRIVATE_KEY as string,
   mongodbUri: process.env.MONGODB_URI as string,
   //firebase config

@@ -36,8 +36,9 @@ import cityRoutes from "@/routes/location/city.routes"
 import headquarterRoutes from "@/routes/location/headquarter.routes"
 
 //config express
+const origin = config.nodeEnv === 'production' ? config.depUrl : config.devUrl
 const app = express();
-app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(cors({ origin, credentials: true }));
 app.use(express.json());
 
 /*--------------------------------------------------health and auth routes--------------------------------------------------*/

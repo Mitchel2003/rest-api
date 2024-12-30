@@ -1,10 +1,10 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { DefaultOverwrite, User as UserMDB } from "@/types/user/user.type"
-import { authService as authFB } from "@/services/firebase/auth.service"
-import { userService } from "@/services/mongodb/user/user.service"
-import { handlerResponse } from "@/errors/handler"
-import ErrorAPI, { Unauthorized } from "@/errors"
-import { send } from "@/interfaces/api.interface"
+import { DefaultOverwrite, User as UserMDB } from "@/types/user/user.type";
+import { authService as authFB } from "@/services/firebase/auth.service";
+import { userService } from "@/services/mongodb/user/user.service";
+import { handlerResponse } from "@/errors/handler";
+import ErrorAPI, { Unauthorized } from "@/errors";
+import { send } from "@/interfaces/api.interface";
 
 import { User as UserFB } from "firebase/auth"
 import { Request, Response } from "express"

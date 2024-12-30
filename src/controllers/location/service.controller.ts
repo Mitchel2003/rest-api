@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar servicios */
 import { servService } from "@/services/mongodb/location/serv.service";
 import { handlerResponse } from "@/errors/handler";
-import { send } from "@/interfaces/api.interface"
+import { send } from "@/interfaces/api.interface";
 import ErrorAPI from "@/errors";
 
 import { Request, Response } from "express"

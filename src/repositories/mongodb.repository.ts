@@ -1,4 +1,4 @@
-import { Repository, Doc, Query } from "@/types/repository.type";
+import { Repository, Doc, Query, Populate } from "@/types/repository.type";
 import { Document, Model } from "mongoose";
 
 class MongoDBRepository {
@@ -16,16 +16,31 @@ class MongoDBRepository {
         return doc.toObject() as Doc<T>;
       },
       /** Permite buscar todos los registros en la base de datos, parametro opcional para filtrar los registros */
-      find: async (query?: Query, populate?: string) => {
-        return await model.find(query || {}).populate(populate || '').exec() as Doc<T>[]
+      find: async (query?: Query, populate?: Populate) => {
+        const req = model.find(query || {});
+        if (populate) {// to prepare the query with populate
+          if (Array.isArray(populate)) { populate.forEach(e => req.populate(typeof e === 'string' ? { path: e } : e)) }
+          else { req.populate(typeof populate === 'string' ? { path: populate } : populate) }
+        }
+        return await req.exec() as Doc<T>[];
       },
       /** Permite buscar un registro por su id */
-      findById: async (id: string) => {
-        return await model.findById(id).exec() as Doc<T> | null
+      findById: async (id: string, populate?: Populate) => {
+        const req = model.findById(id);
+        if (populate) {// to prepare the query with populate
+          if (Array.isArray(populate)) { populate.forEach(e => req.populate(typeof e === 'string' ? { path: e } : e)) }
+          else { req.populate(typeof populate === 'string' ? { path: populate } : populate) }
+        }
+        return await req.exec() as Doc<T> | null;
       },
       /** Permite actualizar un registro por su id */
-      update: async (id: string, data: Partial<Doc<T>>) => {
-        return await model.findByIdAndUpdate(id, data, { new: true }).exec() as Doc<T> | null
+      update: async (id: string, data: Partial<Doc<T>>, populate?: Populate) => {
+        const req = model.findByIdAndUpdate(id, data, { new: true });
+        if (populate) {// to prepare the query with populate
+          if (Array.isArray(populate)) { populate.forEach(e => req.populate(typeof e === 'string' ? { path: e } : e)) }
+          else { req.populate(typeof populate === 'string' ? { path: populate } : populate) }
+        }
+        return await req.exec() as Doc<T> | null;
       },
       /** Permite eliminar un registro por su id */
       delete: async (id: string) => {

@@ -1,4 +1,4 @@
-import { Repository, Doc, Query } from "@/types/repository.type";
+import { Repository, Doc, Query, Populate } from "@/types/repository.type";
 import { handlerService as handler } from "@/errors/handler";
 import { Result } from "@/interfaces/api.interface";
 
@@ -14,16 +14,16 @@ abstract class MongoDB<T> {
     return handler(async () => await this.repository.create(data), "crear");
   }
   /** Busca todos los documentos en la base de datos */
-  async find(query?: Query, populate?: string): Promise<Result<T[]>> {
+  async find(query?: Query, populate?: Populate): Promise<Result<T[]>> {
     return handler(async () => await this.repository.find(query, populate), "buscar todos");
   }
   /** Busca un documento por su id en la base de datos */
-  async findById(id: string): Promise<Result<T | null>> {
-    return handler(async () => await this.repository.findById(id), "buscar por id");
+  async findById(id: string, populate?: Populate): Promise<Result<T | null>> {
+    return handler(async () => await this.repository.findById(id, populate), "buscar por id");
   }
   /** Actualiza un documento por su id en la base de datos */
-  async update(id: string, data: Partial<Doc<T>>): Promise<Result<T | null>> {
-    return handler(async () => await this.repository.update(id, data), "actualizar");
+  async update(id: string, data: Partial<Doc<T>>, populate?: Populate): Promise<Result<T | null>> {
+    return handler(async () => await this.repository.update(id, data, populate), "actualizar");
   }
   /** Elimina un documento por su id en la base de datos */
   async delete(id: string): Promise<Result<boolean>> {

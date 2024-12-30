@@ -1,14 +1,15 @@
-import { Doc, Populate, Query } from "@/types/repository.type";
+import { Doc, Query, Populate } from "@/types/repository.type";
 import Repository from "@/repositories/mongodb.repository";
 import MongoDB from "@/services/mongodb/mongodb.service";
+import { Result } from "@/interfaces/api.interface";
+
 import cityModel from "@/models/location/city.model";
 import { City } from "@/types/location/city.type";
-import { Result } from "@/interfaces/api.interface";
 
 class CityService extends MongoDB<City> {
   private static instance: CityService;
   private readonly defaultPopulate: Populate = {
-    select: 'name', //For more fields => select: 'name code currency'
+    select: 'name',
     path: 'state',
   }
 

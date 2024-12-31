@@ -15,16 +15,17 @@ export const clientSchema = z.object({
     })
     .email("El formato del correo electrónico no es válido"),
   phone: z
-    .number({
+    .string({
       required_error: "El teléfono es requerido",
       invalid_type_error: "El teléfono debe ser un número"
     })
     .min(4, "El teléfono debe tener al menos 4 dígitos")
-    .max(999999999999999, "El teléfono no puede exceder 15 dígitos"),
+    .max(15, "El teléfono no puede exceder los 15 dígitos"),
   nit: z
     .string({
       required_error: "El NIT es requerido",
       invalid_type_error: "El NIT debe ser texto"
     })
-    .min(15, "El NIT debe tener al menos 15 caracteres")
+    .min(10, "El NIT debe tener al menos 10 caracteres")
+    .max(20, "El NIT no puede exceder los 20 caracteres")
 })

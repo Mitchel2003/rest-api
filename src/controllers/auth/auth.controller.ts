@@ -38,8 +38,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const sendEmail = await authFB.sendEmailVerification();
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
-    if (!(await authFB.logout()).success) throw new Conflict({ message: 'onLogout' });
-
+    if (!(await authFB.logout()).success) throw new Conflict({ message: 'Error logout on register' });
     send(res, 200, undefined);
   } catch (e: unknown) { handlerResponse(res, e, "registrarse") }
 }

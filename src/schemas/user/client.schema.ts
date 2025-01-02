@@ -19,7 +19,7 @@ export const clientSchema = z.object({
       required_error: "El teléfono es requerido",
       invalid_type_error: "El teléfono debe ser un número"
     })
-    .min(4, "El teléfono debe tener al menos 4 dígitos")
+    .min(6, "El teléfono debe tener al menos 6 dígitos")
     .max(15, "El teléfono no puede exceder los 15 dígitos"),
   nit: z
     .string({

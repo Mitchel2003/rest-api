@@ -2,8 +2,8 @@
 import { DefaultOverwrite, User as UserMDB } from "@/types/user/user.type";
 import { authService as authFB } from "@/services/firebase/auth.service";
 import { userService } from "@/services/mongodb/user/user.service";
+import ErrorAPI, { Unauthorized, Conflict } from "@/errors";
 import { handlerResponse } from "@/errors/handler";
-import ErrorAPI, { Unauthorized } from "@/errors";
 import { send } from "@/interfaces/api.interface";
 
 import { User as UserFB } from "firebase/auth"
@@ -38,7 +38,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     const sendEmail = await authFB.sendEmailVerification();
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
-    send(res, 200, result.data);
+    if (!(await authFB.logout()).success) throw new Conflict({ message: 'onLogout' });
+
+    send(res, 200, undefined);
   } catch (e: unknown) { handlerResponse(res, e, "registrarse") }
 }
 /**

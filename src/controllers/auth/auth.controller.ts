@@ -21,9 +21,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
     const auth = await authFB.login(email, password);
     if (!auth.success) throw new ErrorAPI(auth.error);
-    if (!auth.data.emailVerified) return await authFB.logout().then(() => {
-      throw new Unauthorized({ message: 'Email no verificado' })
-    })
+    if (!auth.data.emailVerified) return await authFB.logout().then(() => { throw new Unauthorized({ message: 'Email no verificado' }) });
     const user = await getUserCredentials(auth.data);
     send(res, 200, user);
   } catch (e: unknown) { handlerResponse(res, e, "iniciar sesión") }

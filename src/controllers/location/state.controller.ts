@@ -22,7 +22,6 @@ export const getState = async ({ params }: Request, res: Response): Promise<void
 /**
  * Obtiene todos los departamentos.
  * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
- * @argument usePopulate - Respecto al body obtenido, podemos mimificar el rango de busqueda de departamentos mediante country.id
  * @returns {Promise<void>} - Envía todos los departamentos encontrados o un mensaje de error.
  */
 export const getStates = async ({ body }: Request, res: Response): Promise<void> => {

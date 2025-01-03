@@ -8,24 +8,21 @@ import { Headquarter } from "@/types/location/headquarter.type";
 
 class HeadquarterService extends MongoDB<Headquarter> {
   private static instance: HeadquarterService;
-  private readonly defaultPopulate: Populate = [
-    {
-      path: 'city',
-      select: 'name state',
+  private readonly defaultPopulate: Populate = [{
+    path: 'city',
+    select: 'name state',
+    populate: {
+      path: 'state',
+      select: 'name country',
       populate: {
-        path: 'state',
-        select: 'name country',
-        populate: {
-          path: 'country',
-          select: 'name'
-        }
+        path: 'country',
+        select: 'name'
       }
-    },
-    {
-      path: 'client',
-      select: 'name email phone nit'
     }
-  ]
+  }, {
+    path: 'client',
+    select: 'name email phone nit'
+  }]
 
   private constructor() {
     super(Repository.create(headquarterModel))

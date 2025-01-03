@@ -11,23 +11,21 @@ class AreaService extends MongoDB<Area> {
   private readonly defaultPopulate: Populate = {
     path: 'headquarter',
     select: 'name city client',
-    populate: [
-      {
-        path: 'city',
-        select: 'name state',
+    populate: [{
+      path: 'city',
+      select: 'name state',
+      populate: {
+        path: 'state',
+        select: 'name country',
         populate: {
-          path: 'state',
-          select: 'name country',
-          populate: {
-            path: 'country',
-            select: 'name'
-          }
+          path: 'country',
+          select: 'name'
         }
-      }, {
-        path: 'client',
-        select: 'name email phone nit'
       }
-    ]
+    }, {
+      path: 'client',
+      select: 'name email phone nit'
+    }]
   }
 
   private constructor() {

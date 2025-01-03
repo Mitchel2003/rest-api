@@ -9,8 +9,8 @@ const areaSchema: Schema<Area> = new Schema({
   },
   headquarter: {
     type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'headquearter'
+    ref: 'headquarter',
+    required: true
   }
 }, configSchema);
 

@@ -8,24 +8,22 @@ import { Area } from "@/types/location/area.type";
 
 class AreaService extends MongoDB<Area> {
   private static instance: AreaService;
-  private readonly defaultPopulate: Populate = [
-    {
-      path: 'headquarter',
-      select: 'name city client',
+  private readonly defaultPopulate: Populate = {
+    path: 'headquarter',
+    select: 'name city client',
+    populate: {
+      path: 'city',
+      select: 'name state',
       populate: {
-        path: 'city',
-        select: 'name state',
+        path: 'state',
+        select: 'name country',
         populate: {
-          path: 'state',
-          select: 'name country',
-          populate: {
-            path: 'country',
-            select: 'name'
-          }
+          path: 'country',
+          select: 'name'
         }
       }
     }
-  ]
+  }
 
   private constructor() {
     super(Repository.create(areaModel))

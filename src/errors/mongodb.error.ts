@@ -10,7 +10,7 @@ class HandlerErrors {
   public static get(e: MongooseError): ErrorAPI {
     const message = 'Error interno del servidor (mongoDB)'
     const record = this.errorRecords[e.name] || defaultRecord(message, e.name)
-    return new record.errorType({ message: record.message })
+    return new record.errorType({ message: record.message, details: { code: e.name } })
   }
 
   /** Mapeo de errores de MongoDB a errores personalizados */

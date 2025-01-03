@@ -23,7 +23,7 @@ class HeadquarterService extends MongoDB<Headquarter> {
     },
     {
       path: 'client',
-      select: 'name email'
+      select: 'name email phone nit'
     }
   ]
 

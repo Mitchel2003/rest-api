@@ -13,7 +13,7 @@ class OfficeService extends MongoDB<Office> {
     select: 'name headquarter',
     populate: {
       path: 'headquarter',
-      select: 'name city client',
+      select: 'name address city client',
       populate: [{
         path: 'city',
         select: 'name state',

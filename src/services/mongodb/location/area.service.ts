@@ -10,7 +10,7 @@ class AreaService extends MongoDB<Area> {
   private static instance: AreaService;
   private readonly defaultPopulate: Populate = {
     path: 'headquarter',
-    select: 'name city client',
+    select: 'name address city client',
     populate: [{
       path: 'city',
       select: 'name state',

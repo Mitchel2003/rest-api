@@ -36,6 +36,7 @@ import cityRoutes from "@/routes/location/city.routes"
 import headquarterRoutes from "@/routes/location/headquarter.routes"
 import areaRoutes from "@/routes/location/area.routes"
 import officeRoutes from "@/routes/location/office.routes"
+import serviceRoutes from "@/routes/location/service.routes"
 
 //config express
 const origin = config.nodeEnv === 'production' ? config.depUrl : config.devUrl
@@ -86,6 +87,7 @@ app.use('/api/location', cityRoutes);
 app.use('/api/location', headquarterRoutes);
 app.use('/api/location', areaRoutes);
 app.use('/api/location', officeRoutes);
+app.use('/api/location', serviceRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 export default app;

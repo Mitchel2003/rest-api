@@ -17,6 +17,11 @@ const manufacturerSchema: Schema<Manufacturer> = new Schema({
     type: String,
     required: true,
     trim: true
+  },
+  city: {
+    type: String,
+    required: true,
+    trim: true
   }
 }, configSchema)
 

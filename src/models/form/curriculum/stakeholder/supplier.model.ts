@@ -13,6 +13,11 @@ const supplierSchema: Schema<Supplier> = new Schema({
     unique: true,
     trim: true
   },
+  address: {
+    type: String,
+    required: true,
+    trim: true
+  },
   phone: {
     type: String,
     required: true,

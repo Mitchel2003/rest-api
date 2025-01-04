@@ -7,7 +7,9 @@ export const representativeSchema = z.object({
     .string({ required_error: "El correo electrónico del representante es requerido" })
     .email({ message: "El correo electrónico del representante es inválido" }),
   phone: z
-    .string({ required_error: "El teléfono del representante es requerido" })
+    .string({ required_error: "El teléfono del representante es requerido" }),
+  city: z
+    .string({ required_error: "La ciudad del representante es requerida" })
 });
 
 export const supplierSchema = z.object({
@@ -16,6 +18,8 @@ export const supplierSchema = z.object({
   email: z
     .string({ required_error: "El correo electrónico del proveedor es requerido" })
     .email({ message: "El correo electrónico del proveedor es inválido" }),
+  address: z
+    .string({ required_error: "La dirección del proveedor es requerida" }),
   phone: z
     .string({ required_error: "El teléfono del proveedor es requerido" }),
   nit: z
@@ -30,5 +34,7 @@ export const manufacturerSchema = z.object({
     .string({ required_error: "El correo electrónico del fabricante es requerido" })
     .email({ message: "El correo electrónico del fabricante es inválido" }),
   phone: z
-    .string({ required_error: "El teléfono del fabricante es requerido" })
+    .string({ required_error: "El teléfono del fabricante es requerido" }),
+  city: z
+    .string({ required_error: "La ciudad del fabricante es requerida" })
 });

@@ -1,22 +1,14 @@
-import { serviceOfficeSchema, inspectionHeadquarterSchema, representativeHeadquarterSchema, supplierHeadquarterSchema, manufacturerHeadquarterSchema } from "@/schemas/relation/curriculum.schema";
+import { inspectionHeadquarterSchema, representativeHeadquarterSchema, supplierHeadquarterSchema, manufacturerHeadquarterSchema } from "@/schemas/relation/curriculum.schema";
 import validateSchema from "@/middlewares/validator.middleware";
 import authRequired from "@/middlewares/auth.middleware";
 import { Router } from "express";
 
-import { createServiceOffice, getServiceOffices, getServiceOffice, updateServiceOffice, deleteServiceOffice } from "@/controllers/relation/curriculum/serviceOffice.controller";
 import { createInspectionHeadquarter, getInspectionHeadquarters, getInspectionHeadquarter, updateInspectionHeadquarter, deleteInspectionHeadquarter } from "@/controllers/relation/curriculum/inspectionHeadquarter.controller";
 import { createRepresentativeHeadquarter, getRepresentativeHeadquarters, getRepresentativeHeadquarter, updateRepresentativeHeadquarter, deleteRepresentativeHeadquarter } from "@/controllers/relation/curriculum/representativeHeadquarter.controller";
 import { createSupplierHeadquarter, getSupplierHeadquarters, getSupplierHeadquarter, updateSupplierHeadquarter, deleteSupplierHeadquarter } from "@/controllers/relation/curriculum/supplierHeadquarter.controller";
 import { createManufacturerHeadquarter, getManufacturerHeadquarters, getManufacturerHeadquarter, updateManufacturerHeadquarter, deleteManufacturerHeadquarter } from "@/controllers/relation/curriculum/manufacturerHeadquarter.controller";
 
 const router = Router();
-
-//service office routes (relation/cv/service-office)
-router.post('/service-office', authRequired, validateSchema(serviceOfficeSchema), createServiceOffice);
-router.get('/service-offices', authRequired, getServiceOffices);
-router.get('/service-office/:id', authRequired, getServiceOffice);
-router.put('/service-office/:id', authRequired, updateServiceOffice);
-router.delete('/service-office/:id', authRequired, deleteServiceOffice);
 
 //inspection headquarter routes (relation/cv/inspection-headquarter)
 router.post('/inspection-headquarter', authRequired, validateSchema(inspectionHeadquarterSchema), createInspectionHeadquarter);

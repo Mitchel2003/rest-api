@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export const serviceOfficeSchema = z.object({
-  service: z.string({
-    required_error: "El ID del servicio es requerido"
-  }),
-  office: z.string({
-    required_error: "El ID de la oficina es requerido"
-  })
-});
-
 export const inspectionHeadquarterSchema = z.object({
   inspection: z.string({
     required_error: "El ID de la inspección es requerido"

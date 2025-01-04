@@ -7,6 +7,7 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   name: { type: String, required: true },
   brand: { type: String, required: true },
   serie: { type: String, required: true },
+  service: { type: String, required: true },
   modelEquip: { type: String, required: true },
   healthRecord: { type: String, required: true },
   characteristics: { type: String, required: true },
@@ -37,9 +38,9 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   manualsMaintenance: { type: String, required: true },
 
   //relationship
-  serviceOffice: {
+  office: {
     type: Schema.Types.ObjectId,
-    ref: 'serviceOffice',
+    ref: 'office',
     required: true
   },
   representative: {

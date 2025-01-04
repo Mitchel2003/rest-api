@@ -11,6 +11,9 @@ const curriculumSchema = z.object({
   serie: z.string({
     required_error: "Serie del equipo es requerido"
   }),
+  service: z.string({
+    required_error: "Servicio es requerido"
+  }),
   modelEquip: z.string({
     required_error: "Modelo del equipo es requerido"
   }),
@@ -79,8 +82,8 @@ const curriculumSchema = z.object({
   }),
 
   //relationship
-  serviceOffice: z.string({
-    required_error: "Oficina de servicio es requerida"
+  office: z.string({
+    required_error: "Oficina es requerida"
   }),
   representative: z.string({
     required_error: "Representante es requerido"

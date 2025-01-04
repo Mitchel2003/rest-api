@@ -5,6 +5,7 @@ export interface Curriculum extends Document {
   name: string,
   brand: string,
   serie: string,
+  service: string,
   modelEquip: string,
   healthRecord: string,
   photoUrl: string,
@@ -35,7 +36,7 @@ export interface Curriculum extends Document {
   manualsMaintenance: string,
 
   //relationship
-  serviceOffice: Schema.Types.ObjectId,
+  office: Schema.Types.ObjectId,
   representative: Schema.Types.ObjectId,
   supplier: Schema.Types.ObjectId,
   manufacturer: Schema.Types.ObjectId,

@@ -21,7 +21,7 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   dateManufacturing: { type: Date, required: true },
   acquisition: { type: String, required: true },
   warranty: { type: String, required: true },
-  price: { type: Number, required: true },
+  price: { type: String, required: true },
 
   //equipment
   useClassification: { type: String, required: true },

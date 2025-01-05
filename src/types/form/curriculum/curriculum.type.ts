@@ -19,7 +19,7 @@ export interface Curriculum extends Document {
   dateManufacturing: Date,
   acquisition: string,
   warranty: string,
-  price: number,
+  price: string,
 
   //equipment
   typeClassification: string,

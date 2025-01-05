@@ -37,7 +37,7 @@ const curriculumSchema = z.object({
   warranty: z.string({
     required_error: "Garantía del equipo es requerida"
   }),
-  price: z.number({
+  price: z.string({
     required_error: "Precio del equipo es requerido"
   }),
 

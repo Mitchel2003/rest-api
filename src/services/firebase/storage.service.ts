@@ -26,10 +26,12 @@ import { Metadata } from "@/interfaces/props.interface"
  * 
  *     ===> files (folder)
  *         ===>> uid (device uid folder)
- *             ===>>> documentation (folder)
- *                 ===>>> doc_1 ... (file)
- *             ===>>> preview (folder)
- *                 ===>>> img_1 ... (file)
+*              ===>>>> curriculum (folder)
+*                  ===>>> doc_1 ... (file)
+*              ===>>>> maintenance (folder)
+*                  ===>>> doc_1 ... (file)
+*              ===>>>> preview (folder)
+*                  ===>>> img_1 ... (file)
  * 
  * @argument uid(auth) represent the id of the business,
  * so, just like that, each folder that represent a business could have many products

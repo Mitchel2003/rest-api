@@ -3,8 +3,9 @@ import express from "express"
 import cors from "cors"
 
 //auth and health routes
-import healthRoutes from "@/routes/auth/health.routes"
 import authRoutes from "@/routes/auth/auth.routes"
+import healthRoutes from "@/routes/auth/health.routes"
+import storageRoutes from "@/routes/auth/storage.routes"
 
 //user routes
 import userRoutes from "@/routes/user/user.routes"
@@ -46,8 +47,9 @@ app.use(express.json());
 
 /*--------------------------------------------------health and auth routes--------------------------------------------------*/
 //to auto-refresh and uptime server
-app.use('/api', healthRoutes);
+app.use('/api/storage', storageRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api', healthRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------user routes--------------------------------------------------*/

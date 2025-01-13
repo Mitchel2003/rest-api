@@ -5,11 +5,13 @@ import { Request, Response } from "express";
 
 /**
  * Obtiene los metadatos de los archivos en una ruta específica
- * @param {Request} req - body debe contener { path: string, reference: string }
+ * @param {Request} req - body debe contener { id: string, ref: string }
+ * @argument id: corresponde al id del curriculum (equipo)
+ * @argument ref: corresponde al folder que contiene el archivo (curriculum, maintenance, preview)
  */
 export const getFiles = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await storageService.getFilesWithMetadata(`${body.path}/${body.reference}`);
+    const result = await storageService.getFilesWithMetadata(`${body.id}/${body.ref}`);
     if (!result.success) throw result.error;
     send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, 'obtener archivos') }
@@ -17,11 +19,14 @@ export const getFiles = async ({ body }: Request, res: Response): Promise<void> 
 
 /**
  * Sube múltiples archivos
- * @param {Request} req - body debe contener { path: string, reference: string, files: File[] }
+ * @param {Request} req - body debe contener { id: string, ref: string, files: File[] }
+ * @argument id: corresponde al id del curriculum (equipo)
+ * @argument ref: corresponde al folder que contiene el archivo (curriculum, maintenance, preview)
+ * @argument files: corresponde a los archivos a subir, representa un array de archivos
  */
 export const uploadFiles = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await storageService.uploadFiles(`${body.path}/${body.reference}`, body.files);
+    const result = await storageService.uploadFiles(`${body.id}/${body.ref}`, body.files);
     if (!result.success) throw result.error;
     send(res, 201, result.data);
   } catch (e) { handlerResponse(res, e, 'subir archivos') }
@@ -29,11 +34,14 @@ export const uploadFiles = async ({ body }: Request, res: Response): Promise<voi
 
 /**
  * Elimina un archivo específico
- * @param {Request} req - body debe contener { path: string, reference: string, filename: string }
+ * @param {Request} req - body debe contener { id: string, ref: string, filename: string }
+ * @argument id: corresponde al id del curriculum (equipo)
+ * @argument ref: corresponde al folder que contiene el archivo (curriculum, maintenance, preview)
+ * @argument filename: corresponde al nombre del archivo en contexto, este puede ser formato de imagen, pdf, etc.
  */
 export const deleteFile = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await storageService.deleteFile(`${body.path}/${body.reference}/${body.filename}`);
+    const result = await storageService.deleteFile(`${body.id}/${body.ref}/${body.filename}`);
     if (!result.success) throw result.error;
     send(res, 200, undefined);
   } catch (e) { handlerResponse(res, e, 'eliminar archivo') }

@@ -3,16 +3,19 @@ import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const inspectionSchema: Schema<Inspection> = new Schema({
-  presetInspection: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'preset_inspection'
+  name: {
+    type: String,
+    required: true
   },
-  typeInspection: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'type_inspection'
+  inactive: {
+    type: Boolean,
+    required: false,
+    default: false
   },
+  typeInspection: [{
+    type: String,
+    required: true
+  }]
 }, configSchema);
 
 export default mongoose.model('inspection', inspectionSchema);

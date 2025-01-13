@@ -10,15 +10,16 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   service: { type: String, required: true },
   modelEquip: { type: String, required: true },
   healthRecord: { type: String, required: true },
+
+  //standard technicals
   characteristics: { type: String, required: true },
-  photoUrl: { type: String, required: false, default: null },
+  technicalCharacteristics: [{ type: String, required: true }],
   recommendationsManufacturer: { type: String, required: false, default: null },
 
   //details
   datePurchase: { type: Date, required: true },
   dateInstallation: { type: Date, required: true },
   dateOperation: { type: Date, required: true },
-  dateManufacturing: { type: Date, required: true },
   acquisition: { type: String, required: true },
   warranty: { type: String, required: true },
   price: { type: String, required: true },
@@ -41,6 +42,11 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   office: {
     type: Schema.Types.ObjectId,
     ref: 'office',
+    required: true
+  },
+  inspection: {
+    type: Schema.Types.ObjectId,
+    ref: 'inspection',
     required: true
   },
   representative: {

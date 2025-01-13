@@ -1,10 +1,35 @@
+import { Doc, Query, Populate } from "@/types/repository.type";
+import Repository from "@/repositories/mongodb.repository";
+import MongoDB from "@/services/mongodb/mongodb.service";
+import { Result } from "@/interfaces/api.interface";
+
 import representativeHeadquarterModel from "@/models/relation/curriculum/representativeHeadquarter.model";
 import { RepresentativeHeadquarter } from "@/types/relation/curriculum/representativeHeadquarter.type";
-import MongoDBService from "@/services/mongodb/mongodb.service";
-import Repository from "@/repositories/mongodb.repository";
 
-class RepresentativeHeadquarterService extends MongoDBService<RepresentativeHeadquarter> {
+class RepresentativeHeadquarterService extends MongoDB<RepresentativeHeadquarter> {
   private static instance: RepresentativeHeadquarterService;
+  private readonly defaultPopulate: Populate = [{
+    path: 'headquarter',
+    select: 'name address',
+    populate: [{
+      path: 'client',
+      select: 'name email phone city'
+    }, {
+      path: 'city',
+      select: 'name state',
+      populate: {
+        path: 'state',
+        select: 'name country',
+        populate: {
+          path: 'country',
+          select: 'name'
+        }
+      }
+    }]
+  }, {
+    path: 'representative',
+    select: 'name email phone city'
+  }]
 
   private constructor() {
     super(Repository.create(representativeHeadquarterModel));
@@ -13,6 +38,17 @@ class RepresentativeHeadquarterService extends MongoDBService<RepresentativeHead
   public static getInstance(): RepresentativeHeadquarterService {
     if (!RepresentativeHeadquarterService.instance) RepresentativeHeadquarterService.instance = new RepresentativeHeadquarterService();
     return RepresentativeHeadquarterService.instance;
+  }
+
+  // Overwrite the methods to apply the populate that corresponds to this service "representativeHeadquarter"
+  async find(query?: Query, populate?: Populate): Promise<Result<RepresentativeHeadquarter[]>> {
+    return super.find(query, populate || this.defaultPopulate);
+  }
+  async findById(id: string): Promise<Result<RepresentativeHeadquarter | null>> {
+    return super.findById(id, this.defaultPopulate);
+  }
+  async update(id: string, data: Partial<Doc<RepresentativeHeadquarter>>): Promise<Result<RepresentativeHeadquarter | null>> {
+    return super.update(id, data, this.defaultPopulate);
   }
 }
 

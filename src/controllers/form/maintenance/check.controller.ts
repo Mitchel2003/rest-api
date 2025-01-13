@@ -11,11 +11,11 @@ import { Request, Response } from "express";
  * @returns {Promise<void>} - Envía el check encontrado o un mensaje de error.
  */
 export const getCheck = async ({ params }: Request, res: Response): Promise<void> => {
-    try {
-        const check = await checkService.findById(params.id);
-        if (!check.success) throw new ErrorAPI(check.error);
-        send(res, 200, check.data);
-    } catch (e) { handlerResponse(res, e, "obtener el check") }
+  try {
+    const check = await checkService.findById(params.id);
+    if (!check.success) throw new ErrorAPI(check.error);
+    send(res, 200, check.data);
+  } catch (e) { handlerResponse(res, e, "obtener el check") }
 }
 
 /**
@@ -24,11 +24,11 @@ export const getCheck = async ({ params }: Request, res: Response): Promise<void
  * @returns {Promise<void>} - Envía un objeto con los checks.
  */
 export const getChecks = async ({ body }: Request, res: Response): Promise<void> => {
-    try {
-        const checks = await checkService.find(body.query);
-        if (!checks.success) throw new ErrorAPI(checks.error);
-        send(res, 200, checks.data);
-    } catch (e) { handlerResponse(res, e, "obtener los checks") }
+  try {
+    const checks = await checkService.find(body.query);
+    if (!checks.success) throw new ErrorAPI(checks.error);
+    send(res, 200, checks.data);
+  } catch (e) { handlerResponse(res, e, "obtener los checks") }
 }
 
 /**
@@ -37,11 +37,11 @@ export const getChecks = async ({ body }: Request, res: Response): Promise<void>
  * @returns {Promise<void>} - Envía el check creado o un mensaje de error.
  */
 export const createCheck = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const check = await checkService.create(req.body);
-        if (!check.success) throw new ErrorAPI(check.error);
-        send(res, 201, check.data);
-    } catch (e) { handlerResponse(res, e, "crear el check") }
+  try {
+    const check = await checkService.create(req.body);
+    if (!check.success) throw new ErrorAPI(check.error);
+    send(res, 201, check.data);
+  } catch (e) { handlerResponse(res, e, "crear el check") }
 }
 
 /**
@@ -50,11 +50,11 @@ export const createCheck = async (req: Request, res: Response): Promise<void> =>
  * @returns {Promise<void>} - Envía el check actualizado o un mensaje de error.
  */
 export const updateCheck = async ({ params, body }: Request, res: Response): Promise<void> => {
-    try {
-        const check = await checkService.update(params.id, body);
-        if (!check.success) throw new ErrorAPI(check.error);
-        send(res, 200, check.data);
-    } catch (e) { handlerResponse(res, e, "actualizar el check") }
+  try {
+    const check = await checkService.update(params.id, body);
+    if (!check.success) throw new ErrorAPI(check.error);
+    send(res, 200, check.data);
+  } catch (e) { handlerResponse(res, e, "actualizar el check") }
 }
 
 /**
@@ -63,9 +63,9 @@ export const updateCheck = async ({ params, body }: Request, res: Response): Pro
  * @returns {Promise<void>} - Envía un mensaje de confirmación o error.
  */
 export const deleteCheck = async ({ params }: Request, res: Response): Promise<void> => {
-    try {
-        const check = await checkService.delete(params.id);
-        if (!check.success) throw new ErrorAPI(check.error);
-        send(res, 200, check.data);
-    } catch (e) { handlerResponse(res, e, "eliminar el check") }
+  try {
+    const check = await checkService.delete(params.id);
+    if (!check.success) throw new ErrorAPI(check.error);
+    send(res, 200, check.data);
+  } catch (e) { handlerResponse(res, e, "eliminar el check") }
 } 

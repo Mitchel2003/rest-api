@@ -1,8 +1,9 @@
-import { Document, Schema } from "mongoose"
+import { Document } from "mongoose"
 
 export interface Inspection extends Document {
-  presetInspection: Schema.Types.ObjectId,
-  typeInspection: Schema.Types.ObjectId,
+  name: string,
+  inactive: Boolean,
+  typeInspection: string[],
   createdAt?: Date,
   updatedAt?: Date
 }

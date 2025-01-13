@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const maintenanceSchema = z.object({
+export const maintenanceSchema = z.object({
   //timestandard
   dateNextMaintenance: z
     .date({ required_error: "La fecha del próximo mantenimiento es requerida" }),
@@ -38,9 +38,11 @@ const maintenanceSchema = z.object({
   //references
   equipment: z
     .string({ required_error: "El ID del equipo es requerido" }),
-
-  headquarter: z
-    .string({ required_error: "El ID de la sede es requerido" })
 });
 
-export default maintenanceSchema;
+export const checkSchema = z.object({
+  name: z.string({
+    required_error: "El nombre del check es requerido"
+  }),
+  inactive: z.boolean().optional().default(false)
+});

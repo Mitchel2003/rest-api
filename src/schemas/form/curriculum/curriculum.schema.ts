@@ -20,17 +20,22 @@ const curriculumSchema = z.object({
   healthRecord: z.string({
     required_error: "Registro sanitario del equipo es requerido"
   }),
+
+  //standard technicals
   characteristics: z.string({
     required_error: "Características del equipo son requeridas"
   }),
-  photoUrl: z.string().optional().nullable(),
+  technicalCharacteristics: z.array(
+    z.string({
+      required_error: "Caracteristicas tecnicas del equipo son requeridas"
+    })
+  ),
   recommendationsManufacturer: z.string().optional().nullable(),
 
   //details
   datePurchase: z.string().datetime(),
   dateInstallation: z.string().datetime(),
   dateOperation: z.string().datetime(),
-  dateManufacturing: z.string().datetime(),
   acquisition: z.string({
     required_error: "Fecha de adquisición del equipo es requerida"
   }),
@@ -84,6 +89,9 @@ const curriculumSchema = z.object({
   //relationship
   office: z.string({
     required_error: "Oficina es requerida"
+  }),
+  inspection: z.string({
+    required_error: "Inspección es requerida"
   }),
   representative: z.string({
     required_error: "Representante es requerido"

@@ -23,7 +23,6 @@ import reminderRoutes from "@/routes/form/equipment/reminder.routes"
 
 //maintenance routes
 import maintenanceRoutes from "@/routes/form/maintenance/maintenance.routes"
-import checkRoutes from "@/routes/form/maintenance/check.routes"
 
 // relation routes
 import curriculumRelationRoutes from "@/routes/relation/curriculum.routes";
@@ -47,9 +46,9 @@ app.use(express.json());
 
 /*--------------------------------------------------health and auth routes--------------------------------------------------*/
 //to auto-refresh and uptime server
-app.use('/api/storage', storageRoutes);
-app.use('/api/auth', authRoutes);
 app.use('/api', healthRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/storage', storageRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------user routes--------------------------------------------------*/
@@ -63,22 +62,17 @@ app.use('/api', clientRoutes);
 app.use('/api/form', curriculumRoutes);
 app.use('/api/form/cv', inspectionRoutes);
 app.use('/api/form/cv', stakeholderRoutes);
+app.use('/api/form/cv', curriculumRelationRoutes);
 
 //form equipment routes
 app.use('/api/form', equipmentRoutes);
-app.use('/api/form', calibrationRoutes);
-app.use('/api/form', reminderRoutes);
+app.use('/api/form/equipment', reminderRoutes);
+app.use('/api/form/equipment', calibrationRoutes);
+app.use('/api/form/equipment', equipmentRelationRoutes);
 
 //form maintenance routes
 app.use('/api/form', maintenanceRoutes);
-app.use('/api/form/maintenance', checkRoutes);
-/*---------------------------------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------relation routes--------------------------------------------------*/
-//relation routes (table relation)
-app.use('/api/relation/cv', curriculumRelationRoutes);
-app.use('/api/relation/equipment', equipmentRelationRoutes);
-app.use('/api/relation/maintenance', maintenanceRelationRoutes);
+app.use('/api/form/maintenance', maintenanceRelationRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------location routes--------------------------------------------------*/

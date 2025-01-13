@@ -59,10 +59,6 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
   equipment: {
     type: Schema.Types.ObjectId,
     required: true
-  },
-  headquarter: {
-    type: Schema.Types.ObjectId,
-    required: true
   }
 }, configSchema);
 

@@ -18,7 +18,6 @@ export interface Maintenance extends Document {
   nameEngineer: string;
   invimaEngineer: string;
   equipment: Schema.Types.ObjectId,
-  headquarter: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
 }

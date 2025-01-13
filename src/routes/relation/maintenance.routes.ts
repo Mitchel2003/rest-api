@@ -7,11 +7,11 @@ import { createCheckMaintenance, getCheckMaintenances, getCheckMaintenance, upda
 
 const router = Router();
 
-//check maintenance routes (relation/maintenance)
-router.post('/check-maintenance', authRequired, validateSchema(checkMaintenanceSchema), createCheckMaintenance);
-router.get('/check-maintenances', authRequired, getCheckMaintenances);
-router.get('/check-maintenance/:id', authRequired, getCheckMaintenance);
-router.put('/check-maintenance/:id', authRequired, updateCheckMaintenance);
-router.delete('/check-maintenance/:id', authRequired, deleteCheckMaintenance);
+//check maintenance routes (form/maintenance/checkMaintenance)
+router.post('/checkMaintenance', authRequired, validateSchema(checkMaintenanceSchema), createCheckMaintenance);
+router.get('/checkMaintenances', authRequired, getCheckMaintenances);
+router.get('/checkMaintenance/:id', authRequired, getCheckMaintenance);
+router.put('/checkMaintenance/:id', authRequired, updateCheckMaintenance);
+router.delete('/checkMaintenance/:id', authRequired, deleteCheckMaintenance);
 
 export default router;

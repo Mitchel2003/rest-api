@@ -8,15 +8,16 @@ export interface Curriculum extends Document {
   service: string,
   modelEquip: string,
   healthRecord: string,
-  photoUrl: string,
+
+  //standard technicals
   characteristics: string,
+  technicalCharacteristics: string[],
   recommendationsManufacturer: string,
 
   //details
   datePurchase: Date,
   dateInstallation: Date,
   dateOperation: Date,
-  dateManufacturing: Date,
   acquisition: string,
   warranty: string,
   price: string,
@@ -37,6 +38,7 @@ export interface Curriculum extends Document {
 
   //relationship
   office: Schema.Types.ObjectId,
+  inspection: Schema.Types.ObjectId,
   representative: Schema.Types.ObjectId,
   supplier: Schema.Types.ObjectId,
   manufacturer: Schema.Types.ObjectId,

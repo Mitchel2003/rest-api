@@ -3,7 +3,7 @@ import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const typeInspectionSchema: Schema<TypeInspection> = new Schema({
-  nameType: {
+  name: {
     type: String,
     required: true
   },

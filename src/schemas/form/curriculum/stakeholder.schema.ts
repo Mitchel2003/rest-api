@@ -24,7 +24,8 @@ export const supplierSchema = z.object({
     .string({ required_error: "El teléfono del proveedor es requerido" }),
   nit: z
     .string({ required_error: "El NIT del proveedor es requerido" })
-    .regex(/^\d+$/, { message: "El NIT del proveedor debe contener solo números" })
+    .min(10, "El NIT debe tener al menos 10 caracteres")
+    .max(20, "El NIT no puede exceder los 20 caracteres")
 });
 
 export const manufacturerSchema = z.object({

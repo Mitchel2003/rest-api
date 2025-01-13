@@ -1,10 +1,35 @@
+import { Doc, Query, Populate } from "@/types/repository.type";
 import Repository from "@/repositories/mongodb.repository";
-import MongoDBService from "@/services/mongodb/mongodb.service";
+import MongoDB from "@/services/mongodb/mongodb.service";
+import { Result } from "@/interfaces/api.interface";
+
 import supplierHeadquarterModel from "@/models/relation/curriculum/supplierHeadquarter.model";
 import { SupplierHeadquarter } from "@/types/relation/curriculum/supplierHeadquarter.type";
 
-class SupplierHeadquarterService extends MongoDBService<SupplierHeadquarter> {
+class SupplierHeadquarterService extends MongoDB<SupplierHeadquarter> {
   private static instance: SupplierHeadquarterService;
+  private readonly defaultPopulate: Populate = [{
+    path: 'headquarter',
+    select: 'name address',
+    populate: [{
+      path: 'client',
+      select: 'name email phone city'
+    }, {
+      path: 'city',
+      select: 'name state',
+      populate: {
+        path: 'state',
+        select: 'name country',
+        populate: {
+          path: 'country',
+          select: 'name'
+        }
+      }
+    }]
+  }, {
+    path: 'supplier',
+    select: 'name email address phone nit'
+  }]
 
   private constructor() {
     super(Repository.create(supplierHeadquarterModel));
@@ -13,6 +38,17 @@ class SupplierHeadquarterService extends MongoDBService<SupplierHeadquarter> {
   public static getInstance(): SupplierHeadquarterService {
     if (!SupplierHeadquarterService.instance) SupplierHeadquarterService.instance = new SupplierHeadquarterService();
     return SupplierHeadquarterService.instance;
+  }
+
+  // Overwrite the methods to apply the populate that corresponds to this service "supplierHeadquarter"
+  async find(query?: Query, populate?: Populate): Promise<Result<SupplierHeadquarter[]>> {
+    return super.find(query, populate || this.defaultPopulate);
+  }
+  async findById(id: string): Promise<Result<SupplierHeadquarter | null>> {
+    return super.findById(id, this.defaultPopulate);
+  }
+  async update(id: string, data: Partial<Doc<SupplierHeadquarter>>): Promise<Result<SupplierHeadquarter | null>> {
+    return super.update(id, data, this.defaultPopulate);
   }
 }
 

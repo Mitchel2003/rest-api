@@ -11,7 +11,7 @@ export interface Curriculum extends Document {
 
   //standard technicals
   characteristics: string,
-  technicalCharacteristics: string[],
+  technicalCharacteristics: object,
   recommendationsManufacturer: string,
 
   //details

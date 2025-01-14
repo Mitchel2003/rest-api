@@ -25,11 +25,7 @@ const curriculumSchema = z.object({
   characteristics: z.string({
     required_error: "Características del equipo son requeridas"
   }),
-  technicalCharacteristics: z.array(
-    z.string({
-      required_error: "Caracteristicas tecnicas del equipo son requeridas"
-    })
-  ),
+  technicalCharacteristics: z.object({}).optional().nullable(),
   recommendationsManufacturer: z.string().optional().nullable(),
 
   //details
@@ -37,7 +33,7 @@ const curriculumSchema = z.object({
   dateInstallation: z.date(),
   dateOperation: z.date(),
   acquisition: z.string({
-    required_error: "Fecha de adquisición del equipo es requerida"
+    required_error: "Tipo de adquisición del equipo es requerida"
   }),
   warranty: z.string({
     required_error: "Garantía del equipo es requerida"

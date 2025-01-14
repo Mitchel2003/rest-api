@@ -13,7 +13,7 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
 
   //standard technicals
   characteristics: { type: String, required: true },
-  technicalCharacteristics: [{ type: String, required: true }],
+  technicalCharacteristics: { type: Object, required: true },
   recommendationsManufacturer: { type: String, required: false, default: null },
 
   //details

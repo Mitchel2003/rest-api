@@ -39,7 +39,7 @@ export interface Curriculum extends Document {
   //relationship
   office: Schema.Types.ObjectId,
   inspection: Schema.Types.ObjectId,
-  representative: Schema.Types.ObjectId,
+  /*representative: Schema.Types.ObjectId,
   supplier: Schema.Types.ObjectId,
-  manufacturer: Schema.Types.ObjectId,
+  manufacturer: Schema.Types.ObjectId,*/
 }

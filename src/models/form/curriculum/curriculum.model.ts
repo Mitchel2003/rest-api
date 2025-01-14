@@ -49,21 +49,21 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
     ref: 'inspection',
     required: true
   },
-  representative: {
+  /*representative: {
     type: Schema.Types.ObjectId,
     ref: 'representative',
     required: true
-  },
-  supplier: {
+  },*/
+  /*supplier: {
     type: Schema.Types.ObjectId,
     ref: 'supplier',
     required: true
-  },
-  manufacturer: {
+  },*/
+  /*manufacturer: {
     type: Schema.Types.ObjectId,
     ref: 'manufacturer',
     required: true
-  }
+  }*/
 }, configSchema);
 
 export default mongoose.model('curriculum', curriculumSchema);

@@ -33,9 +33,9 @@ const curriculumSchema = z.object({
   recommendationsManufacturer: z.string().optional().nullable(),
 
   //details
-  datePurchase: z.string().datetime(),
-  dateInstallation: z.string().datetime(),
-  dateOperation: z.string().datetime(),
+  datePurchase: z.date(),
+  dateInstallation: z.date(),
+  dateOperation: z.date(),
   acquisition: z.string({
     required_error: "Fecha de adquisición del equipo es requerida"
   }),
@@ -93,15 +93,15 @@ const curriculumSchema = z.object({
   inspection: z.string({
     required_error: "Inspección es requerida"
   }),
-  representative: z.string({
+  /*representative: z.string({
     required_error: "Representante es requerido"
-  }),
-  supplier: z.string({
+  }),*/
+  /*supplier: z.string({
     required_error: "Proveedor es requerido"
-  }),
-  manufacturer: z.string({
+  }),*/
+  /*manufacturer: z.string({
     required_error: "Fabricante es requerido"
-  })
+  })*/
 })
 
 export default curriculumSchema

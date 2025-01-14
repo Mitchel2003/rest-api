@@ -11,11 +11,6 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   modelEquip: { type: String, required: true },
   healthRecord: { type: String, required: true },
 
-  //standard technicals
-  characteristics: { type: String, required: true },
-  technicalCharacteristics: { type: Object, required: true },
-  recommendationsManufacturer: { type: String, required: false, default: null },
-
   //details
   datePurchase: { type: Date, required: true },
   dateInstallation: { type: Date, required: true },
@@ -32,6 +27,9 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   technologyPredominant: [{ type: String, required: true }],
   powerSupply: [{ type: String, required: true }],
 
+  //technical characteristics
+  technicalCharacteristics: { type: Object, required: true },
+
   //maintenance
   employmentMaintenance: { type: String, required: true },
   frequencyMaintenance: { type: String, required: true },
@@ -44,11 +42,11 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
     ref: 'office',
     required: true
   },
-  inspection: {
+  /*inspection: {
     type: Schema.Types.ObjectId,
     ref: 'inspection',
     required: true
-  },
+  },*/
   /*representative: {
     type: Schema.Types.ObjectId,
     ref: 'representative',

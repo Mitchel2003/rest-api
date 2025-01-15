@@ -15,27 +15,10 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
   },
 
   //maintenance
-  typeMaintenance: {
-    type: String,
-    requerid: true
-  },
   statusEquipment: {
     type: String,
     requerid: true
   },
-  faultEquipment: {
-    type: Boolean,
-    requerid: false,
-    default: false
-  },
-  faultDescription: {
-    type: String,
-    requerid: true
-  },
-  inspections: [{
-    type: String,
-    requerid: true
-  }],
   observations: {
     type: String,
     requerid: true
@@ -56,7 +39,7 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
   },
 
   //references
-  equipment: {
+  curriculum: {
     type: Schema.Types.ObjectId,
     required: true
   }

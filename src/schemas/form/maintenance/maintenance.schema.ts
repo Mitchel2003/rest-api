@@ -8,22 +8,12 @@ export const maintenanceSchema = z.object({
   dateMaintenance: z.date().optional(),
 
   //maintenance
-  typeMaintenance: z
-    .string({ required_error: "El tipo de mantenimiento es requerido" }),
-
   statusEquipment: z
     .string({ required_error: "El estado del equipo es requerido" }),
 
-  faultEquipment: z.boolean().optional().default(false),
-
-  faultDescription: z
-    .string({ required_error: "La descripción de la falla es requerida" }),
-
-  inspections: z
-    .array(z.string({ required_error: "Las inspecciones son requeridas" })),
-
   observations: z
     .string({ required_error: "Las observaciones son requeridas" }),
+
 
   //received
   receivedBy: z
@@ -36,8 +26,8 @@ export const maintenanceSchema = z.object({
     .string({ required_error: "El INVIMA del ingeniero es requerido" }),
 
   //references
-  equipment: z
-    .string({ required_error: "El ID del equipo es requerido" }),
+  curriculum: z
+    .string({ required_error: "El ID del curriculum es requerido" }),
 });
 
 export const checkSchema = z.object({

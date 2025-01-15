@@ -6,18 +6,14 @@ export interface Maintenance extends Document {
   dateMaintenance: Date;
 
   //maintenance
-  typeMaintenance: string;
   statusEquipment: string;
-  faultEquipment: boolean;
-  faultDescription: string;
-  inspections: string[];
   observations: string;
 
   //references
   receivedBy: string;
   nameEngineer: string;
   invimaEngineer: string;
-  equipment: Schema.Types.ObjectId,
+  curriculum: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
 }

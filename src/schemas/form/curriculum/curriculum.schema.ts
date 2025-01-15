@@ -22,9 +22,9 @@ const curriculumSchema = z.object({
   }),
 
   //details
-  datePurchase: z.string().datetime(),
-  dateInstallation: z.string().datetime(),
-  dateOperation: z.string().datetime(),
+  datePurchase: z.string().datetime().optional().nullable(),
+  dateInstallation: z.string().datetime().optional().nullable(),
+  dateOperation: z.string().datetime().optional().nullable(),
   acquisition: z.string({
     required_error: "Tipo de adquisición del equipo es requerida"
   }),
@@ -59,7 +59,7 @@ const curriculumSchema = z.object({
     })
   ),
 
-  //standard technicals
+  //technical characteristics
   technicalCharacteristics: z.object({}).optional().nullable(),
 
   //maintenance

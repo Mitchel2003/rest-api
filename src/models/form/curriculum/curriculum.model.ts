@@ -12,9 +12,9 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   healthRecord: { type: String, required: true },
 
   //details
-  datePurchase: { type: String, required: true },
-  dateInstallation: { type: String, required: true },
-  dateOperation: { type: String, required: true },
+  datePurchase: { type: String, required: false },
+  dateInstallation: { type: String, required: false },
+  dateOperation: { type: String, required: false },
   acquisition: { type: String, required: true },
   warranty: { type: String, required: true },
   price: { type: String, required: true },
@@ -28,7 +28,7 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   powerSupply: [{ type: String, required: true }],
 
   //technical characteristics
-  technicalCharacteristics: { type: Object, required: true },
+  technicalCharacteristics: { type: Object, required: false, default: {} },
 
   //maintenance
   employmentMaintenance: { type: String, required: true },

@@ -2,8 +2,8 @@ import { Document, Schema } from "mongoose"
 
 export interface Maintenance extends Document {
   //timestandard
-  dateNextMaintenance: Date;
-  dateMaintenance: Date;
+  dateNextMaintenance: string;
+  dateMaintenance: string;
 
   //maintenance
   statusEquipment: string;

@@ -5,13 +5,13 @@ import mongoose, { Schema } from "mongoose";
 const maintenanceSchema: Schema<Maintenance> = new Schema({
   //timestandard
   dateNextMaintenance: {
-    type: Date,
+    type: String,
     requerid: true
   },
   dateMaintenance: {
-    type: Date,
+    type: String,
     requerid: false,
-    default: new Date(Date.now())
+    default: new Date(Date.now()).toISOString()
   },
 
   //maintenance

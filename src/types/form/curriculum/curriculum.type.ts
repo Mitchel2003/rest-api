@@ -14,9 +14,9 @@ export interface Curriculum extends Document {
   // recommendationsManufacturer: string,
 
   //details
-  datePurchase: Date,
-  dateInstallation: Date,
-  dateOperation: Date,
+  datePurchase: string,
+  dateInstallation: string,
+  dateOperation: string,
   acquisition: string,
   warranty: string,
   price: string,

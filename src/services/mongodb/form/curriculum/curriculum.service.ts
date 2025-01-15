@@ -34,15 +34,6 @@ class CurriculumService extends MongoDB<Curriculum> {
         }]
       }
     }
-  }, {
-    path: 'representative',
-    select: 'name email phone city'
-  }, {
-    path: 'supplier',
-    select: 'name email address phone nit'
-  }, {
-    path: 'manufacturer',
-    select: 'name email phone city'
   }]
 
   private constructor() {

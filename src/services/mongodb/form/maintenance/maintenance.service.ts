@@ -8,7 +8,7 @@ import { Maintenance } from "@/types/form/maintenance/maintenance.type";
 
 class MaintenanceService extends MongoDB<Maintenance> {
   private static instance: MaintenanceService;
-  private readonly defaultPopulate: Populate = [{
+  private readonly defaultPopulate: Populate = {
     path: 'curriculum',
     select: 'name brand serie service modelEquip healthRecord',
     populate: {
@@ -38,7 +38,7 @@ class MaintenanceService extends MongoDB<Maintenance> {
         }
       }
     }
-  }]
+  }
 
   private constructor() {
     super(Repository.create(maintenanceModel));

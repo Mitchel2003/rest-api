@@ -21,6 +21,7 @@
     "@babel/preset-typescript": "^7.25.9",
     "babel-plugin-transform-typescript-metadata": "^0.3.2",
     "cors": "^2.8.5",
+    "debug": "^4.4.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "firebase": "^11.0.1",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
+    "@types/debug": "^4.1.12",
     "@types/express": "^5.0.0"
   },
   "_moduleAliases": {

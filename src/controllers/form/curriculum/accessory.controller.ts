@@ -2,11 +2,8 @@ import { accessoryService } from "@/services/mongodb/form/curriculum/accessory.s
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
 import ErrorAPI from "@/errors";
-import debug from 'debug';
 
 import { Request, Response } from "express";
-
-const log = debug('app:controller:accessory');
 
 /**
  * Obtiene un accesorio específico por su ID.
@@ -28,21 +25,10 @@ export const getAccessory = async ({ params }: Request, res: Response): Promise<
  */
 export const getAccessories = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const query = body.query || {};
-    const populate = body.populate;
-
-    log('getAccessories received:', {
-      rawQuery: query,
-      rawPopulate: populate,
-    });
-
-    const accessories = await accessoryService.find(query, populate);
+    const accessories = await accessoryService.find(body.query, body.populate);
     if (!accessories.success) throw new ErrorAPI(accessories.error);
     send(res, 200, accessories.data);
-  } catch (e) {
-    log('getAccessories error:', e);
-    handlerResponse(res, e, "obtener los accesorios")
-  }
+  } catch (e) { handlerResponse(res, e, "obtener los accesorios") }
 }
 
 /**

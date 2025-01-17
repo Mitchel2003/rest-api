@@ -1,8 +1,5 @@
 import { Repository, Doc, Query, Populate } from "@/types/repository.type";
 import { Document, Model } from "mongoose";
-import debug from 'debug';
-
-const log = debug('app:repository:mongodb');
 
 class MongoDBRepository {
   /**
@@ -20,7 +17,6 @@ class MongoDBRepository {
       },
       /** Permite buscar todos los registros en la base de datos, parametro opcional para filtrar los registros */
       find: async (query?: Query, populate?: Populate) => {
-        log('find called with:', { query, populate });
         const req = model.find(query || {});
         if (populate) {// to prepare the query with populate
           if (Array.isArray(populate)) { populate.forEach(e => req.populate(typeof e === 'string' ? { path: e } : e)) }

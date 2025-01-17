@@ -2,7 +2,6 @@ import { Doc, Query, Populate } from "@/types/repository.type";
 import Repository from "@/repositories/mongodb.repository";
 import MongoDB from "@/services/mongodb/mongodb.service";
 import { Result } from "@/interfaces/api.interface";
-import { Types } from "mongoose";
 
 import accessoryModel from "@/models/form/curriculum/accessory.model";
 import { Accessory } from "@/types/form/curriculum/accessory.type";
@@ -52,7 +51,7 @@ class AccessoryService extends MongoDB<Accessory> {
 
   // Overwrite the methods to apply the populate that corresponds to this service "accessory"
   async find(query?: Query, populate?: Populate): Promise<Result<Accessory[]>> {
-    if (query?.curriculum && typeof query.curriculum === 'string') query.curriculum = new Types.ObjectId(query.curriculum)
+    console.log(query)
     return super.find(query, populate || this.defaultPopulate);
   }
   async findById(id: string): Promise<Result<Accessory | null>> {

@@ -1,0 +1,1 @@
+export const parseQuery = (query: any) => typeof query === 'string' ? JSON.parse(query) : query

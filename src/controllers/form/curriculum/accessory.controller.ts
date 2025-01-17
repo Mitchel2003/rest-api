@@ -68,4 +68,4 @@ export const deleteAccessory = async ({ params }: Request, res: Response): Promi
     if (!accessory.success) throw new ErrorAPI(accessory.error);
     send(res, 200, accessory.data);
   } catch (e) { handlerResponse(res, e, "eliminar el accesorio") }
-} 
+}

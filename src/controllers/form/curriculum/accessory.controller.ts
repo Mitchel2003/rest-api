@@ -3,8 +3,11 @@ import { parseQuery as parse } from "@/utils/helper";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
 import ErrorAPI from "@/errors";
+import debug from 'debug';
 
 import { Request, Response } from "express";
+
+const log = debug('app:controller:accessory');
 
 /**
  * Obtiene un accesorio específico por su ID.
@@ -28,10 +31,35 @@ export const getAccessories = async (req: Request, res: Response): Promise<void>
   try {
     const query = req.query.query || {};
     const populate = req.query.populate;
-    const accessories = await accessoryService.find(parse(query), parse(populate));
+    
+    log('getAccessories received:', { 
+      rawQuery: query,
+      rawPopulate: populate,
+      headers: req.headers,
+      method: req.method,
+      url: req.url
+    });
+
+    const parsedQuery = parse(query);
+    const parsedPopulate = parse(populate);
+    
+    log('getAccessories parsed params:', { 
+      parsedQuery,
+      parsedPopulate
+    });
+
+    const accessories = await accessoryService.find(parsedQuery, parsedPopulate);
+    
+    log('getAccessories result:', { 
+      success: accessories.success,
+    });
+
     if (!accessories.success) throw new ErrorAPI(accessories.error);
     send(res, 200, accessories.data);
-  } catch (e) { handlerResponse(res, e, "obtener los accesorios") }
+  } catch (e) { 
+    log('getAccessories error:', e);
+    handlerResponse(res, e, "obtener los accesorios") 
+  }
 }
 
 /**

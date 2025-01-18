@@ -24,12 +24,18 @@ export const getAccessory = async ({ params }: Request, res: Response): Promise<
  * @param {Request} req - Objeto de solicitud Express. Se espera query params para la consulta.
  * @returns {Promise<void>} - Envía un objeto con los accesorios.
  */
-export const getAccessories = async ({ query: q }: Request, res: Response): Promise<void> => {
+export const getAccessories = async (req: Request, res: Response): Promise<void> => {
   try {
-    const query = q.query ? JSON.parse(q.query as string) : undefined;
-    const populate = q.populate ? JSON.parse(q.populate as string) : undefined;
-    // convert string to ObjectId (necesary to query that refer to other collections)
-    query?.curriculum && (query.curriculum = Types.ObjectId.createFromHexString(query.curriculum));
+    // Extraer el query string
+    const queryStr = req.query.query as string;
+    const populateStr = req.query.populate as string;
+    const populate = populateStr ? JSON.parse(populateStr) : undefined;
+    let query = {};
+
+    if (queryStr) {
+      const parsedQuery = JSON.parse(queryStr);
+      parsedQuery.curriculum && (query = { curriculum: Types.ObjectId.createFromHexString(parsedQuery.curriculum) })
+    }
 
     const accessories = await accessoryService.find(query, populate);
     if (!accessories.success) throw new ErrorAPI(accessories.error);

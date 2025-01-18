@@ -1,8 +1,8 @@
 import { accessoryService } from "@/services/mongodb/form/curriculum/accessory.service";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
-import ErrorAPI from "@/errors";
 import { Types } from "mongoose";
+import ErrorAPI from "@/errors";
 
 import { Request, Response } from "express";
 
@@ -21,23 +21,13 @@ export const getAccessory = async ({ params }: Request, res: Response): Promise<
 
 /**
  * Obtiene todos los accesorios.
- * @param {Request} req - Objeto de solicitud Express. Se espera query params para la consulta.
+ * @param {Request} req - Objeto de solicitud Express. Se espera params para la consulta.
  * @returns {Promise<void>} - Envía un objeto con los accesorios.
  */
-export const getAccessories = async (req: Request, res: Response): Promise<void> => {
+export const getAccessories = async ({ params }: Request, res: Response): Promise<void> => {
   try {
-    // Extraer el query string
-    const queryStr = req.query.query as string;
-    const populateStr = req.query.populate as string;
-    const populate = populateStr ? JSON.parse(populateStr) : undefined;
-    let query = {};
-
-    if (queryStr) {
-      const parsedQuery = JSON.parse(queryStr);
-      parsedQuery.curriculum && (query = { curriculum: Types.ObjectId.createFromHexString(parsedQuery.curriculum) })
-    }
-
-    const accessories = await accessoryService.find(query, populate);
+    const query = params.id ? { curriculum: new Types.ObjectId(params.id) } : {};
+    const accessories = await accessoryService.find(query);
     if (!accessories.success) throw new ErrorAPI(accessories.error);
     send(res, 200, accessories.data);
   } catch (e) { handlerResponse(res, e, "obtener los accesorios") }

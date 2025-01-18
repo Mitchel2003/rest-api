@@ -50,8 +50,8 @@ class AccessoryService extends MongoDB<Accessory> {
   }
 
   // Overwrite the methods to apply the populate that corresponds to this service "accessory"
-  async find(query?: Query, populate?: Populate): Promise<Result<Accessory[]>> {
-    return super.find(query, populate || this.defaultPopulate);
+  async find(query?: Query): Promise<Result<Accessory[]>> {
+    return super.find(query, this.defaultPopulate);
   }
   async findById(id: string): Promise<Result<Accessory | null>> {
     return super.findById(id, this.defaultPopulate);

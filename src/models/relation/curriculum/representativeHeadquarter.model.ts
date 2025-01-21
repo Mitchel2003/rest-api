@@ -8,11 +8,7 @@ const representativeHeadquarterSchema: Schema<RepresentativeHeadquarter> = new S
     ref: 'representative',
     required: true
   },
-  headquarter: {
-    type: Schema.Types.ObjectId,
-    ref: 'headquarter',
-    required: true
-  }
+  headquarter: { type: String, required: true },
 }, configSchema);
 
 export default mongoose.model('representative_headquarter', representativeHeadquarterSchema);

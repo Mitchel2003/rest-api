@@ -9,13 +9,13 @@ const representativeSchema: Schema<Representative> = new Schema({
   },
   phone: {
     type: String,
-    required: false,
+    required: true,
     default: 'n/r',
     trim: true
   },
   city: {
     type: String,
-    required: false,
+    required: true,
     default: 'n/r',
     trim: true
   }

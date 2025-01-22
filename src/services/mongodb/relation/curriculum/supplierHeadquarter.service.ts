@@ -8,28 +8,10 @@ import { SupplierHeadquarter } from "@/types/relation/curriculum/supplierHeadqua
 
 class SupplierHeadquarterService extends MongoDB<SupplierHeadquarter> {
   private static instance: SupplierHeadquarterService;
-  private readonly defaultPopulate: Populate = [{
-    path: 'headquarter',
-    select: 'name address',
-    populate: [{
-      path: 'client',
-      select: 'name email phone city'
-    }, {
-      path: 'city',
-      select: 'name state',
-      populate: {
-        path: 'state',
-        select: 'name country',
-        populate: {
-          path: 'country',
-          select: 'name'
-        }
-      }
-    }]
-  }, {
+  private readonly defaultPopulate: Populate = {
     path: 'supplier',
-    select: 'name email address phone nit'
-  }]
+    select: 'name phone city'
+  }
 
   private constructor() {
     super(Repository.create(supplierHeadquarterModel));

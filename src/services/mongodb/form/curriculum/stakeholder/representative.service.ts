@@ -1,7 +1,8 @@
-import representativeModel from "@/models/form/curriculum/stakeholder/representative.model";
-import { Representative } from "@/types/form/curriculum/stakeholder/representative.type";
 import Repository from "@/repositories/mongodb.repository";
 import MongoDB from "@/services/mongodb/mongodb.service";
+
+import representativeModel from "@/models/form/curriculum/stakeholder/representative.model";
+import { Representative } from "@/types/form/curriculum/stakeholder/representative.type";
 
 class RepresentativeService extends MongoDB<Representative> {
   private static instance: RepresentativeService;

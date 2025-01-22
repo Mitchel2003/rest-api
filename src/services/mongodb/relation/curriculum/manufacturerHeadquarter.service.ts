@@ -8,28 +8,10 @@ import { ManufacturerHeadquarter } from "@/types/relation/curriculum/manufacture
 
 class ManufacturerHeadquarterService extends MongoDB<ManufacturerHeadquarter> {
   private static instance: ManufacturerHeadquarterService;
-  private readonly defaultPopulate: Populate = [{
-    path: 'headquarter',
-    select: 'name address',
-    populate: [{
-      path: 'client',
-      select: 'name email phone city'
-    }, {
-      path: 'city',
-      select: 'name state',
-      populate: {
-        path: 'state',
-        select: 'name country',
-        populate: {
-          path: 'country',
-          select: 'name'
-        }
-      }
-    }]
-  }, {
+  private readonly defaultPopulate: Populate = {
     path: 'manufacturer',
-    select: 'name email phone city'
-  }]
+    select: 'name phone country'
+  }
 
   private constructor() {
     super(Repository.create(manufacturerHeadquarterModel));

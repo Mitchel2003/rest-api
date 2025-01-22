@@ -1,9 +1,10 @@
 import Repository from "@/repositories/mongodb.repository";
-import MongoDBService from "@/services/mongodb/mongodb.service";
+import MongoDB from "@/services/mongodb/mongodb.service";
+
 import manufacturerModel from "@/models/form/curriculum/stakeholder/manufacturer.model";
 import { Manufacturer } from "@/types/form/curriculum/stakeholder/manufacturer.type";
 
-class ManufacturerService extends MongoDBService<Manufacturer> {
+class ManufacturerService extends MongoDB<Manufacturer> {
   private static instance: ManufacturerService;
 
   private constructor() {

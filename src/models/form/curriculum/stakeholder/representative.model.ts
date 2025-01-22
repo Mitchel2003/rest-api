@@ -7,12 +7,6 @@ const representativeSchema: Schema<Representative> = new Schema({
     type: String,
     required: true
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-  },
   phone: {
     type: String,
     required: true,

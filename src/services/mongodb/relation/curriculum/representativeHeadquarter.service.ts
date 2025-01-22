@@ -8,28 +8,10 @@ import { RepresentativeHeadquarter } from "@/types/relation/curriculum/represent
 
 class RepresentativeHeadquarterService extends MongoDB<RepresentativeHeadquarter> {
   private static instance: RepresentativeHeadquarterService;
-  private readonly defaultPopulate: Populate = [{
-    path: 'headquarter',
-    select: 'name address',
-    populate: [{
-      path: 'client',
-      select: 'name email phone city'
-    }, {
-      path: 'city',
-      select: 'name state',
-      populate: {
-        path: 'state',
-        select: 'name country',
-        populate: {
-          path: 'country',
-          select: 'name'
-        }
-      }
-    }]
-  }, {
+  private readonly defaultPopulate: Populate = {
     path: 'representative',
-    select: 'name email phone city'
-  }]
+    select: 'name phone city'
+  }
 
   private constructor() {
     super(Repository.create(representativeHeadquarterModel));

@@ -8,11 +8,7 @@ const manufacturerHeadquarterSchema: Schema<ManufacturerHeadquarter> = new Schem
     ref: 'manufacturer',
     required: true
   },
-  headquarter: {
-    type: Schema.Types.ObjectId,
-    ref: 'headquarter',
-    required: true
-  }
+  headquarter: { type: String, required: true }
 }, configSchema);
 
 export default mongoose.model('manufacturer_headquarter', manufacturerHeadquarterSchema);

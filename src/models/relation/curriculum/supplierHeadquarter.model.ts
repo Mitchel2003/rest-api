@@ -8,11 +8,7 @@ const supplierHeadquarterSchema: Schema<SupplierHeadquarter> = new Schema({
     ref: 'supplier',
     required: true
   },
-  headquarter: {
-    type: Schema.Types.ObjectId,
-    ref: 'headquarter',
-    required: true
-  }
+  headquarter: { type: String, required: true },
 }, configSchema);
 
 export default mongoose.model('supplier_headquarter', supplierHeadquarterSchema);

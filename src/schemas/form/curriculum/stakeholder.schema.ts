@@ -6,11 +6,11 @@ export const representativeSchema = z.object({
   phone: z
     .string()
     .optional()
-    .transform((val) => val || "n/r"),
+    .transform((val) => val === '' ? 'n/r' : val),
   city: z
     .string()
     .optional()
-    .transform((val) => val || "n/r")
+    .transform((val) => val === '' ? 'n/r' : val)
 });
 
 export const supplierSchema = z.object({
@@ -19,11 +19,11 @@ export const supplierSchema = z.object({
   phone: z
     .string()
     .optional()
-    .transform((val) => val || "n/r"),
+    .transform((val) => val === '' ? 'n/r' : val),
   city: z
     .string()
     .optional()
-    .transform((val) => val || "n/r")
+    .transform((val) => val === '' ? 'n/r' : val)
 });
 
 export const manufacturerSchema = z.object({
@@ -32,9 +32,9 @@ export const manufacturerSchema = z.object({
   phone: z
     .string()
     .optional()
-    .transform((val) => val || "n/r"),
+    .transform((val) => val === '' ? 'n/r' : val),
   country: z
     .string()
     .optional()
-    .transform((val) => val || "n/r")
+    .transform((val) => val === '' ? 'n/r' : val)
 });

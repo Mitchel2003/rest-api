@@ -5,12 +5,10 @@ export const representativeSchema = z.object({
     .string({ required_error: "El nombre del representante es requerido" }),
   phone: z
     .string()
-    .optional()
-    .transform((val) => val === '' ? 'n/r' : val),
+    .transform((val) => val.length > 0 ? val : 'n/r'),
   city: z
     .string()
-    .optional()
-    .transform((val) => val === '' ? 'n/r' : val)
+    .transform((val) => val.length > 0 ? val : 'n/r')
 });
 
 export const supplierSchema = z.object({
@@ -18,12 +16,10 @@ export const supplierSchema = z.object({
     .string({ required_error: "El nombre del proveedor es requerido" }),
   phone: z
     .string()
-    .optional()
-    .transform((val) => val === '' ? 'n/r' : val),
+    .transform((val) => val.length > 0 ? val : 'n/r'),
   city: z
     .string()
-    .optional()
-    .transform((val) => val === '' ? 'n/r' : val)
+    .transform((val) => val.length > 0 ? val : 'n/r')
 });
 
 export const manufacturerSchema = z.object({
@@ -31,10 +27,8 @@ export const manufacturerSchema = z.object({
     .string({ required_error: "El nombre del fabricante es requerido" }),
   phone: z
     .string()
-    .optional()
-    .transform((val) => val === '' ? 'n/r' : val),
+    .transform((val) => val.length > 0 ? val : 'n/r'),
   country: z
     .string()
-    .optional()
-    .transform((val) => val === '' ? 'n/r' : val)
+    .transform((val) => val.length > 0 ? val : 'n/r')
 });

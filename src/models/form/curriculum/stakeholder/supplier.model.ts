@@ -9,13 +9,13 @@ const supplierSchema: Schema<Supplier> = new Schema({
   },
   phone: {
     type: String,
-    required: true,
+    required: false,
     default: 'n/r',
     trim: true
   },
   city: {
     type: String,
-    required: true,
+    required: false,
     default: 'n/r',
     trim: true
   }

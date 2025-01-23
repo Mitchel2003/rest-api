@@ -9,7 +9,7 @@ const router = Router();
 
 //inspection routes (form/cv/inspection)
 router.post('/inspection', authRequired, validateSchema(inspectionSchema), createInspection);
-router.get('/inspections', authRequired, getInspections);
+router.get('/inspections/:id', authRequired, getInspections);
 router.get('/inspection/:id', authRequired, getInspection);
 router.put('/inspection/:id', authRequired, updateInspection);
 router.delete('/inspection/:id', authRequired, deleteInspection);

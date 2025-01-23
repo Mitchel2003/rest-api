@@ -21,13 +21,13 @@ export const getAccessory = async ({ params }: Request, res: Response): Promise<
 
 /**
  * Obtiene todos los accesorios.
- * @param {Request} req - Objeto de solicitud Express. Se espera params para la consulta.
+ * @param {Request} req - Objeto de solicitud Express. Se espera query para la consulta.
  * @returns {Promise<void>} - Envía un objeto con los accesorios.
  */
-export const getAccessories = async ({ params }: Request, res: Response): Promise<void> => {
+export const getAccessories = async ({ query }: Request, res: Response): Promise<void> => {
   try {
-    const query = params.id ? { curriculum: new Types.ObjectId(params.id) } : {};
-    const accessories = await accessoryService.find(query);
+    const queryFormated = query.curriculum ? { curriculum: new Types.ObjectId(query.curriculum as string) } : {};
+    const accessories = await accessoryService.find(queryFormated);
     if (!accessories.success) throw new ErrorAPI(accessories.error);
     send(res, 200, accessories.data);
   } catch (e) { handlerResponse(res, e, "obtener los accesorios") }

@@ -19,12 +19,12 @@ router.get('/cv/:id', authRequired, getCurriculum)
 router.put('/cv/:id', authRequired, updateCurriculum)
 router.delete('/cv/:id', authRequired, deleteCurriculum)
 
-//accessory routes (form/cv/accessory)
-router.post('/cv/accessory', authRequired, validateSchema(accessorySchema), createAccessory)
-router.get('/cv/accessories', authRequired, getAccessories)
-router.get('/cv/accessory/:id', authRequired, getAccessory)
-router.put('/cv/accessory/:id', authRequired, updateAccessory)
-router.delete('/cv/accessory/:id', authRequired, deleteAccessory)
+//accessory routes (form/cv/sub/accessory)
+router.post('/cv/sub/accessory', authRequired, validateSchema(accessorySchema), createAccessory)
+router.get('/cv/sub/accessories', authRequired, getAccessories)
+router.get('/cv/sub/accessory/:id', authRequired, getAccessory)
+router.put('/cv/sub/accessory/:id', authRequired, updateAccessory)
+router.delete('/cv/sub/accessory/:id', authRequired, deleteAccessory)
 
 //inspection routes (form/cv/sub/inspection)
 router.post('/cv/sub/inspection', authRequired, validateSchema(inspectionSchema), createInspection);

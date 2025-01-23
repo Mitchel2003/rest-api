@@ -21,12 +21,12 @@ export const getCurriculum = async ({ params }: Request, res: Response): Promise
 
 /**
  * Obtiene todos los curriculums.
- * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
+ * @param {Request} req - Objeto de solicitud Express. Se espera query para la consulta.
  * @returns {Promise<void>} - Envía un objeto con los curriculums.
  */
-export const getCurriculums = async ({ body }: Request, res: Response): Promise<void> => {
+export const getCurriculums = async ({ query }: Request, res: Response): Promise<void> => {
   try {
-    const curriculums = await curriculumService.find(body.query, body.populate);
+    const curriculums = await curriculumService.find(query || {});
     if (!curriculums.success) throw new ErrorAPI(curriculums.error);
     send(res, 200, curriculums.data);
   } catch (e) { handlerResponse(res, e, "obtener los curriculums") }

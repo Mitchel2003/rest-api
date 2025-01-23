@@ -9,9 +9,9 @@ import { Request, Response } from "express";
  * @argument id: corresponde al id del curriculum (equipo)
  * @argument ref: corresponde al folder que contiene el archivo (curriculum, maintenance, preview)
  */
-export const getFiles = async ({ body }: Request, res: Response): Promise<void> => {
+export const getFiles = async ({ query }: Request, res: Response): Promise<void> => {
   try {
-    const result = await storageService.getFilesWithMetadata(`${body.id}/${body.ref}`);
+    const result = await storageService.getFilesWithMetadata(`${query.id}/${query.ref}`);
     if (!result.success) throw result.error;
     send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, 'obtener archivos') }

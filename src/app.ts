@@ -13,7 +13,6 @@ import clientRoutes from "@/routes/user/client.routes"
 
 //curriculum routes
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
-import inspectionRoutes from "@/routes/form/curriculum/inspection.routes";
 import stakeholderRoutes from "@/routes/form/curriculum/stakeholder.routes"
 
 //equipment routes
@@ -60,7 +59,6 @@ app.use('/api', clientRoutes);
 /*--------------------------------------------------form routes--------------------------------------------------*/
 //form curriculum routes
 app.use('/api/form', curriculumRoutes);
-app.use('/api/form/cv', inspectionRoutes);
 app.use('/api/form/cv', stakeholderRoutes);
 app.use('/api/form/cv', curriculumRelationRoutes);
 

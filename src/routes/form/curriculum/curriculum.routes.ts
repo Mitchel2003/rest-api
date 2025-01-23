@@ -4,7 +4,9 @@ import { Router } from "express"
 
 import curriculumSchema from "@/schemas/form/curriculum/curriculum.schema"
 import accessorySchema from "@/schemas/form/curriculum/accessory.schema"
+import inspectionSchema from "@/schemas/form/curriculum/inspection.schema"
 
+import { createInspection, getInspections, getInspection, updateInspection, deleteInspection } from "@/controllers/form/curriculum/inspection.controller"
 import { getCurriculum, getCurriculums, createCurriculum, updateCurriculum, deleteCurriculum } from "@/controllers/form/curriculum/curriculum.controller"
 import { createAccessory, getAccessories, getAccessory, updateAccessory, deleteAccessory } from "@/controllers/form/curriculum/accessory.controller"
 
@@ -23,5 +25,12 @@ router.get('/cv/accessories', authRequired, getAccessories)
 router.get('/cv/accessory/:id', authRequired, getAccessory)
 router.put('/cv/accessory/:id', authRequired, updateAccessory)
 router.delete('/cv/accessory/:id', authRequired, deleteAccessory)
+
+//inspection routes (form/cv/sub/inspection)
+router.post('/cv/sub/inspection', authRequired, validateSchema(inspectionSchema), createInspection);
+router.get('/cv/sub/inspections', authRequired, getInspections);
+router.get('/cv/sub/inspection/:id', authRequired, getInspection);
+router.put('/cv/sub/inspection/:id', authRequired, updateInspection);
+router.delete('/cv/sub/inspection/:id', authRequired, deleteInspection);
 
 export default router

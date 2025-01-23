@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const inspectionSchema = z.object({
+const inspectionSchema = z.object({
   name: z.string({
     required_error: "El nombre de inspección es requerido"
   }),
@@ -10,4 +10,6 @@ export const inspectionSchema = z.object({
       required_error: "Tipos de inspección son requeridas"
     })
   )
-});
+})
+
+export default inspectionSchema

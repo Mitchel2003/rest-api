@@ -7,7 +7,7 @@ export const representativeSchema = z.object({
     .string({ required_error: "El teléfono es requerido" }),
   city: z
     .string({ required_error: "La ciudad es requerida" })
-});
+})
 
 export const supplierSchema = z.object({
   name: z
@@ -16,7 +16,7 @@ export const supplierSchema = z.object({
     .string({ required_error: "El teléfono es requerido" }),
   city: z
     .string({ required_error: "La ciudad es requerida" })
-});
+})
 
 export const manufacturerSchema = z.object({
   name: z
@@ -25,4 +25,4 @@ export const manufacturerSchema = z.object({
     .string({ required_error: "El teléfono es requerido" }),
   country: z
     .string({ required_error: "El país es requerido" })
-});
+})

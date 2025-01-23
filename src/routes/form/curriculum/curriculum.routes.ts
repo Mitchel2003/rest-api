@@ -19,7 +19,7 @@ router.delete('/cv/:id', authRequired, deleteCurriculum)
 
 //accessory routes (form/cv/accessory)
 router.post('/cv/accessory', authRequired, validateSchema(accessorySchema), createAccessory)
-router.get('/cv/accessories/:id', authRequired, getAccessories)
+router.get('/cv/accessories', authRequired, getAccessories)
 router.get('/cv/accessory/:id', authRequired, getAccessory)
 router.put('/cv/accessory/:id', authRequired, updateAccessory)
 router.delete('/cv/accessory/:id', authRequired, deleteAccessory)

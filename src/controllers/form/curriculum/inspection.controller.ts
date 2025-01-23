@@ -23,10 +23,9 @@ export const getInspection = async ({ params }: Request, res: Response): Promise
  * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
  * @returns {Promise<void>} - Envía un objeto con las inspecciones.
  */
-export const getInspections = async ({ params }: Request, res: Response): Promise<void> => {
+export const getInspections = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const query = params.id ? { name: params.id } : {};
-    const inspections = await inspectionService.find(query);
+    const inspections = await inspectionService.find(body.query, body.populate);
     if (!inspections.success) throw new ErrorAPI(inspections.error);
     send(res, 200, inspections.data);
   } catch (e) { handlerResponse(res, e, "obtener las inspecciones") }

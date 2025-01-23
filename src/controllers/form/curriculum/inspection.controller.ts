@@ -1,7 +1,6 @@
 import { inspectionService } from "@/services/mongodb/form/curriculum/inspection.service";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
-import { Types } from "mongoose";
 import ErrorAPI from "@/errors";
 
 import { Request, Response } from "express";

@@ -25,7 +25,7 @@ export const getInspection = async ({ params }: Request, res: Response): Promise
  */
 export const getInspections = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const inspections = await inspectionService.find(body.query, body.populate);
+    const inspections = await inspectionService.find(body.query);
     if (!inspections.success) throw new ErrorAPI(inspections.error);
     send(res, 200, inspections.data);
   } catch (e) { handlerResponse(res, e, "obtener las inspecciones") }

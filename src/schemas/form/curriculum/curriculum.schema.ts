@@ -21,6 +21,14 @@ const curriculumSchema = z.object({
     required_error: "Registro sanitario del equipo es requerido"
   }),
 
+  //standard technical
+  characteristics: z.string({
+    required_error: "Características del equipo son requeridas"
+  }),
+  recommendationsManufacturer: z.string({
+    required_error: "Recomendaciones del fabricante son requeridas"
+  }),
+
   //details
   datePurchase: z.string().datetime().optional().nullable(),
   dateInstallation: z.string().datetime().optional().nullable(),
@@ -78,22 +86,25 @@ const curriculumSchema = z.object({
     required_error: "Manuales de mantenimiento son requeridos"
   }),
 
+  //service engineer
+  serviceEngineer: z.object({}).optional().nullable(),
+
   //relationship
   office: z.string({
     required_error: "Oficina es requerida"
   }),
-  /*inspection: z.string({
+  inspection: z.string({
     required_error: "Inspección es requerida"
-  }),*/
-  /*representative: z.string({
+  }),
+  representative: z.string({
     required_error: "Representante es requerido"
-  }),*/
-  /*supplier: z.string({
+  }),
+  supplier: z.string({
     required_error: "Proveedor es requerido"
-  }),*/
-  /*manufacturer: z.string({
+  }),
+  manufacturer: z.string({
     required_error: "Fabricante es requerido"
-  })*/
+  })
 })
 
 export default curriculumSchema

@@ -11,6 +11,10 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   modelEquip: { type: String, required: true },
   healthRecord: { type: String, required: true },
 
+  //standard technical
+  characteristics: { type: String, required: true },
+  recommendationsManufacturer: { type: String, required: true },
+
   //details
   datePurchase: { type: String, required: false },
   dateInstallation: { type: String, required: false },
@@ -36,32 +40,35 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   typeMaintenance: [{ type: String, required: true }],
   manualsMaintenance: { type: String, required: true },
 
+  //service engineer
+  serviceEngineer: { type: Object, required: false, default: {} },
+
   //relationship
   office: {
     type: Schema.Types.ObjectId,
     ref: 'office',
     required: true
   },
-  /*inspection: {
+  inspection: {
     type: Schema.Types.ObjectId,
     ref: 'inspection',
     required: true
-  },*/
-  /*representative: {
+  },
+  representative: {
     type: Schema.Types.ObjectId,
     ref: 'representative',
     required: true
-  },*/
-  /*supplier: {
+  },
+  supplier: {
     type: Schema.Types.ObjectId,
     ref: 'supplier',
     required: true
-  },*/
-  /*manufacturer: {
+  },
+  manufacturer: {
     type: Schema.Types.ObjectId,
     ref: 'manufacturer',
     required: true
-  }*/
+  }
 }, configSchema);
 
 export default mongoose.model('curriculum', curriculumSchema);

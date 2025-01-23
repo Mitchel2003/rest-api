@@ -1,4 +1,4 @@
-import { Inspection } from "@/types/form/curriculum/inspection/inspection.type";
+import { Inspection } from "@/types/form/curriculum/inspection.type";
 import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 

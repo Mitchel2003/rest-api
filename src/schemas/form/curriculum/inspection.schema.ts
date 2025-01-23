@@ -11,10 +11,3 @@ export const inspectionSchema = z.object({
     })
   )
 });
-
-export const typeInspectionSchema = z.object({
-  name: z.string({
-    required_error: "El nombre del tipo de inspección es requerido"
-  }),
-  inactive: z.boolean().optional().default(false)
-});

@@ -10,8 +10,8 @@ export interface Curriculum extends Document {
   healthRecord: string,
 
   //standard technicals
-  // characteristics: string,
-  // recommendationsManufacturer: string,
+  characteristics: string,
+  recommendationsManufacturer: string,
 
   //details
   datePurchase: string,
@@ -38,10 +38,13 @@ export interface Curriculum extends Document {
   typeMaintenance: string[],
   manualsMaintenance: string,
 
+  //serviceEngineer
+  serviceEngineer: object,
+
   //relationship
   office: Schema.Types.ObjectId,
-  /*inspection: Schema.Types.ObjectId,
+  inspection: Schema.Types.ObjectId,
   representative: Schema.Types.ObjectId,
   supplier: Schema.Types.ObjectId,
-  manufacturer: Schema.Types.ObjectId,*/
+  manufacturer: Schema.Types.ObjectId,
 }

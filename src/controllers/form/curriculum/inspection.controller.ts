@@ -1,4 +1,4 @@
-import { inspectionService } from "@/services/mongodb/form/curriculum/inspection/inspection.service";
+import { inspectionService } from "@/services/mongodb/form/curriculum/inspection.service";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
 import ErrorAPI from "@/errors";

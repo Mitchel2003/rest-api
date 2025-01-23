@@ -8,7 +8,7 @@ import { Curriculum } from "@/types/form/curriculum/curriculum.type";
 
 class CurriculumService extends MongoDB<Curriculum> {
   private static instance: CurriculumService;
-  private readonly defaultPopulate: Populate = {
+  private readonly defaultPopulate: Populate = [{
     path: 'office',
     select: 'name area',
     populate: {
@@ -34,7 +34,19 @@ class CurriculumService extends MongoDB<Curriculum> {
         }]
       }
     }
-  }
+  }, {
+    path: 'inspection',
+    select: 'name typeInspection inactive',
+  }, {
+    path: 'representative',
+    select: 'name phone city',
+  }, {
+    path: 'supplier',
+    select: 'name phone city',
+  }, {
+    path: 'manufacturer',
+    select: 'name phone country',
+  }]
 
   private constructor() {
     super(Repository.create(curriculumModel))

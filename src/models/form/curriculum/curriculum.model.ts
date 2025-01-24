@@ -40,9 +40,6 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   typeMaintenance: [{ type: String, required: true }],
   manualsMaintenance: { type: String, required: true },
 
-  //service engineer
-  serviceEngineer: { type: Object, required: false, default: {} },
-
   //relationship
   office: {
     type: Schema.Types.ObjectId,

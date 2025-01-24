@@ -86,9 +86,6 @@ const curriculumSchema = z.object({
     required_error: "Manuales de mantenimiento son requeridos"
   }),
 
-  //service engineer
-  serviceEngineer: z.object({}).optional().nullable(),
-
   //relationship
   office: z.string({
     required_error: "Oficina es requerida"

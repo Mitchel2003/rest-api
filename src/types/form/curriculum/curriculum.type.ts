@@ -38,9 +38,6 @@ export interface Curriculum extends Document {
   typeMaintenance: string[],
   manualsMaintenance: string,
 
-  //serviceEngineer
-  serviceEngineer: object,
-
   //relationship
   office: Schema.Types.ObjectId,
   inspection: Schema.Types.ObjectId,

@@ -41,7 +41,10 @@ import serviceRoutes from "@/routes/location/service.routes"
 const origin = config.nodeEnv === 'production' ? config.depUrl : config.devUrl
 const app = express();
 app.use(cors({ origin, credentials: true }));
-app.use(express.json());
+
+// Aumentar el límite del tamaño del cuerpo de la solicitud a 10MB
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 /*--------------------------------------------------health and auth routes--------------------------------------------------*/
 //to auto-refresh and uptime server

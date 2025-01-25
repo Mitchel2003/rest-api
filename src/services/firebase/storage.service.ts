@@ -102,6 +102,9 @@ class StorageService implements IStorage {
       const lastPath = ext ? path + '.' + ext : path
 
       const metadata = buildStorageMetadata(file)
+
+      console.log('Metadata:', metadata)
+      
       const buffer = file.buffer instanceof Buffer ? file.buffer : Buffer.from(file.buffer || '', 'base64')
       const upload = await uploadBytes(this.getReference(lastPath), buffer, metadata)
       return await getDownloadURL(upload.ref)

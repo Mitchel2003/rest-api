@@ -29,17 +29,14 @@ export const uploadFiles = async ({ body }: Request, res: Response): Promise<voi
     if (!body.files || !Array.isArray(body.files)) throw new Error('No se proporcionaron archivos válidos')
 
     // Debug: Ver qué tipo de datos estamos recibiendo
-    console.log('Received files:', body.files.map((f: any) => ({
-      buffer: f.buffer ? 'Buffer present' : 'No buffer',
-      originalname: f.originalname,
-      mimetype: f.mimetype,
-      size: f.size
-    })))
+    console.log('Received files:', body.files.map((f: any) => {
+      console.log(f)
+      console.log(typeof f)
+    }))
 
     const processFiles: Express.Multer.File[] = body.files.map((file: any) => {
-      // Intentar determinar el tipo MIME basado en el nombre del archivo
-      const ext = file.originalname?.split('.').pop()?.toLowerCase()
       const mimeTypes: { [key: string]: string } = { 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif' }
+      const ext = file.originalname?.split('.').pop()?.toLowerCase()
 
       return {
         size: file.size,
@@ -49,10 +46,14 @@ export const uploadFiles = async ({ body }: Request, res: Response): Promise<voi
       }
     });
 
+    console.log('Processed files:', processFiles.map((f: any) => {
+      console.log(f)
+      console.log(typeof f)
+    }))
+
     const result = body.unique
       ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, processFiles[0])
       : await storageService.uploadFiles(`${body.id}/${body.ref}/${body.filename}`, processFiles)
-
     if (!result.success) throw result.error;
     send(res, 201, result.data);
   } catch (e) { handlerResponse(res, e, 'subir archivos') }

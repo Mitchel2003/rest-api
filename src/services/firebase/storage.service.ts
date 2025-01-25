@@ -97,13 +97,8 @@ class StorageService implements IStorage {
    */
   async uploadFile(path: string, file: Express.Multer.File): Promise<Result<string>> {
     return handler(async () => {
-      // Asegurarse de que el path incluya la extensión del archivo
-      const ext = file.originalname?.split('.').pop()?.toLowerCase()
-      const finalPath = ext ? `${path}.${ext}` : path
-
+      const storageRef = this.getReference(path)
       const metadata = buildStorageMetadata(file)
-      const storageRef = this.getReference(finalPath)
-
       const upload = await uploadBytes(storageRef, file.buffer, metadata)
       return await getDownloadURL(upload.ref)
     }, 'subir archivo')
@@ -171,10 +166,8 @@ class StorageService implements IStorage {
  * @returns {object} Los metadatos del archivo con su configuración para Firebase Storage
  */
 const buildStorageMetadata = (file: Express.Multer.File): object => {
-  // Asegurar que tenemos un tipo MIME válido
-  const mimeTypes: { [key: string]: string } = { 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif' }
   const ext = file.originalname?.split('.').pop()?.toLowerCase()
-  const contentType = file.mimetype || mimeTypes[ext as keyof typeof mimeTypes] || 'application/octet-stream'
+  const contentType = file.mimetype || 'application/octet-stream'
 
   return {
     contentType,

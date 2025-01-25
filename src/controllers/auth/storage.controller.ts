@@ -27,23 +27,9 @@ export const getFiles = async ({ query }: Request, res: Response): Promise<void>
 export const uploadFiles = async ({ body }: Request, res: Response): Promise<void> => {
   try {
     if (!body.files || !Array.isArray(body.files)) throw new Error('No se proporcionaron archivos válidos')
-
-    const processFiles: Express.Multer.File[] = body.files.map((file: any) => {
-      if (!file.buffer || !file.originalname || !file.mimetype) throw new Error('Formato de archivo inválido: falta información requerida')
-      if (!file.mimetype.startsWith('image/')) throw new Error('El archivo debe ser una imagen')
-      if (file.size > 5 * 1024 * 1024) throw new Error('La imagen no debe superar los 5MB')
-
-      return {
-        size: file.size,
-        mimetype: file.mimetype,
-        originalname: file.originalname,
-        buffer: Buffer.from(file.buffer, 'base64'),
-      }
-    })
-
     const result = body.unique
-      ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, processFiles[0])
-      : await storageService.uploadFiles(`${body.id}/${body.ref}/${body.filename}`, processFiles)
+      ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, processFiles(body.files)[0])
+      : await storageService.uploadFiles(`${body.id}/${body.ref}/${body.filename}`, processFiles(body.files))
 
     if (!result.success) throw result.error;
     send(res, 201, result.data);
@@ -64,3 +50,19 @@ export const deleteFile = async ({ body }: Request, res: Response): Promise<void
     send(res, 200, undefined);
   } catch (e) { handlerResponse(res, e, 'eliminar archivo') }
 }
+/*---------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------tools--------------------------------------------------*/
+/**
+ * Allows us to process multiple files, converting them to base64
+ * @param {Array<any>} files - Array of files to process
+ * @returns {Express.Multer.File[]} - Array of Express.Multer.File
+ */
+const processFiles = (files: any): Express.Multer.File[] => (
+  files.map((file: any) => ({
+    size: file.size,
+    mimetype: file.mimetype,
+    originalname: file.originalname,
+    buffer: Buffer.from(file.buffer, 'base64')
+  }))
+)

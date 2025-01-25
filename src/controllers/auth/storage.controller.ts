@@ -28,32 +28,23 @@ export const uploadFiles = async ({ body }: Request, res: Response): Promise<voi
   try {
     if (!body.files || !Array.isArray(body.files)) throw new Error('No se proporcionaron archivos válidos')
 
-    // Debug: Ver qué tipo de datos estamos recibiendo
-    console.log('Received files:', body.files.map((f: any) => {
-      console.log(f)
-      console.log(typeof f)
-    }))
-
     const processFiles: Express.Multer.File[] = body.files.map((file: any) => {
-      const mimeTypes: { [key: string]: string } = { 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif' }
-      const ext = file.originalname?.split('.').pop()?.toLowerCase()
+      if (!file.buffer || !file.originalname || !file.mimetype) throw new Error('Formato de archivo inválido: falta información requerida')
+      if (!file.mimetype.startsWith('image/')) throw new Error('El archivo debe ser una imagen')
+      if (file.size > 5 * 1024 * 1024) throw new Error('La imagen no debe superar los 5MB')
 
       return {
         size: file.size,
-        originalname: file.originalname || 'unnamed',
-        buffer: Buffer.from(file.buffer || '', 'base64'),
-        mimetype: file.mimetype || mimeTypes[ext] || 'application/octet-stream',
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+        buffer: Buffer.from(file.buffer, 'base64'),
       }
-    });
-
-    console.log('Processed files:', processFiles.map((f: any) => {
-      console.log(f)
-      console.log(typeof f)
-    }))
+    })
 
     const result = body.unique
       ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, processFiles[0])
       : await storageService.uploadFiles(`${body.id}/${body.ref}/${body.filename}`, processFiles)
+
     if (!result.success) throw result.error;
     send(res, 201, result.data);
   } catch (e) { handlerResponse(res, e, 'subir archivos') }

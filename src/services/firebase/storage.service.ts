@@ -98,15 +98,13 @@ class StorageService implements IStorage {
   async uploadFile(path: string, file: Express.Multer.File): Promise<Result<string>> {
     return handler(async () => {
       // Asegurarse de que el path incluya la extensión del archivo
-      const ext = file.originalname?.split('.').pop()
-      const lastPath = ext ? path + '.' + ext : path
+      const ext = file.originalname?.split('.').pop()?.toLowerCase()
+      const finalPath = ext ? `${path}.${ext}` : path
 
       const metadata = buildStorageMetadata(file)
+      const storageRef = this.getReference(finalPath)
 
-      console.log('Metadata:', metadata)
-      
-      const buffer = file.buffer instanceof Buffer ? file.buffer : Buffer.from(file.buffer || '', 'base64')
-      const upload = await uploadBytes(this.getReference(lastPath), buffer, metadata)
+      const upload = await uploadBytes(storageRef, file.buffer, metadata)
       return await getDownloadURL(upload.ref)
     }, 'subir archivo')
   }
@@ -181,10 +179,10 @@ const buildStorageMetadata = (file: Express.Multer.File): object => {
   return {
     contentType,
     customMetadata: {
-      originalName: file.originalname || 'unnamed',
-      uploadedAt: new Date().toISOString(),
+      extension: ext || '',
       size: file.size?.toString() || '0',
-      extension: ext || ''
+      uploadedAt: new Date().toISOString(),
+      originalName: file.originalname || 'unnamed',
     }
   }
 }

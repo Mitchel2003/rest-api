@@ -19,16 +19,24 @@ export const getFiles = async ({ query }: Request, res: Response): Promise<void>
 
 /**
  * Sube múltiples archivos
- * @param {Request} req - body debe contener { id: string, ref: string, files: File[] }
+ * @param {Request} req - body debe contener { id: string, ref: string, files: Express.Multer.File[] }
  * @argument id: corresponde al id del curriculum (equipo)
  * @argument ref: corresponde al folder que contiene el archivo (curriculum, maintenance, preview)
  * @argument files: corresponde a los archivos a subir, representa un array de archivos
  */
 export const uploadFiles = async ({ body }: Request, res: Response): Promise<void> => {
   try {
+    if (!body.files || !Array.isArray(body.files)) throw new Error('No se proporcionaron archivos válidos')
+    const processFiles: Express.Multer.File[] = body.files.map((file: any) => ({
+      originalname: file.originalname || 'unnamed',
+      buffer: Buffer.from(file.buffer || '', 'base64'),
+      mimetype: file.mimetype || 'application/octet-stream'
+    }));
+
     const result = body.unique
-      ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, body.files[0] as File)
-      : await storageService.uploadFiles(`${body.id}/${body.ref}/${body.filename}`, body.files as File[])
+      ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, processFiles[0])
+      : await storageService.uploadFiles(`${body.id}/${body.ref}/${body.filename}`, processFiles)
+
     if (!result.success) throw result.error;
     send(res, 201, result.data);
   } catch (e) { handlerResponse(res, e, 'subir archivos') }

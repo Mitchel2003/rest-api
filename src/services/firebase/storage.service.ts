@@ -97,10 +97,13 @@ class StorageService implements IStorage {
    */
   async uploadFile(path: string, file: Express.Multer.File): Promise<Result<string>> {
     return handler(async () => {
-      const storageRef = this.getReference(path)
+      // Asegurarse de que el path incluya la extensión del archivo
+      const ext = file.originalname?.split('.').pop()
+      const lastPath = ext ? path + '.' + ext : path
+
       const metadata = buildStorageMetadata(file)
-      const buffer = file.buffer instanceof Buffer ? file.buffer : Buffer.from(file.buffer || '', 'base64') //we need to convert to buffer
-      const upload = await uploadBytes(storageRef, buffer, metadata)
+      const buffer = file.buffer instanceof Buffer ? file.buffer : Buffer.from(file.buffer || '', 'base64')
+      const upload = await uploadBytes(this.getReference(lastPath), buffer, metadata)
       return await getDownloadURL(upload.ref)
     }, 'subir archivo')
   }
@@ -163,16 +166,22 @@ class StorageService implements IStorage {
 /*--------------------------------------------------tools--------------------------------------------------*/
 /**
  * Construye los metadatos del archivo para Firebase Storage.
- * @param {File} file - El archivo a subir. @example file: "imagen.png"
- * @returns {object} Los metadatos del archivo con su configuración para Firebase Storage.
+ * @param {Express.Multer.File} file - El archivo a subir
+ * @returns {object} Los metadatos del archivo con su configuración para Firebase Storage
  */
 const buildStorageMetadata = (file: Express.Multer.File): object => {
+  // Asegurar que tenemos un tipo MIME válido
+  const mimeTypes: { [key: string]: string } = { 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif' }
+  const ext = file.originalname?.split('.').pop()?.toLowerCase()
+  const contentType = file.mimetype || mimeTypes[ext as keyof typeof mimeTypes] || 'application/octet-stream'
+
   return {
-    contentType: file.mimetype || 'application/octet-stream',
+    contentType,
     customMetadata: {
       originalName: file.originalname || 'unnamed',
       uploadedAt: new Date().toISOString(),
-      size: file.size?.toString() || '0'
+      size: file.size?.toString() || '0',
+      extension: ext || ''
     }
   }
 }

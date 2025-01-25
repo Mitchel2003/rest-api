@@ -27,11 +27,27 @@ export const getFiles = async ({ query }: Request, res: Response): Promise<void>
 export const uploadFiles = async ({ body }: Request, res: Response): Promise<void> => {
   try {
     if (!body.files || !Array.isArray(body.files)) throw new Error('No se proporcionaron archivos válidos')
-    const processFiles: Express.Multer.File[] = body.files.map((file: any) => ({
-      originalname: file.originalname || 'unnamed',
-      buffer: Buffer.from(file.buffer || '', 'base64'),
-      mimetype: file.mimetype || 'application/octet-stream'
-    }));
+
+    // Debug: Ver qué tipo de datos estamos recibiendo
+    console.log('Received files:', body.files.map((f: any) => ({
+      buffer: f.buffer ? 'Buffer present' : 'No buffer',
+      originalname: f.originalname,
+      mimetype: f.mimetype,
+      size: f.size
+    })))
+
+    const processFiles: Express.Multer.File[] = body.files.map((file: any) => {
+      // Intentar determinar el tipo MIME basado en el nombre del archivo
+      const ext = file.originalname?.split('.').pop()?.toLowerCase()
+      const mimeTypes: { [key: string]: string } = { 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'gif': 'image/gif' }
+
+      return {
+        size: file.size,
+        originalname: file.originalname || 'unnamed',
+        buffer: Buffer.from(file.buffer || '', 'base64'),
+        mimetype: file.mimetype || mimeTypes[ext] || 'application/octet-stream',
+      }
+    });
 
     const result = body.unique
       ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, processFiles[0])

@@ -27,7 +27,7 @@ export const getFiles = async ({ query }: Request, res: Response): Promise<void>
 export const uploadFiles = async ({ body }: Request, res: Response): Promise<void> => {
   try {
     const result = body.unique
-      ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, body.files as File)
+      ? await storageService.uploadFile(`${body.id}/${body.ref}/${body.filename}`, body.files[0] as File)
       : await storageService.uploadFiles(`${body.id}/${body.ref}/${body.filename}`, body.files as File[])
     if (!result.success) throw result.error;
     send(res, 201, result.data);

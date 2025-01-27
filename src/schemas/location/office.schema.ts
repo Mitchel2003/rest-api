@@ -8,8 +8,8 @@ const officeSchema = z.object({
   services: z
     .array(z.string({ required_error: "Servicio requerido" }))
     .min(1, { message: "Debe seleccionar al menos un servicio" }),
-  area: z
-    .string({ required_error: "Área requerida" })
+  headquarter: z
+    .string({ required_error: "Sede requerida" })
 })
 
 export default officeSchema;

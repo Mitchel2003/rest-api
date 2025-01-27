@@ -11,10 +11,10 @@ const officeSchema: Schema<Office> = new Schema({
     type: [String],
     required: true
   },
-  area: {
+  headquarter: {
     type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'area'
+    ref: 'headquarter',
+    required: true
   }
 }, configSchema);
 

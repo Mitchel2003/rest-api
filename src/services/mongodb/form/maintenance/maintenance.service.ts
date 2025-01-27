@@ -13,29 +13,25 @@ class MaintenanceService extends MongoDB<Maintenance> {
     select: 'name brand serie service modelEquip healthRecord',
     populate: {
       path: 'office',
-      select: 'name area',
+      select: 'name headquarter',
       populate: {
-        path: 'area',
-        select: 'name headquarter',
-        populate: {
-          path: 'headquarter',
-          select: 'name address city client',
-          populate: [{
-            path: 'city',
-            select: 'name state',
+        path: 'headquarter',
+        select: 'name address city client',
+        populate: [{
+          path: 'city',
+          select: 'name state',
+          populate: {
+            path: 'state',
+            select: 'name country',
             populate: {
-              path: 'state',
-              select: 'name country',
-              populate: {
-                path: 'country',
-                select: 'name'
-              }
+              path: 'country',
+              select: 'name'
             }
-          }, {
-            path: 'client',
-            select: 'name email phone nit'
-          }]
-        }
+          }
+        }, {
+          path: 'client',
+          select: 'name email phone nit'
+        }]
       }
     }
   }

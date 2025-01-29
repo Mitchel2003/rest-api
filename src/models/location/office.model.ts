@@ -7,6 +7,10 @@ const officeSchema: Schema<Office> = new Schema({
     type: String,
     required: true
   },
+  group: {
+    type: String,
+    required: true
+  },
   services: {
     type: [String],
     required: true

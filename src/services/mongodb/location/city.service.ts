@@ -10,7 +10,7 @@ class CityService extends MongoDB<City> {
   private static instance: CityService;
   private readonly defaultPopulate: Populate = {
     path: 'state',
-    select: 'name state',
+    select: 'name country',
     populate: {
       path: 'country',
       select: 'name'

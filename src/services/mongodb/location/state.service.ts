@@ -10,11 +10,7 @@ class StateService extends MongoDB<State> {
   private static instance: StateService;
   private readonly defaultPopulate: Populate = {
     path: 'country',
-    select: 'name country',
-    populate: {
-      path: 'country',
-      select: 'name'
-    }
+    select: 'name'
   }
 
   private constructor() {

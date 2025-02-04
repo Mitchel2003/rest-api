@@ -9,8 +9,12 @@ import { City } from "@/types/location/city.type";
 class CityService extends MongoDB<City> {
   private static instance: CityService;
   private readonly defaultPopulate: Populate = {
-    select: 'name',
     path: 'state',
+    select: 'name state',
+    populate: {
+      path: 'country',
+      select: 'name'
+    }
   }
 
   private constructor() {

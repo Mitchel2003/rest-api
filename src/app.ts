@@ -32,10 +32,8 @@ import maintenanceRelationRoutes from "@/routes/relation/maintenance.routes";
 import countryRoutes from "@/routes/location/country.routes"
 import stateRoutes from "@/routes/location/state.routes"
 import cityRoutes from "@/routes/location/city.routes"
-import headquarterRoutes from "@/routes/location/headquarter.routes"
-import groupRoutes from "@/routes/location/group.routes"
 import officeRoutes from "@/routes/location/office.routes"
-import serviceRoutes from "@/routes/location/service.routes"
+import headquarterRoutes from "@/routes/location/headquarter.routes"
 
 //config express
 const origin = config.nodeEnv === 'production' ? config.depUrl : config.devUrl
@@ -79,10 +77,8 @@ app.use('/api/form/maintenance', maintenanceRelationRoutes);
 app.use('/api/location', countryRoutes);
 app.use('/api/location', stateRoutes);
 app.use('/api/location', cityRoutes);
-app.use('/api/location', headquarterRoutes);
-app.use('/api/location', groupRoutes);
 app.use('/api/location', officeRoutes);
-app.use('/api/location', serviceRoutes);
+app.use('/api/location', headquarterRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 export default app;

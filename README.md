@@ -1,24 +1,14 @@
 ## ---------------------------------------------------------------------------------------------------- ###
-implementar proximamente:
- esto para resolver el problema de la autenticación en el frontend,
- el chrome me manda una advertencia de httpOnly; esto es porque conn cookie-js consumimos las cookies del frontend,
- la recomendación es usar axios en el frontend y no cookie-js, pero bueno, esto es lo que se me ocurrio para resolver el problema de la autenticación en el frontend,
+Backend mode development:
 ```typescript
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies.token; // Accede a la cookie
+//on the package.json
+  "_moduleAliases": { "@": "src" }
+```
 
-  if (!token) {
-    return res.status(401).json({ message: 'No autorizado' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, config.jwtSecret);
-    req.user = decoded; // Agrega los datos del usuario al request
-    next();
-  } catch (e) {
-    res.status(403).json({ message: 'Token inválido' });
-  }
-};
+Backend mode production:
+```typescript
+//on the package.json
+  "_moduleAliases": { "@": "dist" }
 ```
 ## ---------------------------------------------------------------------------------------------------- ###
 

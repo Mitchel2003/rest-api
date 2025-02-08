@@ -6,8 +6,7 @@ export const clientSchema = z.object({
       required_error: "El nombre es requerido",
       invalid_type_error: "El nombre debe ser texto"
     })
-    .min(5, "El nombre debe tener al menos 5 caracteres")
-    .max(35, "El nombre no puede exceder los 35 caracteres"),
+    .min(5, "El nombre debe tener al menos 5 caracteres"),
   email: z
     .string({
       required_error: "El email es requerido",

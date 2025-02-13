@@ -2,12 +2,25 @@
 Backend mode development:
 ```typescript
 //on the package.json
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+  },
+  "dependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.9",
+  },
+  "devDependencies": {
+    "@types/morgan": "^1.9.9",
+  },
   "_moduleAliases": { "@": "src" }
 ```
 
 Backend mode production:
 ```typescript
 //on the package.json
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+  },
   "_moduleAliases": { "@": "dist" }
 ```
 ## ---------------------------------------------------------------------------------------------------- ###

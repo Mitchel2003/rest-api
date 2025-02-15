@@ -1,4 +1,4 @@
-import { Doc, Query, Populate } from "@/types/repository.type";
+import { Doc, Query, Populate, PaginationOptions, PaginatedResult } from "@/types/repository.type";
 import Repository from "@/repositories/mongodb.repository";
 import MongoDB from "@/services/mongodb/mongodb.service";
 import { Result } from "@/interfaces/api.interface";
@@ -54,8 +54,12 @@ class CurriculumService extends MongoDB<Curriculum> {
   }
 
   // Overwrite the methods to apply the populate that corresponds to this service "curriculum"
-  async find(query?: Query, populate?: Populate): Promise<Result<Curriculum[]>> {
-    return super.find(query, populate || this.defaultPopulate);
+  async findByPaginate(query: Query = {}, options?: PaginationOptions): Promise<Result<PaginatedResult<Curriculum>>> {
+    return super.findByPaginate(query, {
+      sort: options?.sort || { createdAt: -1 },
+      perPage: options?.perPage || 10,
+      page: options?.page || 1
+    }, this.defaultPopulate)
   }
   async findById(id: string): Promise<Result<Curriculum | null>> {
     return super.findById(id, this.defaultPopulate);

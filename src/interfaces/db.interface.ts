@@ -22,10 +22,10 @@ export interface StorageService {
   getFiles(path: string): Promise<Result<string[]>>
   getFilesWithMetadata(path: string): Promise<Result<Metadata[]>>
   /*-----------------> upload <-----------------*/
-  uploadFile(path: string, file: Express.Multer.File): Promise<Result<string>>
-  uploadFiles(path: string, files: Express.Multer.File[]): Promise<Result<string[]>>
+  uploadFile(file: Express.Multer.File, path: string): Promise<Result<string>>
+  uploadFiles(files: Express.Multer.File[], path: string): Promise<Result<string[]>>
   /*-----------------> update <-----------------*/
-  updateFile(path: string, file: Express.Multer.File): Promise<Result<string>>
+  updateFile(file: Express.Multer.File, path: string): Promise<Result<string>>
   deleteFile(path: string): Promise<Result<void>>
 }
 /*---------------------------------------------------------------------------------------------------------*/

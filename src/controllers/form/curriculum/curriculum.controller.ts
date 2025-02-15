@@ -20,15 +20,21 @@ export const getCurriculum = async ({ params }: Request, res: Response): Promise
 }
 
 /**
- * Obtiene todos los curriculums.
- * @param {Request} req - Objeto de solicitud Express. Se espera query para la consulta.
- * @returns {Promise<void>} - Envía un objeto con los curriculums.
+ * Obtiene todos los curriculums con soporte para paginación.
+ * @param {Request} req - Objeto de solicitud Express. Se espera query para la consulta y opciones de paginación.
+ * @returns {Promise<void>} - Envía un objeto con los curriculums paginados.
  */
 export const getCurriculums = async ({ query }: Request, res: Response): Promise<void> => {
   try {
-    const curriculums = await curriculumService.find(query || {});
-    if (!curriculums.success) throw new ErrorAPI(curriculums.error);
-    send(res, 200, curriculums.data);
+    const { page, perPage, sort, ...filters } = query;
+    const paginationOptions = {
+      page: page ? Number(page) : undefined,
+      perPage: perPage ? Number(perPage) : undefined,
+      sort: sort ? JSON.parse(sort as string) : undefined
+    };
+    const result = await curriculumService.findByPaginate(filters || {}, paginationOptions);
+    if (!result.success) throw new ErrorAPI(result.error);
+    send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "obtener los curriculums") }
 }
 

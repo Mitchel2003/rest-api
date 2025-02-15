@@ -1,6 +1,7 @@
 import { StorageService as IStorage } from "@/interfaces/db.interface"
 import { handlerService as handler } from "@/errors/handler"
 import { Result, Success } from "@/interfaces/api.interface"
+import { Metadata } from "@/interfaces/props.interface"
 import { firebaseApp } from "@/db"
 import ErrorAPI from "@/errors"
 
@@ -14,24 +15,24 @@ import {
   listAll,
   ref,
 } from "firebase/storage"
-import { Metadata } from "@/interfaces/props.interface"
 
 /**
  * ¿who are estructured the storage?
  * 
  * gestions (storage)
- *     ===> auth (folder)
- *         ===>> uid (folder auth)
- *             ===>>> profile_(number generated) (file)
+ *     ===>> client (folder auth)
+ *         ===>>> uid (client uid folder)
+ *             ===>>> preview (folder)
+ *                 ===>>>> img_1 ... (file)
  * 
  *     ===> files (folder)
  *         ===>> uid (device uid folder)
-*              ===>>>> curriculum (folder)
-*                  ===>>> doc_1 ... (file)
-*              ===>>>> maintenance (folder)
-*                  ===>>> doc_1 ... (file)
-*              ===>>>> preview (folder)
-*                  ===>>> img_1 ... (file)
+ *              ===>>> curriculum (folder)
+ *                  ===>>>> doc_1 ... (file)
+ *              ===>>> maintenance (folder)
+ *                  ===>>>> doc_1 ... (file)
+ *              ===>>> preview (folder)
+ *                  ===>>>> img_1 ... (file)
  * 
  * @argument uid(auth) represent the id of the business,
  * so, just like that, each folder that represent a business could have many products
@@ -90,12 +91,12 @@ class StorageService implements IStorage {
   /*---------------> upload <---------------*/
   /**
    * Subir un archivo al almacenamiento de Firebase.
+   * @param {Express.Multer.File} file - El archivo a subir.
    * @param {string} path - La ruta del archivo final.
    * @example path podria ser 'users/profile/{username}'
-   * @param {Express.Multer.File} file - El archivo a subir.
    * @returns {Promise<Result<string>>} La URL del archivo subido.
    */
-  async uploadFile(path: string, file: Express.Multer.File): Promise<Result<string>> {
+  async uploadFile(file: Express.Multer.File, path: string): Promise<Result<string>> {
     return handler(async () => {
       const storageRef = this.getReference(path)
       const metadata = buildStorageMetadata(file)
@@ -106,17 +107,17 @@ class StorageService implements IStorage {
 
   /**
    * Sube múltiples archivos al almacenamiento de Firebase.
-   * @param {string} path - directorio (gestions/files/{uid}/preview) + nombre del archivo
    * @param {Express.Multer.File[]} files - Array de archivos a subir
+   * @param {string} path - directorio (gestions/files/{uid}/preview) + nombre del archivo
    * @argument results - Pretende subir cada uno de los files a Firebase Storage
    * se espera un array con las URLs de los archivos subidos, pero como el uploadFile
    * es un Result(success o failure), se debe manejar el error de cada upload file
    * @returns {Promise<Result<string[]>>} Array con las URLs de los archivos subidos
    */
-  async uploadFiles(path: string, files: Express.Multer.File[]): Promise<Result<string[]>> {
+  async uploadFiles(files: Express.Multer.File[], path: string): Promise<Result<string[]>> {
     return handler(async () => {
       const random = Math.floor(Math.random() * 10000)//genera un numero random de 4 digitos
-      const results = await Promise.all(files.map((file) => this.uploadFile(`${path}_${random}`, file)))
+      const results = await Promise.all(files.map((file) => this.uploadFile(file, `${path}_${random}`)))
       const failed = results.find(result => !result.success)
       if (failed) throw new ErrorAPI(failed.error)
 
@@ -128,11 +129,11 @@ class StorageService implements IStorage {
   /*---------------> update <---------------*/
   /**
    * Actualiza un archivo en el almacenamiento de Firebase.
-   * @param {string} path - La ruta del archivo final @example path: "{uid}/products/{product.name}"
    * @param {File} file - El archivo nuevo a subir, con su nombre y extension @example file: "image.png"
+   * @param {string} path - La ruta del archivo final @example path: "{uid}/products/{product.name}"
    * @returns {Promise<Result<string>>} La URL del archivo actualizado.
    */
-  async updateFile(path: string, file: Express.Multer.File): Promise<Result<string>> {
+  async updateFile(file: Express.Multer.File, path: string): Promise<Result<string>> {
     return handler(async () => {
       const storageRef = this.getReference(path)
       const metadata = buildStorageMetadata(file)
@@ -155,7 +156,7 @@ class StorageService implements IStorage {
    * Obtiene una referencia a un archivo en el almacenamiento de Firebase.
    * @param {string} path - La ruta del archivo al que se accede.
    */
-  private getReference(path: string) { return ref(this.storage, `gestions/files/${path}`) }
+  private getReference(path: string) { return ref(this.storage, `gestions/${path}`) }
 }
 /*---------------------------------------------------------------------------------------------------------*/
 

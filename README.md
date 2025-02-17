@@ -2,6 +2,7 @@
 Backend mode development:
 ```typescript
 //on the package.json
+/** @arguments npm i morgan nodemon ; npm i @types/morgan -D */
   "scripts": {
     "dev": "nodemon src/index.ts",
   },
@@ -18,6 +19,7 @@ Backend mode development:
 Backend mode production:
 ```typescript
 //on the package.json
+/** @arguments npm uninstall morgan nodemon ; npm uninstall @types/morgan -D */
   "scripts": {
     "dev": "ts-node src/index.ts",
   },

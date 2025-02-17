@@ -10,6 +10,7 @@ import storageRoutes from "@/routes/auth/storage.routes"
 //user routes
 import userRoutes from "@/routes/user/user.routes"
 import clientRoutes from "@/routes/user/client.routes"
+import companyRoutes from "@/routes/user/company.routes"
 
 //curriculum routes
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
@@ -53,6 +54,7 @@ app.use('/api/storage', storageRoutes);
 //user routes
 app.use('/api', userRoutes);
 app.use('/api', clientRoutes);
+app.use('/api', companyRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------form routes--------------------------------------------------*/

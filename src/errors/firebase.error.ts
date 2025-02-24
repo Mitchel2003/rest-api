@@ -9,8 +9,8 @@ class HandlerErrors {
    */
   public static get(e: FirebaseError): ErrorAPI {
     const message = 'Error interno del servidor (firebase)'
-    const record = this.errorRecords[e.name] || defaultRecord(message, e.name)
-    return new record.errorType({ message: record.message, details: { name: e.name, message: e.message } })
+    const record = this.errorRecords[e.code] || defaultRecord(message, e.message)
+    return new record.errorType({ message: record.message, details: { name: e.name, message: e.message, code: e.code } })
   }
 
   /** Mapeo de errores de Firebase a errores personalizados */

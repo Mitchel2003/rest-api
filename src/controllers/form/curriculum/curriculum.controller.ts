@@ -26,15 +26,9 @@ export const getCurriculum = async ({ params }: Request, res: Response): Promise
  */
 export const getCurriculums = async ({ query }: Request, res: Response): Promise<void> => {
   try {
-    const { page, perPage, sort, ...filters } = query;
-    const paginationOptions = {
-      page: page ? Number(page) : undefined,
-      perPage: perPage ? Number(perPage) : undefined,
-      sort: sort ? JSON.parse(sort as string) : undefined
-    };
-    const result = await curriculumService.findByPaginate(filters || {}, paginationOptions);
-    if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, result.data);
+    const curriculums = await curriculumService.find(query || {});
+    if (!curriculums.success) throw new ErrorAPI(curriculums.error);
+    send(res, 200, curriculums.data);
   } catch (e) { handlerResponse(res, e, "obtener los curriculums") }
 }
 

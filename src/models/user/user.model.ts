@@ -14,20 +14,31 @@ const permissionsSchema: Schema<Permissions> = new Schema({
 //Schema user
 const userSchema: Schema<User> = new Schema({
   uid: {
+    trim: true,
     type: String,
     required: true,
-    trim: true
   },
   username: {
+    trim: true,
     type: String,
     required: true,
-    trim: true
   },
   email: {
+    trim: true,
+    unique: true,
     type: String,
     required: true,
-    unique: true,
-    trim: true
+  },
+  phone: {
+    trim: true,
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    required: true,
+    default: 'engineer',
+    enum: ['admin', 'engineer']
   },
   permissions: {
     required: false,
@@ -36,12 +47,6 @@ const userSchema: Schema<User> = new Schema({
       overwrite: { read: true, create: false, update: false, delete: false },
       headquarters: []
     })
-  },
-  role: {
-    type: String,
-    required: true,
-    default: 'medical',
-    enum: ['admin', 'engineer', 'medical']
   }
 }, configSchema);
 

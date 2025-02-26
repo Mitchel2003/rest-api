@@ -20,6 +20,11 @@ import {
  * ¿who are estructured the storage?
  * 
  * gestions (storage)
+ *     ===>> company (folder auth)
+ *         ===>>> uid (client uid folder)
+ *             ===>>> preview (folder)
+ *                 ===>>>> img_1 ... (file)
+ * 
  *     ===>> client (folder auth)
  *         ===>>> uid (client uid folder)
  *             ===>>> preview (folder)
@@ -27,12 +32,12 @@ import {
  * 
  *     ===> files (folder)
  *         ===>> uid (device uid folder)
- *              ===>>> curriculum (folder)
- *                  ===>>>> doc_1 ... (file)
- *              ===>>> maintenance (folder)
- *                  ===>>>> doc_1 ... (file)
  *              ===>>> preview (folder)
  *                  ===>>>> img_1 ... (file)
+ *              ===>>> cv (folder)
+ *                  ===>>>> doc_1 ... (file)
+ *              ===>>> mt (folder)
+ *                  ===>>>> doc_1 ... (file)
  * 
  * @argument uid(auth) represent the id of the business,
  * so, just like that, each folder that represent a business could have many products

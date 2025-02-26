@@ -68,10 +68,11 @@ class AuthService implements IAuth {
    * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario (form register)
    * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
    */
-  async registerAccount({ email, password, username, role, headquarters }: RegisterAccountProps): Promise<Result<User>> {
+  async registerAccount({ email, password, username, role, phone, headquarters }: RegisterAccountProps): Promise<Result<User>> {
     return handler(async () => {
+      const userCredentials = `${role};${phone ?? ''};${headquarters?.join(',') ?? ''}`
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await this.updateProfile(res.user, { displayName: username, photoURL: `${role};${headquarters.join(',')}` })
+      await this.updateProfile(res.user, { displayName: username, photoURL: userCredentials })
       return res.user
     }, 'crear usuario (Firebase Auth)')
   }

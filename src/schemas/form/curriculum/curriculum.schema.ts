@@ -82,9 +82,11 @@ const curriculumSchema = z.object({
       required_error: "Tipos de mantenimiento son requeridos"
     })
   ),
-  manualsMaintenance: z.string({
-    required_error: "Manuales de mantenimiento son requeridos"
-  }),
+  manualsMaintenance: z.array(
+    z.string({
+      required_error: "Manuales de mantenimiento son requeridos"
+    })
+  ),
 
   //relationship
   office: z.string({

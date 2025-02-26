@@ -114,15 +114,16 @@ const getUserCredentials = async (auth: UserFB): Promise<UserMDB> => {
  * Nos permite construir las credenciales del usuario (mongoDB).
  * @param {UserFB} auth - El usuario de firebase, representa la autenticación.
  * @argument photoURL - Es un string que contiene el rol y las sedes, su estructura es la siguiente:
- * @example "engineer;headquarters1,headquarters2,headquarters3"
+ * @example "engineer;${numberPhone};headquarters1,headquarters2,headquarters3"
  * @returns {any} - Retornar las credenciales del usuario en el formato standar (model mongoDB)
  */
 const credentials = (auth: UserFB): UserMDB => {
-  const [role, headquarters] = auth.photoURL?.split(';') || []
+  const [role, phone, headquarters] = auth.photoURL?.split(';') || []
   const array = headquarters ? headquarters.split(',') : []
 
   return {
     role,
+    phone,
     uid: auth.uid,
     email: auth.email,
     username: auth.displayName,

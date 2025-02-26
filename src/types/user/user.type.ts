@@ -8,9 +8,10 @@ export interface Permissions {
 export interface User extends Document {
   uid: string; //uid de firebase
   email: string;
+  phone: string;
   username: string;
   permissions?: Permissions;
-  role: 'engineer' | 'admin' | 'medical';
+  role: 'engineer' | 'admin';
 
   createdAt?: Date;
   updatedAt?: Date;

@@ -25,6 +25,20 @@ Backend mode production:
   },
   "_moduleAliases": { "@": "dist" }
 ```
+
+
+To pagination:
+```typescript
+    const { page, perPage, sort, ...filters } = query;
+    const paginationOptions = {
+      page: page ? Number(page) : undefined,
+      perPage: perPage ? Number(perPage) : undefined,
+      sort: sort ? JSON.parse(sort as string) : undefined
+    };
+    const result = await curriculumService.findByPaginate(filters || {}, paginationOptions);
+    if (!result.success) throw new ErrorAPI(result.error);
+    send(res, 200, result.data);
+```
 ## ---------------------------------------------------------------------------------------------------- ###
 
 ### -----------------------------------------------Readme----------------------------------------------- ###

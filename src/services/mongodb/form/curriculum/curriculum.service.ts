@@ -54,6 +54,9 @@ class CurriculumService extends MongoDB<Curriculum> {
   }
 
   // Overwrite the methods to apply the populate that corresponds to this service "curriculum"
+  async find(query?: Query, populate?: Populate): Promise<Result<Curriculum[]>> {
+    return super.find(query, populate || this.defaultPopulate);
+  }
   async findByPaginate(query: Query = {}, options?: PaginationOptions): Promise<Result<PaginatedResult<Curriculum>>> {
     return super.findByPaginate(query, {
       sort: options?.sort || { createdAt: -1 },

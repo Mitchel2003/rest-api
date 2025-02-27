@@ -11,7 +11,7 @@ class MaintenanceService extends MongoDB<Maintenance> {
   private readonly defaultPopulate: Populate = {
     path: 'curriculum',
     select: 'name brand serie service modelEquip healthRecord',
-    populate: {
+    populate: [{
       path: 'office',
       select: 'name headquarter',
       populate: {
@@ -33,7 +33,19 @@ class MaintenanceService extends MongoDB<Maintenance> {
           select: 'name email phone nit'
         }]
       }
-    }
+    }, {
+      path: 'inspection',
+      select: 'name typeInspection inactive',
+    }, {
+      path: 'representative',
+      select: 'name phone city',
+    }, {
+      path: 'supplier',
+      select: 'name phone city',
+    }, {
+      path: 'manufacturer',
+      select: 'name phone country',
+    }]
   }
 
   private constructor() {

@@ -15,6 +15,10 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
   },
 
   //maintenance
+  typeMaintenance: {
+    type: String,
+    requerid: true
+  },
   statusEquipment: {
     type: String,
     requerid: true
@@ -24,23 +28,10 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
     requerid: true
   },
 
-  //received
-  receivedBy: {
-    type: String,
-    requerid: true
-  },
-  nameEngineer: {
-    type: String,
-    requerid: true
-  },
-  invimaEngineer: {
-    type: String,
-    requerid: true
-  },
-
-  //references
+  //relationship
   curriculum: {
     type: Schema.Types.ObjectId,
+    ref: 'curriculum',
     required: true
   }
 }, configSchema);

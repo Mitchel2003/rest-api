@@ -10,7 +10,11 @@ class MaintenanceService extends MongoDB<Maintenance> {
   private static instance: MaintenanceService;
   private readonly defaultPopulate: Populate = {
     path: 'curriculum',
-    select: 'name brand serie service modelEquip healthRecord',
+    select: `name brand serie service modelEquip healthRecord`
+      + `characteristics recommendationsManufacturer`
+      + `datePurchase dateInstallation dateOperation acquisition warranty price`
+      + `typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply`
+      + `employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
     populate: [{
       path: 'office',
       select: 'name headquarter',
@@ -45,6 +49,9 @@ class MaintenanceService extends MongoDB<Maintenance> {
     }, {
       path: 'manufacturer',
       select: 'name phone country',
+    }, {
+      path: 'technicalCharacteristics',
+      select: 'voltage amperage power frequency capacity pressure speed humidity temperature weight'
     }]
   }
 

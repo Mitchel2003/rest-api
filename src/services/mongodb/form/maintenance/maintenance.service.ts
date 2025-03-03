@@ -10,11 +10,12 @@ class MaintenanceService extends MongoDB<Maintenance> {
   private static instance: MaintenanceService;
   private readonly defaultPopulate: Populate = {
     path: 'curriculum',
-    select: `name brand serie service modelEquip healthRecord`
-      + `characteristics recommendationsManufacturer`
-      + `datePurchase dateInstallation dateOperation acquisition warranty price`
-      + `typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply`
-      + `employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
+    select: `
+    name brand serie service modelEquip healthRecord
+    characteristics recommendationsManufacturer
+    datePurchase dateInstallation dateOperation acquisition warranty price
+    typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
+    employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
     populate: [{
       path: 'office',
       select: 'name headquarter',

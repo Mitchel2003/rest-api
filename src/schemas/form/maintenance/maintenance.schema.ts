@@ -3,7 +3,7 @@ import { z } from "zod";
 export const maintenanceSchema = z.object({
   //timestandard
   dateNextMaintenance: z
-    .string({ required_error: "La fecha del próximo mantenimiento es requerida" }).datetime(),
+    .string().datetime().optional().nullable(),
   dateMaintenance: z
     .string().datetime().optional().nullable(),
 

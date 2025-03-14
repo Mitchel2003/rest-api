@@ -92,9 +92,70 @@ To pagination:
   
   Estas mejoras elevarán significativamente la calidad y profesionalismo de tu código. La implementación de patrones de diseño como Singleton en los servicios, el uso consistente de tipos Result, y la clara separación de responsabilidades demuestran un alto nivel de habilidad en ingeniería de software.
 
-## Mailtrap to firebase:=====================================================================================
-Al momento de enviar un email, se debe usar firebase, ya que mailtrap no permite enviar emails a dominios de terceros, esto causa un error en producción:
-"Error interno del servidor al enviar el email: Error: Demo domains can only be used to send emails to account owners. You can only send testing emails to your own email address."
+## Code reference:=====================================================================================
+
+```typescript
+  // Método optimizado para paginación con filtro de proveedor
+  async findByProviderPaginated(providerId: string, query: Query = {}, options: PaginationOptions = {}): Promise<Result<PaginatedResult<Curriculum>>> {
+    try {
+      const { page = 1, perPage = 10, sort = { createdAt: -1 } } = options
+      const skip = (page - 1) * perPage
+      const pipeline: PipelineStage[] = [// Pipeline to count total and get paginated data
+        {// Joins necessary
+          $lookup: {
+            from: 'offices',
+            localField: 'office',
+            foreignField: '_id',
+            as: 'officeData'
+          }
+        } as PipelineStage,
+        { $unwind: '$officeData' } as PipelineStage,
+        {
+          $lookup: {
+            from: 'headquarters',
+            localField: 'officeData.headquarter',
+            foreignField: '_id',
+            as: 'headquarterData'
+          }
+        } as PipelineStage,
+        { $unwind: '$headquarterData' } as PipelineStage,
+        {// Filter by provider and additional query
+          $match: {
+            'headquarterData.client': new Types.ObjectId(providerId),
+            ...query
+          }
+        } as PipelineStage,
+        {
+          $facet: {
+            totalCount: [{ $count: 'count' }],
+            data: [{ $sort: sort }, { $skip: skip }, { $limit: perPage }]
+          }
+        } as PipelineStage
+      ]
+
+      const [result] = await curriculumModel.aggregate<{
+        totalCount: Array<{ count: number }>,
+        data: AggregatedCurriculum[]
+      }>(pipeline)
+
+      const totalCount = result.totalCount[0]?.count || 0
+      if (this.listPopulate) {// Populate of the results if necessary
+        const ids = result.data.map(doc => new Types.ObjectId(doc._id.toString()))
+        const populatedDocs = await curriculumModel
+          .find({ _id: { $in: ids } })
+          .populate(this.listPopulate)
+          .sort(sort)
+          .lean()
+        // Convert to Doc<Curriculum>
+        const populatedData = populatedDocs.map(doc => this.convertToDoc(doc as MongoDocument))
+        return { success: true, data: { data: populatedData, totalCount, pageCount: Math.ceil(totalCount / perPage) } }
+      }
+      // Convert to Doc<Curriculum>
+      const formattedData = result.data.map(doc => this.convertToDoc(doc as MongoDocument))
+      return { success: true, data: { data: formattedData, totalCount, pageCount: Math.ceil(totalCount / perPage) } }
+    } catch (error) { return { success: false, error: { message: error instanceof Error ? error.message : 'Error desconocido' } } }
+  }
+```
 
 ## Request and Response:=====================================================================================
 En las funciones de los controladores, se debe usar el objeto de solicitud `req` para obtener los datos de la solicitud y el objeto de respuesta `res` para enviar la respuesta al cliente; en caso de que no dependamos de `req` en la función, no debemos eliminarle de los params, debemos usarlos para evitar el 502 error.

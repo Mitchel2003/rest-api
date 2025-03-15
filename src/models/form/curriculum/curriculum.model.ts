@@ -26,8 +26,9 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   //equipment
   useClassification: { type: String, required: true },
   typeClassification: { type: String, required: true },
-  biomedicalClassification: { type: String, required: true },
-  riskClassification: { type: String, required: true },
+  equipClassification: { type: String, required: true },
+  riskClassification: { type: String, required: false },
+  biomedicalClassification: { type: String, required: false },
   technologyPredominant: [{ type: String, required: true }],
   powerSupply: [{ type: String, required: true }],
 
@@ -67,5 +68,10 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
     required: true
   }
 }, configSchema);
+
+// Index for performance
+curriculumSchema.index({ 'office': 1, createdAt: -1 }); // Search by office and date
+curriculumSchema.index({ healthRecord: 1 }); // Search by health record
+curriculumSchema.index({ service: 1 }); // Search by service
 
 export default mongoose.model('curriculum', curriculumSchema);

@@ -1,8 +1,8 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
-import { DefaultOverwrite, User as UserMDB } from "@/types/user/user.type";
 import { authService as authFB } from "@/services/firebase/auth.service";
 import { userService } from "@/services/mongodb/user/user.service";
 import ErrorAPI, { Unauthorized, Conflict } from "@/errors";
+import { User as UserMDB } from "@/types/user/user.type";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
 
@@ -35,7 +35,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await authFB.registerAccount(req.body);
     if (!result.success) throw new ErrorAPI(result.error);
-
     const sendEmail = await authFB.sendEmailVerification();
     if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
     if (!(await authFB.logout()).success) throw new Conflict({ message: 'Error logout on register' });
@@ -102,10 +101,9 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
  * @returns Promise con los datos del usuario
  */
 const getUserCredentials = async (auth: UserFB): Promise<UserMDB> => {
-  const found = await userService.find({ uid: auth.uid })
+  const found = await userService.findOne({ uid: auth.uid })
   if (!found.success) throw new ErrorAPI(found.error)
-  if (found.data.length > 0) return found.data[0]
-
+  if (found.data) return found.data
   const result = await userService.create(credentials(auth))
   if (!result.success) throw new ErrorAPI(result.error)
   return result.data
@@ -114,20 +112,18 @@ const getUserCredentials = async (auth: UserFB): Promise<UserMDB> => {
  * Nos permite construir las credenciales del usuario (mongoDB).
  * @param {UserFB} auth - El usuario de firebase, representa la autenticación.
  * @argument photoURL - Es un string que contiene el rol y las sedes, su estructura es la siguiente:
- * @example "engineer;${numberPhone};headquarters1,headquarters2,headquarters3"
+ * @example "engineer;${company};${numberPhone}"
  * @returns {any} - Retornar las credenciales del usuario en el formato standar (model mongoDB)
  */
 const credentials = (auth: UserFB): UserMDB => {
-  const [role, phone, headquarters] = auth.photoURL?.split(';') || []
-  const array = headquarters ? headquarters.split(',') : []
-
+  const [role, company, phone] = auth.photoURL?.split(';') || []
   return {
     role,
     phone,
+    company,
     uid: auth.uid,
     email: auth.email,
     username: auth.displayName,
-    permissions: array.length > 0 ? { headquarters: array, overwrite: DefaultOverwrite } : undefined
   } as UserMDB
 }
 /*---------------------------------------------------------------------------------------------------------*/

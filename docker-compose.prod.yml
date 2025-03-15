@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis
+    container_name: gs_redis_prod
+    command: >
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - gs_network
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '1'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  redis_data:
+    name: gs_redis_prod_data
+
+networks:
+  gs_network:
+    external: true

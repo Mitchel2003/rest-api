@@ -22,10 +22,11 @@ export interface Curriculum extends Document {
   price: string,
 
   //equipment
-  typeClassification: string,
   useClassification: string,
-  biomedicalClassification: string,
-  riskClassification: string,
+  typeClassification: string,
+  equipClassification: string,
+  riskClassification?: string,
+  biomedicalClassification?: string,
   technologyPredominant: string[],
   powerSupply: string[],
 

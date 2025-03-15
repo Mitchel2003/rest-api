@@ -24,35 +24,44 @@ import {
  * Have various functions like observer, verification or overwrite data
  */
 class AuthService implements IAuth {
-  private readonly auth: Auth
-  private static user: User | null = null
+  private auth: Auth
   private static instance: AuthService
+  private static user: User | null = null
   private constructor() { this.auth = getAuth(firebaseApp) }
 
+  /**
+   * Returns the singleton instance of AuthService.
+   * If the instance does not exist, it creates a new one.
+   * @returns {AuthService} The singleton instance of AuthService.
+   */
   public static getInstance(): AuthService {
     if (!AuthService.instance) { AuthService.instance = new AuthService() }
     return AuthService.instance
   }
 
   /*---------------> authentication <---------------*/
+  /** Returns the instance of Auth */
+  getAuth(): Auth { return this.auth }
   /**
-   * Obtiene el estado de autenticación del usuario
-   * consiste en un observador que se ejecuta cada vez que el usuario se autentica o desconecta
-   * @returns {User | null} - Retorna el usuario si esta autenticado, o null si no lo esta.
+   * Returns the current user or null if no user is authenticated.
+   * @returns {User | null} - The current user or null if no user is authenticated.
    */
-  onAuth(): User | null { onAuthStateChanged(this.auth, (user) => AuthService.user = user); return AuthService.user }
+  onAuth(): User | null {
+    onAuthStateChanged(this.auth, (user) => { AuthService.user = user })
+    return AuthService.user
+  }
   /**
-   * Crea una autenticación por medio de la verificación de credenciales.
-   * @param {string} email - El email del usuario.
-   * @param {string} password - La contraseña del usuario.
-   * @returns {Promise<Result<User>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
+   * Creates an authentication by verifying credentials.
+   * @param {string} email - The user's email.
+   * @param {string} password - The user's password.
+   * @returns {Promise<Result<User>>} - Returns the user if the credentials are valid, or an error if they are not.
    */
   async login(email: string, password: string): Promise<Result<User>> {
     return handler(async () => (await signInWithEmailAndPassword(this.auth, email, password)).user, 'verificar credenciales')
   }
   /**
-   * Permite cerrar la sessión del usuario en contexto
-   * @returns {Promise<Result<void>>} - Retorna un mensaje de éxito si la sesión se cierra correctamente.
+   * Closes the user's session in the context.
+   * @returns {Promise<Result<void>>} - Returns a success message if the session is closed successfully.
    */
   async logout(): Promise<Result<void>> {
     return handler(async () => await signOut(this.auth), 'cerrar sesión')
@@ -61,16 +70,15 @@ class AuthService implements IAuth {
 
   /*---------------> create and update <---------------*/
   /**
-   * Crea un usuario con credenciales en Firebase.
-   * usamos propiedades del usuario (UserInfo) para guardar el perfil,
-   * mas adelante podemos crear el perfil en la base de datos (mongoDB)
+   * Creates a user with credentials in Firebase.
+   * We use user properties (UserInfo) to save the profile,
    * @argument photoURL - example: 'admin;sede_1,sede_2,sede_3,sede_4'
-   * @param {UserCredentials & {password: string}} data - Posee la informacion primordial del usuario (form register)
-   * @returns {Promise<Result<UserCredential>>} - Retorna el usuario si las credenciales son válidas, o un error si no lo son.
+   * @param {RegisterAccountProps} data.credentials - Contains the primary user information (form register)
+   * @returns {Promise<Result<UserCredential>>} - Returns the user if the credentials are valid, or an error if they are not.
    */
-  async registerAccount({ email, password, username, role, phone, headquarters }: RegisterAccountProps): Promise<Result<User>> {
+  async registerAccount({ email, password, username, role, phone, company }: RegisterAccountProps): Promise<Result<User>> {
     return handler(async () => {
-      const userCredentials = `${role};${phone ?? ''};${headquarters?.join(',') ?? ''}`
+      const userCredentials = `${role};${company};${phone ?? ''}`
       const res = await createUserWithEmailAndPassword(this.auth, email, password)
       await this.updateProfile(res.user, { displayName: username, photoURL: userCredentials })
       return res.user

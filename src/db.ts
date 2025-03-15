@@ -9,4 +9,4 @@ export const mongoDB = async () => {
   } catch (e) { console.log("Error to try conect with database: " + e) }
 }
 
-export const firebaseApp = initializeApp(config.firebaseConfig);
+export const firebaseApp = initializeApp(config.firebase);

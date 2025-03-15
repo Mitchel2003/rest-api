@@ -1,10 +1,11 @@
 import { Metadata, RegisterAccountProps } from "@/interfaces/props.interface";
+import { Auth, User, UserInfo } from "firebase/auth";
 import { Result } from "@/interfaces/api.interface";
-import { User, UserInfo } from "firebase/auth";
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface AuthService {
   /*-----------------> authentication <-----------------*/
+  getAuth(): Auth
   onAuth(): User | null
   login(email: string, password: string): Promise<Result<User>>
   logout(): Promise<Result<void>>

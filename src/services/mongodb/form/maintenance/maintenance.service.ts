@@ -14,7 +14,7 @@ class MaintenanceService extends MongoDB<Maintenance> {
     name brand serie service modelEquip healthRecord
     characteristics recommendationsManufacturer
     datePurchase dateInstallation dateOperation acquisition warranty price
-    typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
+    equipClassification typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
     employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
     populate: [{
       path: 'office',

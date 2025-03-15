@@ -25,20 +25,6 @@ Backend mode production:
   },
   "_moduleAliases": { "@": "dist" }
 ```
-
-
-To pagination:
-```typescript
-    const { page, perPage, sort, ...filters } = query;
-    const paginationOptions = {
-      page: page ? Number(page) : undefined,
-      perPage: perPage ? Number(perPage) : undefined,
-      sort: sort ? JSON.parse(sort as string) : undefined
-    };
-    const result = await curriculumService.findByPaginate(filters || {}, paginationOptions);
-    if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, result.data);
-```
 ## ---------------------------------------------------------------------------------------------------- ###
 
 ### -----------------------------------------------Readme----------------------------------------------- ###
@@ -93,7 +79,6 @@ To pagination:
   Estas mejoras elevarán significativamente la calidad y profesionalismo de tu código. La implementación de patrones de diseño como Singleton en los servicios, el uso consistente de tipos Result, y la clara separación de responsabilidades demuestran un alto nivel de habilidad en ingeniería de software.
 
 ## Code reference:=====================================================================================
-
 ```typescript
   // Método optimizado para paginación con filtro de proveedor
   async findByProviderPaginated(providerId: string, query: Query = {}, options: PaginationOptions = {}): Promise<Result<PaginatedResult<Curriculum>>> {
@@ -155,6 +140,102 @@ To pagination:
       return { success: true, data: { data: formattedData, totalCount, pageCount: Math.ceil(totalCount / perPage) } }
     } catch (error) { return { success: false, error: { message: error instanceof Error ? error.message : 'Error desconocido' } } }
   }
+```
+## Arquitecture and docker implementation:=====================================================================================
+## Arquitectura
+- **Backend**: Node.js + Express + TypeScript
+- **Frontend**: React + Material UI
+- **Cache**: Redis
+- **Base de datos**: MongoDB
+- **Autenticación**: Firebase
+
+## Requisitos
+- Docker y Docker Compose
+- Node.js 18+
+- npm o yarn
+
+## Configuración de Redis
+El sistema utiliza Redis como capa de caché para optimizar las consultas frecuentes:
+- Caché de datos de usuario
+- Caché de curriculums médicos
+- Caché de permisos y roles
+
+### Configuración con Docker
+1. Copia el archivo de ejemplo de variables de entorno:
+```bash
+cp .env.example .env
+```
+
+2. Configura las variables en el archivo `.env`:
+```properties
+REDIS_PASSWORD=tu_contraseña_segura
+REDIS_URL=redis://:tu_contraseña_segura@localhost:6379
+```
+
+3. Inicia los contenedores:
+```bash
+docker-compose up -d
+```
+
+4. Verifica que los servicios estén corriendo:
+```bash
+docker-compose ps
+```
+
+### Monitoreo de Redis
+El sistema incluye Redis Commander para monitorear y administrar Redis:
+- URL: http://localhost:8081
+- Credenciales: Las configuradas en el archivo .env
+
+## Estructura de Caché
+### Usuarios
+- Clave: `gsalud:user:data:{uid}`
+- TTL: 5 minutos
+- Datos: Información del usuario y permisos
+### Curriculums
+- Clave: `gsalud:curriculum:data:{id}`
+- TTL: 5 minutos
+- Datos: Información del curriculum y relaciones
+
+## Jerarquía de Datos
+1. Usuario (engineer/admin)
+   - Pertenece a un Proveedor de Servicio
+   - Tiene permisos específicos
+2. Proveedor de Servicio
+   - Atiende múltiples IPS
+   - Gestiona equipos médicos
+3. IPS (Entidades de salud)
+   - Tienen equipos médicos
+   - Registran mantenimientos
+
+## Desarrollo
+Para desarrollo local:
+1. Instala las dependencias:
+```bash
+npm install
+```
+
+2. Inicia los servicios de Redis:
+```bash
+docker-compose up -d redis redis-commander
+```
+
+3. Inicia el servidor en modo desarrollo:
+```bash
+npm run dev
+```
+
+## Producción
+Para despliegue en producción:
+1. Configura las variables de entorno para producción
+2. Construye la aplicación:
+```bash
+npm run build
+```
+
+3. Inicia los servicios:
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 ## Request and Response:=====================================================================================

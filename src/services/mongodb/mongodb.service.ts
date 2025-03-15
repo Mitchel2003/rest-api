@@ -1,4 +1,4 @@
-import { Repository, Doc, Query, Populate, PaginationOptions, PaginatedResult } from "@/types/repository.type";
+import { Repository, Doc, Query, Populate } from "@/types/repository.type";
 import { handlerService as handler } from "@/errors/handler";
 import { Result } from "@/interfaces/api.interface";
 
@@ -21,9 +21,9 @@ abstract class MongoDB<T> {
   async findById(id: string, populate?: Populate): Promise<Result<T | null>> {
     return handler(async () => await this.repository.findById(id, populate), "buscar por id");
   }
-  /** Busca todos los documentos en la base de datos con paginación */
-  async findByPaginate(query: Query, options: PaginationOptions, populate?: Populate): Promise<Result<PaginatedResult<T>>> {
-    return handler(async () => await this.repository.findByPaginate(query, options, populate), "buscar todos con paginación");
+  /** Busca un documento por su query en la base de datos */
+  async findOne(query: Query, populate?: Populate): Promise<Result<T | null>> {
+    return handler(async () => await this.repository.findOne(query, populate), "buscar por query");
   }
   /** Actualiza un documento por su id en la base de datos */
   async update(id: string, data: Partial<Doc<T>>, populate?: Populate): Promise<Result<T | null>> {
@@ -35,4 +35,4 @@ abstract class MongoDB<T> {
   }
 }
 
-export default MongoDB;
+export default MongoDB

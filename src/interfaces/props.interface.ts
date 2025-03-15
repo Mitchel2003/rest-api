@@ -3,13 +3,15 @@ export interface Metadata {
   name: string
   url: string
 }
+/*---------------------------------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------Props--------------------------------------------------*/
 export interface RegisterAccountProps {
   role: string;
   email: string;
   phone: string;
+  company: string;
   password: string;
   username: string;
-  headquarters: string[];
 }
 /*---------------------------------------------------------------------------------------------------------*/

@@ -1,5 +1,5 @@
+import { User } from "@/types/user/user.type"
 import { Request, Response } from "express"
-import { User } from "firebase/auth"
 
 /*--------------- request ---------------*/
 export interface ExtendsRequest extends Request { user?: User }

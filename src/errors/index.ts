@@ -14,24 +14,28 @@ export default class ErrorAPI extends Error {
   }
 }
 
+/** Error específico para validación de datos */
+export class Validation extends ErrorAPI {
+  constructor({ message, details }: ErrorProps) {
+    super({ message, statusCode: 400, code: 'VALIDATION_ERROR', details })
+  }
+}
 /** Error específico para operaciones no autorizadas */
 export class Unauthorized extends ErrorAPI {
   constructor({ message }: ErrorProps) {
     super({ message, statusCode: 401, code: 'UNAUTHORIZED' })
   }
 }
-
+/** Error específico para operaciones no autorizadas */
+export class Forbidden extends ErrorAPI {
+  constructor({ message }: ErrorProps) {
+    super({ message, statusCode: 403, code: 'FORBIDDEN' })
+  }
+}
 /** Error específico para recursos no encontrados */
 export class NotFound extends ErrorAPI {
   constructor({ message }: ErrorProps) {
     super({ message: `${message} no encontrado`, statusCode: 404, code: 'NOT_FOUND' })
-  }
-}
-
-/** Error específico para validación de datos */
-export class Validation extends ErrorAPI {
-  constructor({ message, details }: ErrorProps) {
-    super({ message, statusCode: 400, code: 'VALIDATION_ERROR', details })
   }
 }
 

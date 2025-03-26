@@ -1,5 +1,5 @@
-import { Repository, Doc, Query, Populate } from "@/types/repository.type";
-import { Document, Model } from "mongoose";
+import { Repository, Doc, Query, Populate, Options, Aggregated, asDoc, MongoDoc } from "@/types/repository.type";
+import { Document, Model, PipelineStage, Types } from "mongoose";
 
 class MongoDBRepository<T> implements Repository<T> {
   private readonly model: Model<T & Document>
@@ -24,6 +24,16 @@ class MongoDBRepository<T> implements Repository<T> {
     return await req.exec() as Doc<T>[];
   }
 
+  /** Permite buscar un registro por su id */
+  async findById(id: string, populate?: Populate): Promise<Doc<T> | null> {
+    const req = this.model.findById(id);
+    if (populate) {// to prepare the query with populate
+      if (Array.isArray(populate)) { populate.forEach(e => req.populate(typeof e === 'string' ? { path: e } : e)) }
+      else { req.populate(typeof populate === 'string' ? { path: populate } : populate) }
+    }
+    return await req.exec() as Doc<T> | null;
+  }
+
   /** Permite buscar un registro por su query */
   async findOne(query: Query, populate?: Populate): Promise<Doc<T> | null> {
     const req = this.model.findOne(query);
@@ -34,14 +44,27 @@ class MongoDBRepository<T> implements Repository<T> {
     return await req.exec() as Doc<T> | null;
   }
 
-  /** Permite buscar un registro por su id */
-  async findById(id: string, populate?: Populate): Promise<Doc<T> | null> {
-    const req = this.model.findById(id);
-    if (populate) {// to prepare the query with populate
-      if (Array.isArray(populate)) { populate.forEach(e => req.populate(typeof e === 'string' ? { path: e } : e)) }
-      else { req.populate(typeof populate === 'string' ? { path: populate } : populate) }
+  /** Permite buscar registros por acceso */
+  async findByUsers(
+    options: Options & { userIds: string[] },
+    customPipeline: (objectIds: Types.ObjectId[], query: Query) => PipelineStage[]
+  ): Promise<Doc<T>[]> {
+    const { userIds, limit, populate, query = {} } = options
+    const objectIds = userIds.map(id => new Types.ObjectId(id))
+    const pipeline = customPipeline(objectIds, query)//to build pipeline
+    if (limit) pipeline.push({ $limit: limit } as PipelineStage)
+    pipeline.push({ $sort: { createdAt: -1 } } as PipelineStage)
+    //put pipeline and additional populate (optional) to deep search
+    let data = await this.model.aggregate<Aggregated>(pipeline)
+    if (populate) {// If populate so send it
+      const ids = data.map(doc => new Types.ObjectId(doc._id.toString()))
+      const populatedDocs = await this.model
+        .find({ _id: { $in: ids } })
+        .populate(populate)
+        .sort({ createdAt: -1 }).lean()
+      return populatedDocs.map(doc => asDoc<T>(doc as MongoDoc))
     }
-    return await req.exec() as Doc<T> | null;
+    return data.map(doc => asDoc(doc))
   }
 
   /** Permite crear un nuevo registro en la base de datos */

@@ -16,10 +16,10 @@ const headquarterSchema: Schema<Headquarter> = new Schema({
     required: true,
     ref: 'city'
   },
-  client: {
+  user: {//user represents the client
     type: Schema.Types.ObjectId,
     required: true,
-    ref: 'client'
+    ref: 'user'
   }
 }, configSchema);
 

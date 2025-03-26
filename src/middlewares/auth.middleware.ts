@@ -1,10 +1,9 @@
 import { userService } from '@/services/mongodb/user/user.service';
 import { authService } from '@/services/firebase/auth.service';
-// import { redisService } from '@/services/cache/redis.service';
 import { ExtendsRequest } from '@/interfaces/api.interface';
 
 import { handlerResponse } from '@/errors/handler';
-import ErrorAPI, { Unauthorized } from '@/errors';
+import { Unauthorized, NotFound } from '@/errors';
 import { Response, NextFunction } from 'express';
 import { User } from '@/types/user/user.type';
 
@@ -24,18 +23,9 @@ export const authRequired = async (req: ExtendsRequest, res: Response, next: Nex
       const sessionUser = await new Promise<User | null>((resolve) => { const unsubscribe = auth.onAuthStateChanged(user => { unsubscribe(); resolve(user as User | null) }) })
       if (!sessionUser) throw new Unauthorized({ message: 'Usuario no autenticado, por favor inicia sesión' })
     }
-    const credentials = auth.currentUser;
-    if (!credentials?.uid) throw new Unauthorized({ message: 'Credenciales de usuario inválidas' })
-
-    // Try to get user from cache (if exists)
-    // const cachedUser = await redisService.getUserData(credentials.uid);
-    // if (cachedUser.success && cachedUser.data) { req.user = cachedUser.data as User; return next() }
-
-    // If not in cache, search in database
-    const userResult = await userService.findByUid(credentials.uid);
-    if (!userResult.success || !userResult.data) throw new ErrorAPI({ message: 'Usuario no encontrado', statusCode: 404 });
-    // await redisService.setUserData(credentials.uid, userResult.data);// Save in cache for future requests
-    req.user = userResult.data as User;
+    const userFound = await userService.findOne({ uid: auth.currentUser?.uid as string });
+    if (!userFound.success) throw new NotFound({ message: 'Usuario no encontrado' });
+    req.user = userFound.data as User;
     next();
   } catch (e) { handlerResponse(res, e, "autenticación") }
 }

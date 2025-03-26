@@ -23,8 +23,10 @@ class OfficeService extends MongoDB<Office> {
         }
       }
     }, {
-      path: 'client',
-      select: 'name email phone nit'
+      path: 'user',
+      select: `
+        _id uid email phone username role
+        nit invima profesionalLicense permissions`,
     }]
   }
 

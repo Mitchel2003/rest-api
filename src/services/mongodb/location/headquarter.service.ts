@@ -20,8 +20,10 @@ class HeadquarterService extends MongoDB<Headquarter> {
       }
     }
   }, {
-    path: 'client',
-    select: 'name email phone nit'
+    path: 'user',
+    select: `
+      _id uid email phone username role
+      nit invima profesionalLicense permissions`,
   }]
 
   private constructor() {

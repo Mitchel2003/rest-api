@@ -2,15 +2,13 @@ import config from "@/utils/config"
 import express from "express"
 import cors from "cors"
 
+//user routes
+import userRoutes from "@/routes/user/user.routes"
+
 //auth and health routes
 import authRoutes from "@/routes/auth/auth.routes"
 import healthRoutes from "@/routes/auth/health.routes"
 import storageRoutes from "@/routes/auth/storage.routes"
-
-//user routes
-import userRoutes from "@/routes/user/user.routes"
-import clientRoutes from "@/routes/user/client.routes"
-import companyRoutes from "@/routes/user/company.routes"
 
 //curriculum routes
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
@@ -48,13 +46,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/storage', storageRoutes);
-/*---------------------------------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------user routes--------------------------------------------------*/
-//user routes
-app.use('/api', userRoutes);
-app.use('/api', clientRoutes);
-app.use('/api', companyRoutes);
+app.use('/api', userRoutes);//user routes
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------form routes--------------------------------------------------*/

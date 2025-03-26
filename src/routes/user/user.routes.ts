@@ -1,9 +1,8 @@
+import { getUser, getUsers, createUser, updateUser, deleteUser } from "@/controllers/user/user.controller"
 import validateSchema from "@/middlewares/validator.middleware"
 import authRequired from "@/middlewares/auth.middleware"
 import { userSchema } from "@/schemas/user/user.schema"
 import { Router } from "express"
-
-import { getUser, getUsers, createUser, updateUser, deleteUser } from "@/controllers/user/user.controller"
 
 const router = Router()
 

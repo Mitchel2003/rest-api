@@ -1,46 +1,22 @@
-import mongoose, { Schema } from "mongoose";
 import { User } from "@/types/user/user.type";
+import mongoose, { Schema } from "mongoose";
 import configSchema from "@/utils/schema";
 
 const userSchema: Schema<User> = new Schema({
-  uid: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true // To index by uid
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true // To index by email
-  },
-  phone: {
-    type: String,
-    required: true
-  },
-  inactive: {
-    type: Boolean,
-    default: false
-  },
-  username: {
-    type: String,
-    required: true
-  },
-  company: {
-    type: String,
-    required: true,
-    index: true // To index by company
-  },
-  role: {
-    type: String,
-    required: true,
-    enum: ['engineer', 'admin'],
-    index: true // To index by role
-  }
+  //to auth-firebase (password is handled by firebase)
+  uid: { index: true, type: String, unique: true, required: true }, // To index by uid
+  email: { index: true, type: String, unique: true, required: true }, // To index by email
+  //to user credentials
+  username: { type: String, required: true },
+  phone: { type: String, required: true },
+  //dependent role
+  nit: { type: String, required: false, trim: true },
+  invima: { type: String, required: false, trim: true },
+  profesionalLicense: { type: String, required: false, trim: true },
+  //access (role)
+  role: { index: true, type: String, required: true, enum: ['client', 'company', 'engineer', 'admin'] }, // Index by role
+  permissions: { default: [], type: [String], required: false },
+  inactive: { type: Boolean, default: false, required: false }
 }, configSchema)
-
-// Compound indices for common searches
-userSchema.index({ company: 1, role: 1 });
 
 export default mongoose.model('user', userSchema);

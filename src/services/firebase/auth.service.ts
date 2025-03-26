@@ -1,6 +1,7 @@
-import { RegisterAccountProps } from "@/interfaces/props.interface"
+import { firebaseAdmin } from "@/services/firebase/admin.service"
 import { AuthService as IAuth } from "@/interfaces/db.interface"
 import { handlerService as handler } from "@/errors/handler"
+import { AccountProps } from "@/interfaces/props.interface"
 import { Result } from "@/interfaces/api.interface"
 import { NotFound } from "@/errors"
 import { firebaseApp } from "@/db"
@@ -12,7 +13,6 @@ import {
   sendEmailVerification,
   onAuthStateChanged,
   updateProfile,
-  UserInfo,
   getAuth,
   signOut,
   Auth,
@@ -40,7 +40,10 @@ class AuthService implements IAuth {
   }
 
   /*---------------> authentication <---------------*/
-  /** Returns the instance of Auth */
+  /**
+   * Returns the instance of Auth
+   * @returns { Auth } - User of firebase
+   */
   getAuth(): Auth { return this.auth }
   /**
    * Returns the current user or null if no user is authenticated.
@@ -68,38 +71,38 @@ class AuthService implements IAuth {
   }
   /*----------------------------------------------------*/
 
-  /*---------------> create and update <---------------*/
+  /*---------------> create and delete <---------------*/
   /**
    * Creates a user with credentials in Firebase.
    * We use user properties (UserInfo) to save the profile,
-   * @argument photoURL - example: 'admin;sede_1,sede_2,sede_3,sede_4'
-   * @param {RegisterAccountProps} data.credentials - Contains the primary user information (form register)
-   * @returns {Promise<Result<UserCredential>>} - Returns the user if the credentials are valid, or an error if they are not.
+   * @param {AccountProps} credentials - Contains the primary user information (form register)
+   * @returns {Promise<Result<User>>} - Returns the user if the credentials are valid, or an error if they are not.
+   * @example photoURL - example: 'role;permissions;phone;nit;invima;profesionalLicense'
    */
-  async registerAccount({ email, password, username, role, phone, company }: RegisterAccountProps): Promise<Result<User>> {
+  async registerAccount(credentials: AccountProps): Promise<Result<User>> {
     return handler(async () => {
-      const userCredentials = `${role};${company};${phone ?? ''}`
-      const res = await createUserWithEmailAndPassword(this.auth, email, password)
-      await this.updateProfile(res.user, { displayName: username, photoURL: userCredentials })
-      return res.user
+      const { role, phone, nit, invima, profesionalLicense, permissions } = credentials;
+      const dataStr = `${role};${permissions ? JSON.stringify(permissions) : '[]'}
+        ;${phone};${nit ?? ''};${invima ?? ''};${profesionalLicense ?? ''}`;
+      const res = await createUserWithEmailAndPassword(this.auth, credentials.email, credentials.password);
+      await updateProfile(res.user, { displayName: credentials.username, photoURL: dataStr });
+      return res.user;
     }, 'crear usuario (Firebase Auth)')
   }
   /**
-   * Actualiza el perfil del usuario en Firebase.
-   * Los campos editables son limitados: displayName, photoURL;
-   * @param {User} user - El usuario de firebase, representa la autenticación.
-   * @param {Partial<UserInfo>} profile - El campo a actualizar, suele ser un object con los atributos.
-   * @returns {Promise<Result<void>>} - Ejecuta la peticion y retorna un state (sucess or failure).
+   * Deletes a user from Firebase, uses Firebase Admin
+   * @param {string} uid - The unique identifier of the user to delete.
+   * @returns {Promise<Result<void>>} - Executes the request and returns a state (success or failure).
    */
-  async updateProfile(user: User, profile: Partial<UserInfo>): Promise<Result<void>> {
-    return handler(async () => await updateProfile(user, profile), 'actualizar perfil (Firebase Auth)')
+  async deleteAccount(uid: string): Promise<Result<void>> {
+    return handler(async () => await firebaseAdmin.deleteUser(uid), 'eliminar usuario (Firebase Auth)')
   }
   /*----------------------------------------------------*/
 
   /*---------------> actions requests <---------------*/
   /**
-   * Envia un correo de verificación de cuenta al correo en contexto de authetication.
-   * @returns {Promise<Result<void>>} - Ejecuta la peticion y retorna un state (sucess or failure).
+   * Sends an email verification to the email in the authentication context.
+   * @returns {Promise<Result<void>>} - Executes the request and returns a state (success or failure).
    */
   async sendEmailVerification(): Promise<Result<void>> {
     return handler(async () => {
@@ -108,10 +111,10 @@ class AuthService implements IAuth {
     }, 'enviar correo de verificación')
   }
   /**
-   * Envia un correo de restablecimiento de contraseña al correo suministrado por el usuario.
-   * Enlace de redireccion esta definido en el archivo de configuracion de firebase (templates).
-   * @param {string} email - El email del usuario.
-   * @returns {Promise<Result<void>>} - Ejecuta la peticion y retorna un state (sucess or failure).
+   * Sends a password reset email to the email provided by the user.
+   * The redirect link is defined in the firebase configuration file (templates).
+   * @param {string} email - The user's email.
+   * @returns {Promise<Result<void>>} - Executes the request and returns a state (success or failure).
    */
   async sendEmailResetPassword(email: string): Promise<Result<void>> {
     return handler(async () => await sendPasswordResetEmail(this.auth, email), 'enviar correo de restablecimiento de contraseña')

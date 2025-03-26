@@ -1,6 +1,6 @@
-import { Metadata, RegisterAccountProps } from "@/interfaces/props.interface";
-import { Auth, User, UserInfo } from "firebase/auth";
+import { Metadata, AccountProps } from "@/interfaces/props.interface";
 import { Result } from "@/interfaces/api.interface";
+import { Auth, User } from "firebase/auth";
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface AuthService {
@@ -9,9 +9,9 @@ export interface AuthService {
   onAuth(): User | null
   login(email: string, password: string): Promise<Result<User>>
   logout(): Promise<Result<void>>
-  /*-----------------> create and update <-----------------*/
-  registerAccount(credentials: RegisterAccountProps): Promise<Result<User>>
-  updateProfile(user: User, profile: Partial<UserInfo>): Promise<Result<void>>
+  /*-----------------> create and delete <-----------------*/
+  registerAccount(credentials: AccountProps): Promise<Result<User>>
+  deleteAccount(uid: string): Promise<Result<void>>
   /*-----------------> actions requests <-----------------*/
   sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>

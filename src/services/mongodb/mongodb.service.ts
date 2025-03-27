@@ -31,6 +31,10 @@ abstract class MongoDB<T> {
   async findByUsers(options: Options & { userIds: string[] }, customPipeline: (objectIds: Types.ObjectId[], query: Query) => PipelineStage[]): Promise<Result<T[]>> {
     return handler(async () => await this.repository.findByUsers(options, customPipeline), "buscar por múltiples clientes")
   }
+  /** Verifica si un usuario tiene propiedad de un recurso */
+  async verifyOwnership(contextIds: string[], pipeline: PipelineStage[]): Promise<Result<boolean>> {
+    return handler(async () => await this.repository.verifyOwnership(contextIds, pipeline), "verificar propiedad");
+  }
   /** Actualiza un documento por su id en la base de datos */
   async update(id: string, data: Partial<Doc<T>>, populate?: Populate): Promise<Result<T | null>> {
     return handler(async () => await this.repository.update(id, data, populate), "actualizar");
@@ -38,13 +42,6 @@ abstract class MongoDB<T> {
   /** Elimina un documento por su id en la base de datos */
   async delete(id: string): Promise<Result<boolean>> {
     return handler(async () => await this.repository.delete(id), "eliminar");
-  }
-  /*---------------------------------------------------------------------------------------------------------*/
-
-  /*--------------------------------------------------helpers--------------------------------------------------*/
-  /** Verifica si un usuario tiene propiedad de un recurso */
-  async verifyOwnership(_role: string, _resourceId: string, _ids: string[]): Promise<Result<boolean>> {
-    return handler(async () => { return true }, "verificar propiedad")
   }
 }
 
@@ -58,10 +55,9 @@ export default MongoDB
  */
 export interface IResourceService<T, IdType = string> {
   find(query?: Query, options?: any): Promise<Result<T[]>>;
-  /** to find a resource by its id */
   findById(id: IdType, options?: any): Promise<Result<T | null>>;
   findByUsers(options: Options & { userIds: string[] }): Promise<Result<T[]>>;
-  verifyOwnership(role: string, resourceId: IdType, ids: string[]): Promise<Result<boolean>>;
+  isOwnership(contextIds: string[], resourceId: string): Promise<Result<boolean>>;
 }
 
 /**

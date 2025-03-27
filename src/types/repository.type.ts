@@ -15,6 +15,7 @@ export interface Repository<T> {
   findById(id: string, populate?: Populate): Promise<Doc<T> | null>
   findOne(query: Query, populate?: Populate): Promise<Doc<T> | null>
   findByUsers(options: Options & { userIds: string[] }, customPipeline: (objectIds: Types.ObjectId[], query: Query) => PipelineStage[]): Promise<Doc<T>[]>
+  verifyOwnership(contextIds: string[], pipeline: PipelineStage[]): Promise<boolean>
   update(id: string, data: Partial<Doc<T>>, populate?: Populate): Promise<Doc<T> | null>
   delete(id: string): Promise<boolean>
 }

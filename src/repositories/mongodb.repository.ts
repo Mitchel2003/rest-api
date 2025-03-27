@@ -67,6 +67,13 @@ class MongoDBRepository<T> implements Repository<T> {
     return data.map(doc => asDoc(doc))
   }
 
+  /** Permite verificar propiedad de un recurso */
+  async verifyOwnership(contextIds: string[], pipeline: PipelineStage[]): Promise<boolean> {
+    const result = await this.model.aggregate(pipeline);
+    const data = result.length > 0 ? result[0] : null;
+    return data && contextIds.some(id => data.id && data.id.equals(new Types.ObjectId(id)));
+  }
+
   /** Permite crear un nuevo registro en la base de datos */
   async create(data: T): Promise<Doc<T>> {
     const instance = new this.model(data);

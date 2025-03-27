@@ -63,9 +63,7 @@ class MaintenanceService extends MongoDB<Maintenance> {
   }
 
   public static getInstance(): MaintenanceService {
-    if (!MaintenanceService.instance) {
-      MaintenanceService.instance = new MaintenanceService();
-    }
+    if (!MaintenanceService.instance) MaintenanceService.instance = new MaintenanceService()
     return MaintenanceService.instance;
   }
 

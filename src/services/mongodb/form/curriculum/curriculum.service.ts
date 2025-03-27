@@ -1,7 +1,6 @@
 import MongoDB, { IResourceService } from "@/services/mongodb/mongodb.service";
 import { Types, PipelineStage, PopulateOptions } from "mongoose";
 import { Doc, Query, Options } from "@/types/repository.type";
-import { handlerService as handler } from "@/errors/handler";
 import Repository from "@/repositories/mongodb.repository";
 import { Result } from "@/interfaces/api.interface";
 
@@ -56,28 +55,12 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
   }
   /**
    * Verifica si un usuario tiene acceso a un currículum basado en su rol y contexto
-   * @param role Rol del usuario ('admin', 'engineer', 'client')
-   * @param curriculumId ID del currículum a verificar
-   * @param contextIds IDs relevantes según el rol (clientIds para admin, companyIds para engineer, clientId para client)
-   * @returns Resultado con true si tiene acceso, false en caso contrario
+   * @param contextIds Representa los IDs de acceso (permissions) segun el usuario
+   * @param curriculumId ID del recurso a verificar, representa el id del currículum
+   * @returns {Promise<Result<boolean>>} Resultado con true si tiene acceso, false en caso contrario
    */
-  async verifyOwnership(role: string, curriculumId: string, contextIds: string[]): Promise<Result<boolean>> {
-    return handler(async () => {
-      if (!contextIds.length) { return role === 'admin' }//admin without clients
-      const pipeline = ownershipPipeline(curriculumId)
-      const result = await curriculumModel.aggregate(pipeline)
-      if (!result.length) return false
-      const data = result[0]
-      switch (role) {
-        case 'engineer':
-          return contextIds.some(id => data.userId && data.userId.equals(new Types.ObjectId(id)))
-        case 'company':
-          return contextIds.some(id => data.userId && data.userId.equals(new Types.ObjectId(id)))
-        case 'client': //verify if the curriculum belongs to the client
-          return data.userId && data.userId.equals(new Types.ObjectId(contextIds[0]))
-        default: return false
-      }
-    }, "verificar propiedad del currículum")
+  async isOwnership(contextIds: string[], curriculumId: string): Promise<Result<boolean>> {
+    return super.verifyOwnership(contextIds, ownershipPipeline(new Types.ObjectId(curriculumId)))
   }
   /**
    * Encuentra currículums asociados a los usuarios suministrados
@@ -85,7 +68,7 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
    * @returns {Promise<Result<Curriculum[]>>} Resultado con los currículums encontrados
    */
   async findByUsers(options: Options & { userIds: string[] }): Promise<Result<Curriculum[]>> {
-    return super.findByUsers(options, byUsersPipeline)
+    return super.findByUsers({ ...options, populate: this.defaultPopulate }, byUsersPipeline)
   }
   /** Busca un currículum por su id en la base de datos */
   async findById(id: string): Promise<Result<Curriculum | null>> {
@@ -113,9 +96,7 @@ export const curriculumService = CurriculumService.getInstance()
  * @returns {PipelineStage[]} MongoDB aggregation pipeline
  */
 const byUsersPipeline = (userObjectIds: Types.ObjectId[], query: object = {}): PipelineStage[] => [
-  {
-    $match: { 'userData._id': { $in: userObjectIds }, ...query }
-  } as PipelineStage,
+  { $match: { ...query } } as PipelineStage,
   {
     $lookup: {
       from: 'offices',
@@ -142,15 +123,17 @@ const byUsersPipeline = (userObjectIds: Types.ObjectId[], query: object = {}): P
       as: 'userData'
     }
   } as PipelineStage,
-  { $unwind: '$userData' } as PipelineStage
+  { $unwind: '$userData' } as PipelineStage,
+  { $match: { 'userData._id': { $in: userObjectIds } } } as PipelineStage,
+  { $project: { _id: 1 } } as PipelineStage//Allow specify the fields to include on the result
 ]
 /**
  * Crea un pipeline para obtener la relación entre un currículum y su cliente/proveedor
  * @param curriculumId ID del currículum a verificar
  * @returns Pipeline de agregación de MongoDB
  */
-const ownershipPipeline = (curriculumId: string): PipelineStage[] => [
-  { $match: { _id: new Types.ObjectId(curriculumId) } } as PipelineStage,
+const ownershipPipeline = (curriculumId: Types.ObjectId): PipelineStage[] => [
+  { $match: { _id: curriculumId } } as PipelineStage,
   {
     $lookup: {
       from: 'offices',
@@ -181,7 +164,7 @@ const ownershipPipeline = (curriculumId: string): PipelineStage[] => [
   { //like as select
     $project: {
       _id: 1,
-      userId: '$userData._id',
+      id: '$userData._id',
     }
   } as PipelineStage
 ]

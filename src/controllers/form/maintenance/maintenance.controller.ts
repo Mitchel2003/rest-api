@@ -1,17 +1,25 @@
-import { maintenanceService } from "@/services/mongodb/form/maintenance/maintenance.service";
+/** Este módulo proporciona funciones para crear, leer, actualizar y eliminar mantenimientos */
+import { maintenanceService as mtService } from "@/services/mongodb/form/maintenance/maintenance.service";
+import { Maintenance } from "@/types/form/maintenance/maintenance.type";
+import { ExtendsRequest, send } from "@/interfaces/api.interface";
+import { accessFactory } from "@/services/auth/access.service";
 import { handlerResponse } from "@/errors/handler";
-import { send } from "@/interfaces/api.interface";
-import ErrorAPI from "@/errors";
-import { Request, Response } from "express";
+import ErrorAPI, { Forbidden } from "@/errors";
+import { User } from "@/types/user/user.type";
+
+import { Response, Request } from "express";
 
 /**
  * Obtiene un mantenimiento específico por su ID.
- * @param {Request} req - Objeto de solicitud Express. Se espera que contenga el ID del mantenimiento en params.id.
+ * Utiliza un patrón Strategy para aplicar la lógica de acceso según el rol del usuario.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express. Se espera que contenga el ID del mantenimiento en params.id.
+ * @param {Response} res - Objeto de respuesta Express, envía el mantenimiento encontrado o un mensaje de error.
  * @returns {Promise<void>} - Envía el mantenimiento encontrado o un mensaje de error.
  */
-export const getMaintenance = async ({ params }: Request, res: Response): Promise<void> => {
+export const getMaintenance = async ({ params, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const maintenance = await maintenanceService.findById(params.id);
+    const accessService = accessFactory<Maintenance>(mtService, 'maintenance').create(user);
+    const maintenance = await accessService.getOne(user, params.id);
     if (!maintenance.success) throw new ErrorAPI(maintenance.error);
     send(res, 200, maintenance.data);
   } catch (e) { handlerResponse(res, e, "obtener el mantenimiento") }
@@ -19,25 +27,30 @@ export const getMaintenance = async ({ params }: Request, res: Response): Promis
 
 /**
  * Obtiene todos los mantenimientos.
- * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
- * @returns {Promise<void>} - Envía un objeto con los mantenimientos.
+ * Utiliza un patrón Strategy para aplicar la lógica de filtrado según el rol del usuario.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
+ * @param {Response} res - Objeto de respuesta Express, envía los mantenimientos filtrados o un mensaje de error.
+ * @returns {Promise<void>} - Envía un objeto con los mantenimientos filtrados.
  */
-export const getMaintenances = async ({ body }: Request, res: Response): Promise<void> => {
+export const getMaintenances = async ({ query, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const maintenances = await maintenanceService.find(body.query, body.populate);
+    const accessService = accessFactory<Maintenance>(mtService, 'maintenance').create(user);
+    const maintenances = await accessService.getAll(user, query);
     if (!maintenances.success) throw new ErrorAPI(maintenances.error);
     send(res, 200, maintenances.data);
   } catch (e) { handlerResponse(res, e, "obtener los mantenimientos") }
 }
 
 /**
- * Crear un nuevo mantenimiento
- * @param {Request} req - Objeto de solicitud Express. Se espera que contenga los datos del mantenimiento en el body. 
- * @returns {Promise<void>} - Envía el mantenimiento creado o un mensaje de error.
+ * Crea un nuevo mantenimiento.
+ * Todos los usuarios autenticados pueden crear mantenimientos.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación
+ * @param {Response} res - Objeto de respuesta Express
+ * @returns {Promise<void>} - Envía el mantenimiento creado o un mensaje de error
  */
-export const createMaintenance = async (req: Request, res: Response): Promise<void> => {
+export const createMaintenance = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const maintenance = await maintenanceService.create(req.body);
+    const maintenance = await mtService.create(body);
     if (!maintenance.success) throw new ErrorAPI(maintenance.error);
     send(res, 201, maintenance.data);
   } catch (e) { handlerResponse(res, e, "crear el mantenimiento") }
@@ -45,12 +58,17 @@ export const createMaintenance = async (req: Request, res: Response): Promise<vo
 
 /**
  * Actualiza un mantenimiento existente.
- * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del mantenimiento en params.id y los datos actualizados en el body.
- * @returns {Promise<void>} - Envía el mantenimiento actualizado o un mensaje de error.
+ * Verifica los permisos del usuario antes de realizar la actualización.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación
+ * @param {Response} res - Objeto de respuesta Express, envía el mantenimiento actualizado o un mensaje de error
+ * @returns {Promise<void>} - Envía el mantenimiento actualizado o un mensaje de error
  */
-export const updateMaintenance = async ({ params, body }: Request, res: Response): Promise<void> => {
+export const updateMaintenance = async ({ params, body, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const maintenance = await maintenanceService.update(params.id, body);
+    const accessService = accessFactory<Maintenance>(mtService, 'maintenance').create(user);
+    const canUpdate = await accessService.canUpdate(user, params.id);
+    if (!canUpdate) throw new Forbidden({ message: "No tienes permisos para actualizar este mantenimiento" });
+    const maintenance = await mtService.update(params.id, body);
     if (!maintenance.success) throw new ErrorAPI(maintenance.error);
     send(res, 200, maintenance.data);
   } catch (e) { handlerResponse(res, e, "actualizar el mantenimiento") }
@@ -58,13 +76,18 @@ export const updateMaintenance = async ({ params, body }: Request, res: Response
 
 /**
  * Elimina un mantenimiento existente.
- * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del mantenimiento a eliminar en params.id.
- * @returns {Promise<void>} - Envía un mensaje de confirmación o error.
+ * Verifica los permisos del usuario antes de realizar la eliminación.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación
+ * @param {Response} res - Objeto de respuesta Express
+ * @returns {Promise<void>} - Envía un mensaje de confirmación o error
  */
-export const deleteMaintenance = async ({ params }: Request, res: Response): Promise<void> => {
+export const deleteMaintenance = async ({ params, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const maintenance = await maintenanceService.delete(params.id);
-    if (!maintenance.success) throw new ErrorAPI(maintenance.error);
-    send(res, 200, maintenance.data);
+    const accessService = accessFactory<Maintenance>(mtService, 'maintenance').create(user);
+    const canDelete = await accessService.canDelete(user, params.id);
+    if (!canDelete) throw new Forbidden({ message: "No tienes permisos para eliminar este mantenimiento" });
+    const result = await mtService.delete(params.id);
+    if (!result.success) throw new ErrorAPI(result.error);
+    send(res, 200, { message: "Mantenimiento eliminado correctamente" });
   } catch (e) { handlerResponse(res, e, "eliminar el mantenimiento") }
 }

@@ -14,17 +14,11 @@ import storageRoutes from "@/routes/auth/storage.routes"
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
 import stakeholderRoutes from "@/routes/form/curriculum/stakeholder.routes"
 
-//equipment routes
-import equipmentRoutes from "@/routes/form/equipment/equipment.routes"
-import calibrationRoutes from "@/routes/form/equipment/calibration.routes"
-import reminderRoutes from "@/routes/form/equipment/reminder.routes"
-
 //maintenance routes
 import maintenanceRoutes from "@/routes/form/maintenance/maintenance.routes"
 
 // relation routes
 import curriculumRelationRoutes from "@/routes/relation/curriculum.routes";
-import equipmentRelationRoutes from "@/routes/relation/equipment.routes";
 import maintenanceRelationRoutes from "@/routes/relation/maintenance.routes";
 
 //location routes
@@ -54,12 +48,6 @@ app.use('/api', userRoutes);//user routes
 app.use('/api/form', curriculumRoutes);
 app.use('/api/form/cv', stakeholderRoutes);
 app.use('/api/form/cv', curriculumRelationRoutes);
-
-//form equipment routes
-app.use('/api/form', equipmentRoutes);
-app.use('/api/form/equipment', reminderRoutes);
-app.use('/api/form/equipment', calibrationRoutes);
-app.use('/api/form/equipment', equipmentRelationRoutes);
 
 //form maintenance routes
 app.use('/api/form', maintenanceRoutes);

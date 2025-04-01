@@ -1,5 +1,6 @@
 import 'firebase/auth';
 
+/** Type for window object (Firebase Auth) */
 declare module '@firebase/auth/dist/auth-public' {
   export type Window = {
     firebase: { auth: Auth };
@@ -16,4 +17,8 @@ declare module '@firebase/auth/dist/auth-public' {
     execute: (id: number) => unknown;
     reset: (id: number) => unknown;
   };
+}
+/** Type for service worker registration (Firebase Messaging FCM) */
+declare module '@firebase/messaging/dist/index-public' {
+  export type ServiceWorkerRegistration = unknown;
 }

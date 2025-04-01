@@ -7,7 +7,7 @@ import config from "@/utils/config"
 import { NotFound } from "@/errors"
 import { firebaseApp } from "@/db"
 
-import { getMessaging, getToken, Messaging } from "firebase/messaging"
+import { type Messaging, getMessaging, getToken } from "firebase/messaging"
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,

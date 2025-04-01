@@ -3,6 +3,7 @@ import { authService as authFB } from "@/services/firebase/auth.service";
 import { userService } from "@/services/mongodb/user/user.service";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
+import { sendWhatsAppMessage } from "@/lib/mail";
 import ErrorAPI from "@/errors";
 
 import { Request, Response } from "express";
@@ -68,4 +69,16 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, 'Email enviado correctamente');
   } catch (e) { handlerResponse(res, e, "enviar email de restablecimiento de contraseña") }
+}
+/**
+ * Nos permite enviar un mensaje de WhatsApp al usuario.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el número de teléfono y el mensaje en el body.
+ * @returns {Promise<void>} - Envía un mensaje de éxito si el mensaje se envía correctamente.
+ */
+export const sendMessage = async ({ body }: Request, res: Response): Promise<void> => {
+  try {
+    const result = await sendWhatsAppMessage(body.phone, body.message);
+    if (!result.success) throw new ErrorAPI({ message: result.message });
+    send(res, 200, 'Mensaje enviado correctamente');
+  } catch (e) { handlerResponse(res, e, "enviar mensaje de WhatsApp") }
 }

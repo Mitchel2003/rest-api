@@ -10,14 +10,13 @@ import authRoutes from "@/routes/auth/auth.routes"
 import healthRoutes from "@/routes/auth/health.routes"
 import storageRoutes from "@/routes/auth/storage.routes"
 
-//curriculum routes
+//form routes
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
 import stakeholderRoutes from "@/routes/form/curriculum/stakeholder.routes"
-
-//maintenance routes
 import maintenanceRoutes from "@/routes/form/maintenance/maintenance.routes"
+import solicitRoutes from "@/routes/form/solicit/solicit.routes"
 
-// relation routes
+//relation routes
 import curriculumRelationRoutes from "@/routes/relation/curriculum.routes";
 import maintenanceRelationRoutes from "@/routes/relation/maintenance.routes";
 
@@ -52,6 +51,9 @@ app.use('/api/form/cv', curriculumRelationRoutes);
 //form maintenance routes
 app.use('/api/form', maintenanceRoutes);
 app.use('/api/form/maintenance', maintenanceRelationRoutes);
+
+//form solicit routes
+app.use('/api/form', solicitRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------location routes--------------------------------------------------*/

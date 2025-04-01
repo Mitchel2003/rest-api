@@ -20,6 +20,7 @@ export default {
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    vapidKey: process.env.FIREBASE_VAPID_KEY,
   },
   firebaseAdmin: {//firebase-admin environment variables
     projectId: process.env.FIREBASE_PROJECT_ID,

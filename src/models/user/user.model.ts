@@ -4,6 +4,7 @@ import configSchema from "@/utils/schema";
 
 const userSchema: Schema<User> = new Schema({
   //to auth-firebase (password is handled by firebase)
+  fcmToken: { type: String, required: false },
   uid: { index: true, type: String, unique: true, required: true }, // To index by uid
   email: { index: true, type: String, unique: true, required: true }, // To index by email
   //to user credentials

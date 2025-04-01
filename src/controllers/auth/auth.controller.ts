@@ -1,6 +1,7 @@
 /** Este módulo proporciona funciones para la autenticación y gestión de usuarios */
 import { authService as authFB } from "@/services/firebase/auth.service";
 import { userService } from "@/services/mongodb/user/user.service";
+import adminService from "@/services/firebase/admin.service";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
 import ErrorAPI from "@/errors";
@@ -69,3 +70,32 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
     send(res, 200, 'Email enviado correctamente');
   } catch (e) { handlerResponse(res, e, "enviar email de restablecimiento de contraseña") }
 }
+/*---------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------notifications--------------------------------------------------*/
+/**
+ * Nos permite guardar el token de Firebase Cloud Messaging (FCM) en el usuario.
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el id del usuario en el body.
+ * @returns {Promise<void>} - Envía un mensaje de éxito si el token se guarda correctamente.
+ */
+export const saveToken = async ({ body }: Request, res: Response): Promise<void> => {
+  try {
+    const result = await authFB.getTokenFCM();
+    if (!result.success) throw new ErrorAPI(result.error);
+    await userService.update(body.id, { fcmToken: result.data });
+    send(res, 200, { message: "Token guardado con éxito" });
+  } catch (e: unknown) { handlerResponse(res, e, "guardar token FCM") }
+}
+/**
+ * Nos permite enviar una notificación al usuario mediante Firebase Cloud Messaging (FCM).
+ * @param {Request} req - Objeto de solicitud Express. Debe contener el id del usuario, el título y el cuerpo de la notificación en el body.
+ * @returns {Promise<void>} - Envía un mensaje de éxito si la notificación se envía correctamente.
+ */
+export const sendNotification = async ({ body }: Request, res: Response): Promise<void> => {
+  try {
+    const result = await adminService.sendNotification(body.id, body.title, body.body);
+    if (!result.success) throw new ErrorAPI(result.error);
+    send(res, 200, { message: "Notificación enviada con éxito" });
+  } catch (e: unknown) { handlerResponse(res, e, "enviar notificación") }
+}
+/*---------------------------------------------------------------------------------------------------------*/

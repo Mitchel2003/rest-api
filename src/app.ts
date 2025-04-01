@@ -17,8 +17,8 @@ import maintenanceRoutes from "@/routes/form/maintenance/maintenance.routes"
 import solicitRoutes from "@/routes/form/solicit/solicit.routes"
 
 //relation routes
-import curriculumRelationRoutes from "@/routes/relation/curriculum.routes";
-import maintenanceRelationRoutes from "@/routes/relation/maintenance.routes";
+import curriculumRelationRoutes from "@/routes/relation/curriculum.routes"
+import maintenanceRelationRoutes from "@/routes/relation/maintenance.routes"
 
 //location routes
 import countryRoutes from "@/routes/location/country.routes"

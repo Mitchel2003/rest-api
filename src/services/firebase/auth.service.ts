@@ -3,9 +3,11 @@ import { AuthService as IAuth } from "@/interfaces/db.interface"
 import { handlerService as handler } from "@/errors/handler"
 import { AccountProps } from "@/interfaces/props.interface"
 import { Result } from "@/interfaces/api.interface"
+import config from "@/utils/config"
 import { NotFound } from "@/errors"
 import { firebaseApp } from "@/db"
 
+import { getMessaging, getToken, Messaging } from "firebase/messaging"
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -16,7 +18,7 @@ import {
   getAuth,
   signOut,
   Auth,
-  User
+  User,
 } from "firebase/auth"
 
 /**
@@ -25,9 +27,14 @@ import {
  */
 class AuthService implements IAuth {
   private auth: Auth
+  private messaging: Messaging
   private static instance: AuthService
   private static user: User | null = null
-  private constructor() { this.auth = getAuth(firebaseApp) }
+
+  private constructor() {
+    this.auth = getAuth(firebaseApp)
+    this.messaging = getMessaging()
+  }
 
   /**
    * Returns the singleton instance of AuthService.
@@ -100,6 +107,16 @@ class AuthService implements IAuth {
   /*----------------------------------------------------*/
 
   /*---------------> actions requests <---------------*/
+  /**
+   * Handles the process of getting a token for Firebase Cloud Messaging (FCM).
+   * @returns {Promise<Result<string>>} - Returns the token if the request is successful, or an error if it fails.
+   */
+  async getTokenFCM(): Promise<Result<string>> {
+    return handler(async () => {
+      if (!this.auth.currentUser) throw new NotFound({ message: 'Usuario (auth)' })
+      return await getToken(this.messaging, { vapidKey: config.firebase.vapidKey })
+    }, 'obtener token FCM')
+  }
   /**
    * Sends an email verification to the email in the authentication context.
    * @returns {Promise<Result<void>>} - Executes the request and returns a state (success or failure).

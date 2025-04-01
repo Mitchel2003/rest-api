@@ -6,6 +6,7 @@ export interface User extends Document {
   _id: string
   uid: string
   email: string
+  fcmToken?: string
   //to user
   phone: string
   username: string

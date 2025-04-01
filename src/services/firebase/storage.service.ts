@@ -45,7 +45,10 @@ import {
 class StorageService implements IStorage {
   private static instance: StorageService
   private readonly storage: FirebaseStorage
-  private constructor() { this.storage = getStorage(firebaseApp) }
+
+  private constructor() {
+    this.storage = getStorage(firebaseApp)
+  }
 
   public static getInstance(): StorageService {
     if (!StorageService.instance) { StorageService.instance = new StorageService() }

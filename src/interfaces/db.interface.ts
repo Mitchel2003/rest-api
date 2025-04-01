@@ -1,6 +1,7 @@
 import { Metadata, AccountProps } from "@/interfaces/props.interface";
 import { Result } from "@/interfaces/api.interface";
 import { Auth, User } from "firebase/auth";
+import admin from "firebase-admin";
 
 /*--------------------------------------------------Firebase--------------------------------------------------*/
 export interface AuthService {
@@ -13,6 +14,7 @@ export interface AuthService {
   registerAccount(credentials: AccountProps): Promise<Result<User>>
   deleteAccount(uid: string): Promise<Result<void>>
   /*-----------------> actions requests <-----------------*/
+  getTokenFCM(): Promise<Result<string>>
   sendEmailVerification(): Promise<Result<void>>
   sendEmailResetPassword(email: string): Promise<Result<void>>
 }
@@ -28,5 +30,10 @@ export interface StorageService {
   /*-----------------> update <-----------------*/
   updateFile(file: Express.Multer.File, path: string): Promise<Result<string>>
   deleteFile(path: string): Promise<Result<void>>
+}
+
+export interface AdminService {
+  getAuth(): admin.auth.Auth
+  sendNotification(userId: string, title: string, body: string): Promise<Result<void>>
 }
 /*---------------------------------------------------------------------------------------------------------*/

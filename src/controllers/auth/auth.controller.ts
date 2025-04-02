@@ -74,19 +74,6 @@ export const forgotPassword = async ({ body }: Request, res: Response): Promise<
 
 /*--------------------------------------------------notifications--------------------------------------------------*/
 /**
- * Nos permite guardar el token de Firebase Cloud Messaging (FCM) en el usuario.
- * @param {Request} req - Objeto de solicitud Express. Debe contener el id del usuario en el body.
- * @returns {Promise<void>} - Envía un mensaje de éxito si el token se guarda correctamente.
- */
-export const saveToken = async ({ body }: Request, res: Response): Promise<void> => {
-  try {
-    const result = await authFB.getTokenFCM();
-    if (!result.success) throw new ErrorAPI(result.error);
-    await userService.update(body.id, { fcmToken: result.data });
-    send(res, 200, { message: "Token guardado con éxito" });
-  } catch (e: unknown) { handlerResponse(res, e, "guardar token FCM") }
-}
-/**
  * Nos permite enviar una notificación al usuario mediante Firebase Cloud Messaging (FCM).
  * @param {Request} req - Objeto de solicitud Express. Debe contener el id del usuario, el título y el cuerpo de la notificación en el body.
  * @returns {Promise<void>} - Envía un mensaje de éxito si la notificación se envía correctamente.

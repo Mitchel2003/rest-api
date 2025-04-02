@@ -8,7 +8,7 @@ export default {
   devUrl: process.env.DEVELOPMENT_URL as string,
   privateKey: process.env.PRIVATE_KEY as string,
   mongodbUri: process.env.MONGODB_URI as string,
-  redis: {//redis environment variables
+  redis: {//redis environment variables (not used)
     url: process.env.REDIS_URL as string,
     password: process.env.REDIS_PASSWORD as string,
   },
@@ -19,8 +19,7 @@ export default {
     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     measurementId: process.env.FIREBASE_MEASUREMENT_ID,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    vapidKey: process.env.FIREBASE_VAPID_KEY,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
   },
   firebaseAdmin: {//firebase-admin environment variables
     projectId: process.env.FIREBASE_PROJECT_ID,

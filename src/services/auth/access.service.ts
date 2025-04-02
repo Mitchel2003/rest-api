@@ -242,7 +242,11 @@ export class ClientAccess<T, IdType = string> extends BaseAccess<T, IdType> {
     return success(result.data)
   }
   /** Verifica si el cliente puede actualizar un recurso */
-  async canUpdate(_user: User, _resourceId: IdType): Promise<boolean> { return false }
+  async canUpdate(user: User, resourceId: IdType): Promise<boolean> {
+    if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
+    if (this.resourceName === 'user') return resourceId === user._id.toString()
+    return false
+  }
   /** Verifica si el cliente puede eliminar un recurso */
   async canDelete(_user: User, _resourceId: IdType): Promise<boolean> { return false }
 }

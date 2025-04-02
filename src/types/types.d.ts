@@ -18,7 +18,3 @@ declare module '@firebase/auth/dist/auth-public' {
     reset: (id: number) => unknown;
   };
 }
-/** Type for service worker registration (Firebase Messaging FCM) */
-declare module '@firebase/messaging/dist/index-public' {
-  export type ServiceWorkerRegistration = unknown;
-}

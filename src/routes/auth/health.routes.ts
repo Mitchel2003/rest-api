@@ -6,7 +6,6 @@ const getHealth = (req: Request, res: Response) => {
   if (req.params.id) console.log('params inecesaries')
   res.status(200).send('ok')
 }
-
 //verify auth and action
 router.get('/health', getHealth)
 

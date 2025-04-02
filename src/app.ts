@@ -2,13 +2,10 @@ import config from "@/utils/config"
 import express from "express"
 import cors from "cors"
 
-//user routes
-import userRoutes from "@/routes/user/user.routes"
-
-//auth and health routes
+//health and auth routes
 import authRoutes from "@/routes/auth/auth.routes"
+import userRoutes from "@/routes/user/user.routes"
 import healthRoutes from "@/routes/auth/health.routes"
-import storageRoutes from "@/routes/auth/storage.routes"
 
 //form routes
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
@@ -28,34 +25,25 @@ import officeRoutes from "@/routes/location/office.routes"
 import headquarterRoutes from "@/routes/location/headquarter.routes"
 
 //config express
-const origin = config.nodeEnv === 'production' ? config.depUrl : config.devUrl
 const app = express();
+const origin = config.nodeEnv === 'production' ? config.depUrl : config.devUrl;
 app.use(cors({ origin, credentials: true }));
-app.use(express.json({ limit: '10mb' })); //to allow large files
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
+app.use(express.json()); //allow read json
 /*--------------------------------------------------health and auth routes--------------------------------------------------*/
-//to auto-refresh and uptime server
+//health and auth routes
+app.use('/api', userRoutes);
 app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/storage', storageRoutes);
-app.use('/api', userRoutes);//user routes
-/*---------------------------------------------------------------------------------------------------------*/
-
 /*--------------------------------------------------form routes--------------------------------------------------*/
 //form curriculum routes
 app.use('/api/form', curriculumRoutes);
 app.use('/api/form/cv', stakeholderRoutes);
 app.use('/api/form/cv', curriculumRelationRoutes);
+app.use('/api/form', solicitRoutes);//form solicit
 
 //form maintenance routes
 app.use('/api/form', maintenanceRoutes);
 app.use('/api/form/maintenance', maintenanceRelationRoutes);
-
-//form solicit routes
-app.use('/api/form', solicitRoutes);
-/*---------------------------------------------------------------------------------------------------------*/
-
 /*--------------------------------------------------location routes--------------------------------------------------*/
 //location routes
 app.use('/api/location', countryRoutes);
@@ -64,5 +52,4 @@ app.use('/api/location', cityRoutes);
 app.use('/api/location', officeRoutes);
 app.use('/api/location', headquarterRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
-
 export default app;

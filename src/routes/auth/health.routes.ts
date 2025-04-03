@@ -2,11 +2,10 @@ import { Router, Request, Response } from "express"
 
 const router = Router()
 
-const getHealth = (req: Request, res: Response) => {
+// health route (to compensate delay "deployment")
+router.get('/health', (req: Request, res: Response) => {
   if (req.params.id) console.log('params inecesaries')
   res.status(200).send('ok')
-}
-//verify auth and action
-router.get('/health', getHealth)
+})
 
 export default router

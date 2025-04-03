@@ -1,7 +1,6 @@
-import { AdminService as IAdmin } from "@/interfaces/db.interface";
 import { userService } from "@/services/mongodb/user/user.service";
 import { handlerService as handler } from "@/errors/handler";
-import { Result } from "@/interfaces/api.interface";
+import { IAdmin, Result } from "@/interfaces/api.interface";
 import { NotFound } from "@/errors";
 import config from "@/utils/config";
 import admin from "firebase-admin";
@@ -30,6 +29,8 @@ class FirebaseAdmin implements IAdmin {
    * @returns {admin.auth.Auth} Instance of Firebase Auth.
    */
   public getAuth(): admin.auth.Auth { return this.auth }
+
+  /*--------------------------------------------------messaging--------------------------------------------------*/
   /**
    * Send notification to user through Firebase Cloud Messaging (FCM).
    * @param {string} userId - User id of user
@@ -45,6 +46,17 @@ class FirebaseAdmin implements IAdmin {
       const message = { notification: { title, body }, token: user.data.fcmToken }
       await admin.messaging().send(message)
     }, 'enviar notificación')
+  }
+  /*---------------------------------------------------------------------------------------------------------*/
+
+  /*--------------------------------------------------authentication--------------------------------------------------*/
+  /**
+   * Deletes a user from Firebase, uses Firebase Admin
+   * @param {string} uid - The unique identifier of the user to delete.
+   * @returns {Promise<Result<void>>} - Executes the request and returns a state (success or failure).
+   */
+  async deleteAccount(uid: string): Promise<Result<void>> {
+    return handler(async () => await firebaseAdmin.deleteUser(uid), 'eliminar usuario (Firebase Auth)')
   }
 }
 /*---------------------------------------------------------------------------------------------------------*/

@@ -1,16 +1,16 @@
-import { login, logout, forgotPassword, getOnAuth, sendNotification } from "@/controllers/auth/auth.controller"
-import { loginSchema, forgotPasswordSchema } from "@/schemas/auth/auth.schema"
-import validateSchema from "@/middlewares/validator.middleware"
+import { sendNotification } from "@/controllers/auth/messaging.controller"
 import authRequired from "@/middlewares/auth.middleware"
-import { Router } from "express"
+import { Router, Request, Response } from "express"
 
 const router = Router()
-/*--------------------------------------------------auth--------------------------------------------------*/
-router.post('/logout', logout)// authentication
-router.post('/login', validateSchema(loginSchema), login)
-router.get('/on-auth', getOnAuth)// verification
-router.post('/forgot-password', validateSchema(forgotPasswordSchema), forgotPassword)
-router.post('/fcm-notification', authRequired, sendNotification)// send notification
-/*---------------------------------------------------------------------------------------------------------*/
+
+// messaging routes through Firebase Cloud Messaging (Admin)
+router.post('/fcm', authRequired, sendNotification)
+
+// health route (to compensate delay "deployment")
+router.get('/health', (req: Request, res: Response) => {
+  if (req.params.id) console.log('params inecesaries')
+  res.status(200).send('ok')
+})
 
 export default router

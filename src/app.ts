@@ -2,10 +2,9 @@ import config from "@/utils/config"
 import express from "express"
 import cors from "cors"
 
-//health and auth routes
-import authRoutes from "@/routes/auth/auth.routes"
+//health and user routes
 import userRoutes from "@/routes/user/user.routes"
-import healthRoutes from "@/routes/auth/health.routes"
+import authRoutes from "@/routes/auth/auth.routes"
 
 //form routes
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
@@ -29,10 +28,9 @@ const app = express();
 const origin = config.nodeEnv === 'production' ? config.depUrl : config.devUrl;
 app.use(cors({ origin, credentials: true }));
 app.use(express.json()); //allow read json
-/*--------------------------------------------------health and auth routes--------------------------------------------------*/
-//health and auth routes
+/*--------------------------------------------------auth and user routes--------------------------------------------------*/
+//auth and user routes (messaging and health)
 app.use('/api', userRoutes);
-app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
 /*--------------------------------------------------form routes--------------------------------------------------*/
 //form curriculum routes

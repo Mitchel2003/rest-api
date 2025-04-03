@@ -1,11 +1,10 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar usuarios */
-import { authService as authFB } from "@/services/firebase/auth.service";
 import { userService } from "@/services/mongodb/user/user.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface";
 import { accessFactory } from "@/services/auth/access.service";
+import firebaseAdmin from "@/services/firebase/admin.service";
 import ErrorAPI, { Forbidden, NotFound } from "@/errors";
 import { handlerResponse } from "@/errors/handler";
-import { User as UserFB } from "firebase/auth";
 import { User } from "@/types/user/user.type";
 
 import { Response, Request } from "express";
@@ -51,12 +50,7 @@ export const getUsers = async ({ query, user = {} as User }: ExtendsRequest, res
  */
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const auth = await authFB.registerAccount(req.body);
-    if (!auth.success) throw new ErrorAPI(auth.error);
-    const sendEmail = await authFB.sendEmailVerification();
-    if (!sendEmail.success) throw new ErrorAPI(sendEmail.error);
-    //create user in database with credentials (mongodb)
-    const result = await userService.create(credentials(auth.data));
+    const result = await userService.create(credentials(req.body));
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, result.data);
   } catch (e: unknown) { handlerResponse(res, e, "registrar usuario") }
@@ -92,7 +86,7 @@ export const deleteUser = async ({ params }: ExtendsRequest, res: Response): Pro
   try {
     const [_id, uid] = params.id.split("-");
     if (!_id || !uid) throw new NotFound({ message: "Invalid user ID" });
-    const auth = await authFB.deleteAccount(uid);
+    const auth = await firebaseAdmin.deleteAccount(uid);
     if (!auth.success) throw new ErrorAPI(auth.error);
     const result = await userService.delete(_id);
     if (!result.success) throw new ErrorAPI(result.error);
@@ -104,12 +98,12 @@ export const deleteUser = async ({ params }: ExtendsRequest, res: Response): Pro
 /*--------------------------------------------------tools--------------------------------------------------*/
 /**
  * Nos permite construir las credenciales del usuario (mongoDB).
- * @param {UserFB} auth - El usuario de firebase, representa la autenticación.
+ * @param {any} auth - El usuario de firebase, representa la autenticación.
  * @argument photoURL - Es un string que contiene el rol y las sedes, su estructura es la siguiente:
  * @example auth.photoURL = "role;permissions;phone;nit;invima;profesionalLicense"
  * @returns {User} - Retorna las credenciales del usuario en el formato standar (model mongoDB)
  */
-const credentials = (auth: UserFB): User => {
+const credentials = (auth: any): User => {
   const [role, permissionsData, phone, nit, invima, profesionalLicense] = auth.photoURL?.split(';') || [];
   const permissions: string[] = permissionsData ? JSON.parse(permissionsData) : []
   return {

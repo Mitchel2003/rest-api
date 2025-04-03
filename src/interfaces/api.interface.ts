@@ -1,14 +1,23 @@
 import { User } from "@/types/user/user.type"
 import { Request, Response } from "express"
+import admin from 'firebase-admin'
 
-/*--------------- request ---------------*/
+/*--------------------------------------------------response--------------------------------------------------*/
+/** Extiende la interfaz Request de Express para incluir el usuario autenticado */
 export interface ExtendsRequest extends Request { user?: User }
-/*--------------- response ---------------*/
-export type Error = string
-export type ApiResponse<T> = T | Error
 export type SendResponseProps = <T>(res: Response, status: number, data: T) => void
+export type ApiResponse<T> = T | Error
+export type Error = string
+/*---------------------------------------------------------------------------------------------------------*/
 
-/*--------------- tools ---------------*/
+/*--------------------------------------------------implements--------------------------------------------------*/
+export interface IAdmin {
+  getAuth(): admin.auth.Auth
+  sendNotification(userId: string, title: string, body: string): Promise<Result<void>>
+}
+/*---------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------tools--------------------------------------------------*/
 /**
  * Envía una respuesta con el estado HTTP y el dato correspondiente.
  * @param res - Objeto de respuesta Express.
@@ -27,3 +36,4 @@ export interface Failure { success: false; error: IError }
 export type Result<T> = Success<T> | Failure //Result either
 export const success = <T>(data: T): Success<T> => ({ success: true, data })
 export const failure = (error: IError): Failure => ({ success: false, error })
+/*---------------------------------------------------------------------------------------------------------*/

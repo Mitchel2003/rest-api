@@ -4,7 +4,6 @@ import HandlerErrorsFB from '@/errors/firebase.error';
 import HandlerErrorsZod from '@/errors/zod.error';
 import ErrorAPI from '@/errors';
 
-import { FirebaseError } from 'firebase/app';
 import { MongooseError } from 'mongoose';
 import { Response } from 'express';
 import { ZodError } from 'zod';
@@ -15,18 +14,10 @@ import { ZodError } from 'zod';
  * @param {Function} operation - La operación asíncrona a ejecutar.
  * @param {string} context - Representa el contexto en el que ocurrió el error, suele referirse a la operación.
  * @returns {Promise<Result<T>>} - Un resultado que puede ser exitoso o fallido.
- * @example
- * if (!result.success) throw new ErrorAPI(result.error)
- * const data = result.data
  */
 export const handlerService = async <T>(operation: () => Promise<T>, context: string): Promise<Result<T>> => {
-  try {
-    const res = await operation();
-    return success(res)
-  } catch (e: unknown) {
-    const error = normalizeError(e, context);
-    return failure(error)
-  }
+  try { return success(await operation()) }
+  catch (e) { return failure(normalizeError(e, context)) }
 }
 
 /**
@@ -52,8 +43,8 @@ export const handlerResponse = (res: Response, e: unknown, context: string) => {
  * @example if (!result.success) throw new ErrorAPI({ message: 'Error de prueba', statusCode: 500 })
  */
 export const normalizeError = (e: unknown, context: string): ErrorAPI => {
+  if (typeof e === 'object' && e !== null && 'code' in e && typeof e.code === 'string' && e.code.startsWith('auth/')) return HandlerErrorsFB(e as any)
   if (e instanceof MongooseError) return HandlerErrorsMDB(e)
-  if (e instanceof FirebaseError) return HandlerErrorsFB(e)
   if (e instanceof ZodError) return HandlerErrorsZod(e)
   if (e instanceof ErrorAPI) return e
   return new ErrorAPI({ message: `Error al ${context}: ${e instanceof Error ? e.message : String(e)}` })

@@ -10,7 +10,9 @@ class FirebaseAdmin implements IAdmin {
   private static instance: FirebaseAdmin;
 
   private constructor() {
-    !admin.apps.length && admin.initializeApp({ credential: admin.credential.cert(config.firebaseAdmin) })
+    const firebaseConfig = config.firebaseAdmin
+    firebaseConfig.private_key = firebaseConfig.private_key.replace(/\\n/g, "\n")
+    !admin.apps.length && admin.initializeApp({ credential: admin.credential.cert(firebaseConfig) })
     this.auth = admin.auth()
   }
 

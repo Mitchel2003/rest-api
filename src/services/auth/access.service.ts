@@ -79,26 +79,26 @@ export class AdminAccess<T, IdType = string> extends BaseAccess<T, IdType> {
   ) { super(resourceService, resourceName) }
   /**
    * Obtiene todos los recursos accesibles para el administrador
-   * @param user Usuario administrador, (not used)
+   * @param user Usuario con acceso de administrador
    * @param query Consulta para filtrar los recursos
    * @returns Resultado con los recursos o un error
    */
   async getAll(_user: User, query?: any): Promise<Result<T[]>> {
-    const result: Result<T[]> = await this.resourceService.find(query || {})
+    const result = await this.resourceService.find(query || {})
     if (!result.success) throw new ErrorAPI(result.error)
     return success(result.data)
   }
   /**
    * Obtiene un recurso específico
-   * @param user Usuario administrador, (not used)
+   * @param user Usuario con acceso de administrador
    * @param resourceId ID del recurso a solicitar
    * @returns Resultado con el recurso o un error
    */
-  async getOne(_user: User, resourceId: IdType): Promise<Result<T>> {
+  async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
+    if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user is trying to get himself
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
-    const result: Result<T | null> = await this.resourceService.findById(resourceId)
-    if (!result.success) throw new ErrorAPI(result.error)//if not found or error
-    if (!result.data) throw new NotFound({ message: this.resourceName })
+    const result = await this.resourceService.findById(resourceId)//the access is allowed
+    if (!result.success || !result.data) throw new NotFound({ message: this.resourceName })
     return success(result.data)
   }
   /** Verifica si el administrador puede actualizar un recurso */
@@ -121,26 +121,27 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
   ) { super(resourceService, resourceName) }
   /**
    * Obtiene todos los recursos accesibles para la empresa
-   * @param user Usuario empresa
+   * @param user Usuario con acceso de empresa
    * @param query Consulta para filtrar los recursos
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
     const clientIds: string[] = this.getUserPermissions(user)
-    if (!clientIds?.length) throw new Forbidden({ message: 'No tienes clientes asignados' })//if no clients, not is allowed
-    const result: Result<T[]> = await this.resourceService.findByUsers({ userIds: clientIds, query: query || {} })
+    if (!clientIds?.length) throw new Forbidden({ message: 'No tienes clientes asignados' })
+    const result = await this.resourceService.findByUsers({ userIds: clientIds, query: query || {} })
     if (!result.success) throw new ErrorAPI(result.error)
     return success(result.data)
   }
   /**
    * Obtiene un recurso específico
-   * @param user Usuario empresa
+   * @param user Usuario con acceso de empresa
    * @param resourceId ID del recurso
    * @returns Resultado con el recurso o un error
    */
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
+    if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user is trying to get himself
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
-    const clientIds: string[] = this.getUserPermissions(user)//get clients ids (permissions)
+    const clientIds: string[] = this.getUserPermissions(user)//get clients ids (permissions) assigned to this user
     const isOwner = await this.resourceService.isOwnership(clientIds, resourceId)//check ownership to this resource context
     if (!isOwner.success || !isOwner.data) throw new Forbidden({ message: `No tienes permiso para acceder a este ${this.resourceName}` })
     const result = await this.resourceService.findById(resourceId)//the access is allowed
@@ -167,26 +168,27 @@ export class EngineerAccess<T, IdType = string> extends BaseAccess<T, IdType> {
   ) { super(resourceService, resourceName) }
   /**
    * Obtiene todos los recursos accesibles para el ingeniero
-   * @param user Usuario ingeniero
+   * @param user Usuario con acceso de ingeniero
    * @param query Consulta para filtrar los recursos
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
     const companyIds: string[] = this.getUserPermissions(user)
     if (!companyIds.length) throw new NotFound({ message: 'No tienes compañías asignadas para supervisar' })
-    const result: Result<T[]> = await (this.resourceService as any).findByUsers({ userIds: companyIds, query: query || {} }) //I need check this!!
+    const result = await this.resourceService.findByUsers({ userIds: companyIds, query: query || {} })
     if (!result.success) throw new ErrorAPI(result.error)
     return success(result.data)
   }
   /**
    * Obtiene un recurso específico accesible para el ingeniero
-   * @param user Usuario ingeniero
+   * @param user Usuario con acceso de ingeniero
    * @param resourceId ID del recurso a obtener
    * @returns Resultado con el recurso o un error
    */
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
+    if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user is trying to get himself
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
-    const companyIds: string[] = this.getUserPermissions(user)//get companies ids (permissions)
+    const companyIds: string[] = this.getUserPermissions(user)//get companies ids (permissions) assigned to this user
     const isOwner = await this.resourceService.isOwnership(companyIds, resourceId)//check ownership to this resource context
     if (!isOwner.success || !isOwner.data) throw new Forbidden({ message: `No tienes permiso para acceder a este ${this.resourceName}` })
     const result = await this.resourceService.findById(resourceId)//the access is allowed
@@ -213,27 +215,28 @@ export class ClientAccess<T, IdType = string> extends BaseAccess<T, IdType> {
   ) { super(resourceService, resourceName) }
   /**
    * Obtiene todos los recursos accesibles para el cliente
-   * @param user Usuario cliente
+   * @param user Usuario con acceso de cliente
    * @param query Consulta para filtrar los recursos
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
-    if (this.resourceName === 'user' && query && query.role === 'company') {//special case
-      const result: Result<T[]> = await this.resourceService.find({ role: 'company', permissions: { $in: [user._id] } })
-      if (!result.success) throw new ErrorAPI(result.error)
+    if (this.resourceName === 'user' && query && query.role === 'company') {//to allow get company assigned
+      const result = await this.resourceService.find({ role: 'company', permissions: { $in: [user._id] } })
+      if (!result.success) throw new ErrorAPI(result.error);
       return success(result.data)
     }
-    const result: Result<T[]> = await this.resourceService.findByUsers({ userIds: [user._id], query: query || {} })
+    const result = await this.resourceService.findByUsers({ userIds: [user._id], query: query || {} })
     if (!result.success) throw new ErrorAPI(result.error)
     return success(result.data)
   }
   /**
    * Obtiene un recurso específico accesible para el cliente
-   * @param user Usuario cliente
+   * @param user Usuario con acceso de cliente
    * @param resourceId ID del recurso a obtener
    * @returns Resultado con el recurso o un error
    */
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
+    if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user is trying to get himself
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
     const isOwner = await this.resourceService.isOwnership([user._id], resourceId)//check ownership to this resource context
     if (!isOwner.success || !isOwner.data) throw new Forbidden({ message: `No tienes permiso para acceder a este ${this.resourceName}` })

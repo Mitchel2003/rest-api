@@ -11,9 +11,12 @@ export type Error = string
 /*---------------------------------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------implements--------------------------------------------------*/
+export interface AuthCredentials { email: any; password: any; displayName: any }
 export interface IAdmin {
   getAuth(): admin.auth.Auth
-  sendNotification(userId: string, title: string, body: string): Promise<Result<void>>
+  sendNotification(userId: string, title: string, body: string): Promise<Result<string>>
+  createAccount(credentials: AuthCredentials): Promise<Result<admin.auth.UserRecord>>
+  deleteAccount(uid: string): Promise<Result<void>>
 }
 /*---------------------------------------------------------------------------------------------------------*/
 

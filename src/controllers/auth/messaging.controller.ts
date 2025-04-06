@@ -1,7 +1,8 @@
+import { userService } from "@/services/mongodb/user/user.service";
 import adminService from "@/services/firebase/admin.service";
 import { handlerResponse } from "@/errors/handler";
 import { send } from "@/interfaces/api.interface";
-import ErrorAPI from "@/errors";
+import ErrorAPI, { NotFound } from "@/errors";
 
 import { Request, Response } from "express";
 
@@ -12,7 +13,10 @@ import { Request, Response } from "express";
  */
 export const sendNotification = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const result = await adminService.sendNotification(body.id, body.title, body.body);
+    const user = await userService.findById(body.id);
+    if (!user.success) throw new NotFound({ message: 'usuario' });
+    if (!user.data?.fcmToken) throw new NotFound({ message: 'token de notificación (FCM)' });
+    const result = await adminService.sendNotification(body.title, body.body, user.data.fcmToken);
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, { message: "Notificación enviada con éxito" });
   } catch (e: unknown) { handlerResponse(res, e, "enviar notificación") }

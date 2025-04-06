@@ -8,6 +8,7 @@ import { handlerResponse } from "@/errors/handler";
 import { User } from "@/types/user/user.type";
 
 import { Response, Request } from "express";
+import admin from "firebase-admin";
 
 /**
  * Obtiene un usuario específico por su ID.
@@ -45,12 +46,20 @@ export const getUsers = async ({ query, user = {} as User }: ExtendsRequest, res
  * Maneja el proceso de registro de un nuevo usuario.
  * crea el usuario en firebase y envia un email de verificacion (authentication)
  * tambien crea el usuario en la base de datos (mongodb) para modelo relacional
- * @param {Request} req - Objeto de solicitud Express.
+ * @param {Request} req - Objeto de solicitud Express con los datos del usuario a registrar.
+ * @param {Response} res - Objeto de respuesta Express, envía el usuario creado o un mensaje de error.
+ * @constant {string} dataStr - Cadena de texto que contiene los datos del usuario.
+ * @example dataStr = "username;role;permissions;phone;nit;invima;profesionalLicense"
  * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
  */
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const result = await userService.create(credentials(req.body));
+    const { username, email, password, role, phone, nit, invima, profesionalLicense, permissions } = req.body;
+    const dataStr = `${username};${role};${permissions ? JSON.stringify(permissions) : '[]'};${phone ?? ''};${nit ?? ''};${invima ?? ''};${profesionalLicense ?? ''}`;
+    const userCredentials = { email, password, displayName: dataStr };
+    const auth = await firebaseAdmin.createAccount(userCredentials);
+    if (!auth.success) throw new ErrorAPI(auth.error) //check result
+    const result = await userService.create(credentials(auth.data));
     if (!result.success) throw new ErrorAPI(result.error);
     send(res, 200, result.data);
   } catch (e: unknown) { handlerResponse(res, e, "registrar usuario") }
@@ -99,15 +108,15 @@ export const deleteUser = async ({ params }: ExtendsRequest, res: Response): Pro
 /**
  * Nos permite construir las credenciales del usuario (mongoDB).
  * @param {any} auth - El usuario de firebase, representa la autenticación.
- * @argument photoURL - Es un string que contiene el rol y las sedes, su estructura es la siguiente:
- * @example auth.photoURL = "role;permissions;phone;nit;invima;profesionalLicense"
+ * @argument displayName - Es un string que contiene el rol, permisos e información del usuario.
+ * @example auth.displayName = "username;role;permissions;phone;nit;invima;profesionalLicense"
  * @returns {User} - Retorna las credenciales del usuario en el formato standar (model mongoDB)
  */
-const credentials = (auth: any): User => {
-  const [role, permissionsData, phone, nit, invima, profesionalLicense] = auth.photoURL?.split(';') || [];
+const credentials = (auth: admin.auth.UserRecord): User => {
+  const [username, role, permissionsData, phone, nit, invima, profesionalLicense] = auth.displayName?.split(';') || [];
   const permissions: string[] = permissionsData ? JSON.parse(permissionsData) : []
   return {
-    email: auth.email, username: auth.displayName,
+    email: auth.email, username,
     nit, invima, profesionalLicense,
     role, phone, permissions,
     inactive: false,

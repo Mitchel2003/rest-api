@@ -16,14 +16,12 @@ export const authRequired = async (req: ExtendsRequest, res: Response, next: Nex
   const authHeader = req.headers.authorization;// Authorization header token
   const token = authHeader?.startsWith('Bearer ') ? authHeader.split('Bearer ')[1] : null;
   if (!token) return handlerResponse(res, new Unauthorized({ message: 'Acceso denegado. Se requiere autenticación.' }), 'autenticar usuario')
-  try {// Verify and decode token
+  try {// Verify and decode token and check expiration (setHeader)
     const decodedToken = await admin.auth().verifyIdToken(token);
-    // Check if token is about to expire (optional)
     const tokenExpirationTime = new Date(decodedToken.exp * 1000);
     const timeToExpire = (tokenExpirationTime.getTime() - new Date().getTime()) / 1000 / 60; // minutes
-    // Add a header to indicate to the client that the token should be renewed
-    if (timeToExpire < 5) res.setHeader('X-Token-Expiring-Soon', 'true');
-    // Find user in database by UID (decoded from token)
+    if (timeToExpire < 5) res.setHeader('x-token-expiring-soon', 'true');
+    // Find user in database by UID (decoded from token) set credentials
     const result = await userService.findOne({ uid: decodedToken.uid });
     if (!result.success) throw new ErrorAPI(result.error)//throw error
     if (!result.data) throw new NotFound({ message: 'usuario requerido' })

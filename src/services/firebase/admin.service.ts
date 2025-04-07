@@ -33,12 +33,16 @@ class FirebaseAdmin implements IAdmin {
   /*--------------------------------------------------messaging--------------------------------------------------*/
   /**
    * Send notification to user through Firebase Cloud Messaging (FCM).
-   * @param {string} title - Title of message
-   * @param {string} body - Body of message
-   * @returns {Promise<Result<string>>} - Executes the request and returns a success UID.
+   * Use the 'data' field instead of 'notification' to avoid duplicate notifications on mobile devices.
+   * The 'data' field makes the service worker responsible for showing the notification, allowing
+   * customization of icons and avoiding duplicates.
+   * @param {string} title - Title of the message
+   * @param {string} body - Body of the message
+   * @param {string} fcmToken - FCM token of the recipient device
+   * @returns {Promise<Result<string>>} - Executes the request and returns a state (success or failure).
    */
   async sendNotification(title: string, body: string, fcmToken: string): Promise<Result<string>> {
-    return handler(async () => await admin.messaging().send({ notification: { title, body }, token: fcmToken }), 'enviar notificación')
+    return handler(async () => await admin.messaging().send({ data: { body: body, title: title, timestamp: Date.now().toString() }, token: fcmToken }), 'enviar notificación')
   }
   /*---------------------------------------------------------------------------------------------------------*/
 

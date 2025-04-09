@@ -1,8 +1,8 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar mantenimientos */
 import { maintenanceService as mtService } from "@/services/mongodb/form/maintenance/maintenance.service";
 import { Maintenance } from "@/types/form/maintenance/maintenance.type";
+import { accessFactory } from "@/services/mongodb/auth/access.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface";
-import { accessFactory } from "@/services/auth/access.service";
 import { handlerResponse } from "@/errors/handler";
 import ErrorAPI, { Forbidden } from "@/errors";
 import { User } from "@/types/user/user.type";

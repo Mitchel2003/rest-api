@@ -1,8 +1,8 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar curriculums */
 import { curriculumService as cvService } from "@/services/mongodb/form/curriculum/curriculum.service";
+import { accessFactory } from "@/services/mongodb/auth/access.service";
 import { Curriculum } from "@/types/form/curriculum/curriculum.type";
 import { ExtendsRequest, send } from "@/interfaces/api.interface";
-import { accessFactory } from "@/services/auth/access.service";
 import { handlerResponse } from "@/errors/handler";
 import ErrorAPI, { Forbidden } from "@/errors";
 import { User } from "@/types/user/user.type";

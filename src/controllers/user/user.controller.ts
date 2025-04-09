@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar usuarios */
+import { accessFactory } from "@/services/mongodb/auth/access.service";
 import { userService } from "@/services/mongodb/user/user.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface";
-import { accessFactory } from "@/services/auth/access.service";
 import firebaseAdmin from "@/services/firebase/admin.service";
 import ErrorAPI, { Forbidden, NotFound } from "@/errors";
 import { handlerResponse } from "@/errors/handler";

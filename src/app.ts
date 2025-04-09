@@ -6,6 +6,7 @@ import cors from "cors"
 import userRoutes from "@/routes/user/user.routes"
 import authRoutes from "@/routes/auth/auth.routes"
 import healthRoutes from "@/routes/auth/health.routes"
+import notificationRoutes from "@/routes/auth/notification.routes"
 
 //form routes
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
@@ -34,6 +35,7 @@ app.use(express.json()); //allow read json
 app.use('/api', userRoutes);
 app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/auth/notifications', notificationRoutes);
 /*--------------------------------------------------form routes--------------------------------------------------*/
 //form curriculum routes
 app.use('/api/form', curriculumRoutes);

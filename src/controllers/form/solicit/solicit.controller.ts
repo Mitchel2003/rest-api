@@ -1,7 +1,7 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar solicitudes */
 import { solicitService as solicitService } from "@/services/mongodb/form/solicit/solicit.service";
+import { accessFactory } from "@/services/mongodb/auth/access.service";
 import { ExtendsRequest, send } from "@/interfaces/api.interface";
-import { accessFactory } from "@/services/auth/access.service";
 import { Solicit } from "@/types/form/solicit/solicit.type";
 import { handlerResponse } from "@/errors/handler";
 import ErrorAPI, { Forbidden } from "@/errors";

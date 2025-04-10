@@ -10,6 +10,7 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   service: { type: String, required: true },
   modelEquip: { type: String, required: true },
   healthRecord: { type: String, required: true },
+  photoUrl: { type: String, required: false },
 
   //standard technical
   characteristics: { type: String, required: true },

@@ -20,6 +20,6 @@ export interface NotificationProps {
   type: string
   url?: string
   //Relationship
-  senderId?: string
-  recipientId: string
+  sender?: string
+  recipient: string
 }

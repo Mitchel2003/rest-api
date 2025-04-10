@@ -16,6 +16,10 @@ const solicitSchema: Schema<Solicit> = new Schema({
     required: false,
     default: 'pendiente'
   },
+  photoUrl: {
+    type: String,
+    required: false
+  },
 
   //relationship
   curriculum: {

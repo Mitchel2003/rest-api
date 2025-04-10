@@ -55,10 +55,10 @@ class NotificationService {
    */
   async createNotification(data: NotificationProps): Promise<Result<Notification>> {
     return handler(async () => {
-      const { recipientId, senderId, title, message, type, url } = data
+      const { recipient, sender, title, message, type, url } = data
       const notificationData: Partial<Notification> = {
-        sender: senderId ? new Types.ObjectId(senderId) : undefined,
-        recipient: new Types.ObjectId(recipientId),
+        sender: sender ? new Types.ObjectId(sender) : undefined,
+        recipient: new Types.ObjectId(recipient),
         title, message, isRead: false, url, type
       } //save notification data on database
       const notification = new notificationModel(notificationData)

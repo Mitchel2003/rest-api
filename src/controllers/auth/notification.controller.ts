@@ -45,8 +45,8 @@ export const getUnreadCount = async (req: ExtendsRequest, res: Response): Promis
  */
 export const createNotification = async (req: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const { recipientId, title, message } = req.body
-    if (!recipientId || !title || !message) throw new Validation({ message: 'Datos incompletos' })
+    const { recipient, title, message } = req.body
+    if (!recipient || !title || !message) throw new Validation({ message: 'Datos incompletos' })
     const result = await notificationService.createNotification(req.body)
     if (!result.success) throw new ErrorAPI(result.error) //catch error
     send(res, 201, result.data) //returns the notification created

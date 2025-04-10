@@ -1,8 +1,9 @@
 import { Document, Schema } from "mongoose"
 
 export interface Solicit extends Document {
-  message: string,
+  photoUrl?: string,
   priority: boolean,
+  message: string,
   status: string,
 
   curriculum: Schema.Types.ObjectId,

@@ -8,6 +8,7 @@ export interface Curriculum extends Document {
   service: string,
   modelEquip: string,
   healthRecord: string,
+  photoUrl?: string,
 
   //standard technicals
   characteristics: string,

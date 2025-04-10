@@ -14,6 +14,8 @@ const curriculumSchema = z.object({
     .string({ required_error: "Modelo del equipo es requerido" }),
   healthRecord: z
     .string({ required_error: "Registro sanitario del equipo es requerido" }),
+  photoUrl: z
+    .string().optional().nullable(),
 
   //standard technical
   characteristics: z

@@ -1,16 +1,22 @@
 import { getNotifications, getUnreadCount, markAsRead, markAllAsRead, deleteNotification, deleteAllNotifications, createNotification } from '@/controllers/auth/notification.controller'
+import notificationSchema from "@/schemas/auth/notification.schema"
+import validateSchema from "@/middlewares/validator.middleware"
 import { authRequired } from '@/middlewares/auth.middleware'
 import { Router } from 'express'
 
 const router = Router()
 
-router.use(authRequired)
-router.get('/', getNotifications)
-router.get('/unread/count', getUnreadCount)
-router.put('/read/:id', markAsRead)
-router.post('/read/all', markAllAsRead)
-router.post('/create', createNotification)
-router.delete('/:id', deleteNotification)
-router.delete('/', deleteAllNotifications)
+/*--------------------------------------------------getters--------------------------------------------------*/
+router.get('/', authRequired, getNotifications)
+router.get('/unread/count', authRequired, getUnreadCount)
+/*---------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------mutations--------------------------------------------------*/
+router.put('/read/:id', authRequired, markAsRead)
+router.post('/read/all', authRequired, markAllAsRead)
+router.delete('/:id', authRequired, deleteNotification)
+router.delete('/', authRequired, deleteAllNotifications)
+router.post('/create', authRequired, validateSchema(notificationSchema), createNotification)
+/*---------------------------------------------------------------------------------------------------------*/
 
 export default router

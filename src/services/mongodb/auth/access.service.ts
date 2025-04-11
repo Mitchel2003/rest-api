@@ -126,9 +126,10 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
-    if (this.resourceName === 'user' && query && query.role === 'engineer') {//to allow get engineers assigned
-      const result = await this.resourceService.find({ role: 'engineer', permissions: { $in: [user._id] } })
-      if (!result.success) throw new ErrorAPI(result.error);
+    if (this.resourceName === 'user' && query?.role) {//to allow get specific users by their role
+      const hasPermissions = query.role === 'company' ? undefined : { permissions: { $in: [user._id] } }
+      const result = await this.resourceService.find({ role: query.role, ...hasPermissions })
+      if (!result.success) throw new ErrorAPI(result.error)
       return success(result.data)
     }
     const clientIds: string[] = this.getUserPermissions(user)

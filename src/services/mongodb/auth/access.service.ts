@@ -1,4 +1,5 @@
 import { IAccessService, IResourceService, BaseAccess, AccessStrategyFactory } from '@/services/mongodb/mongodb.service';
+import { userService } from '@/services/mongodb/user/user.service';
 import { Result, success } from '@/interfaces/api.interface';
 import ErrorAPI, { Forbidden, NotFound } from '@/errors';
 import { User } from '@/types/user/user.type';
@@ -179,9 +180,11 @@ export class EngineerAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
-    const companyIds: string[] = this.getUserPermissions(user)
-    if (!companyIds.length) throw new NotFound({ message: 'No tienes compañías asignadas para supervisar' })
-    const result = await this.resourceService.findByUsers({ userIds: companyIds, query: query || {} })
+    const company = await userService.findById(user.permissions?.[0] || '')
+    if (!company.success || !company.data) throw new NotFound({ message: 'proveedor de servicios' })
+    const clientIds: string[] = this.getUserPermissions(company.data) //get clients ids (permissions)
+    if (!clientIds.length) throw new NotFound({ message: 'No tienes clientes asignados para supervisar' })
+    const result = await this.resourceService.findByUsers({ userIds: clientIds, query: query || {} })
     if (!result.success) throw new ErrorAPI(result.error)
     return success(result.data)
   }

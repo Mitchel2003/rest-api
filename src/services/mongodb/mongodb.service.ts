@@ -2,7 +2,7 @@ import { Repository, Doc, Query, Populate, Options } from "@/types/repository.ty
 import { handlerService as handler } from "@/errors/handler"
 import { Result } from "@/interfaces/api.interface"
 import { PipelineStage, Types } from "mongoose"
-import { User } from "user/user.type"
+import { User } from "@/types/user/user.type"
 
 /**
  * Clase abstracta para servicios de MongoDB

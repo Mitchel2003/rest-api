@@ -9,10 +9,11 @@ import healthRoutes from "@/routes/auth/health.routes"
 import notificationRoutes from "@/routes/auth/notification.routes"
 
 //form routes
+import solicitRoutes from "@/routes/form/solicit/solicit.routes"
+import activityRoutes from "@/routes/form/activity/activity.routes"
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
 import stakeholderRoutes from "@/routes/form/curriculum/stakeholder.routes"
 import maintenanceRoutes from "@/routes/form/maintenance/maintenance.routes"
-import solicitRoutes from "@/routes/form/solicit/solicit.routes"
 
 //relation routes
 import curriculumRelationRoutes from "@/routes/relation/curriculum.routes"
@@ -38,10 +39,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth/notifications', notificationRoutes);
 /*--------------------------------------------------form routes--------------------------------------------------*/
 //form curriculum routes
+app.use('/api/form', solicitRoutes);
+app.use('/api/form', activityRoutes);
 app.use('/api/form', curriculumRoutes);
 app.use('/api/form/cv', stakeholderRoutes);
 app.use('/api/form/cv', curriculumRelationRoutes);
-app.use('/api/form', solicitRoutes);//form solicit
 
 //form maintenance routes
 app.use('/api/form', maintenanceRoutes);

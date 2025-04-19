@@ -17,9 +17,8 @@ export interface User extends Document {
   //access (role)
   role: RoleProps
   inactive: boolean
-  permissions?: string[] //to engineer and admin
-  //if engineer, permissions are limited to their own clients (clientIds)
-  //if admin, permissions are limited to their own companies (companyIds)
+  permissions?: string[] //to access
+  metadata: Record<string, any> //to files
   createdAt?: Date
   updatedAt?: Date
 }

@@ -3,9 +3,9 @@ import validateSchema from "@/middlewares/validator.middleware";
 import authRequired from "@/middlewares/auth.middleware";
 import { Router } from "express";
 
-import { createRepresentativeHeadquarter, getRepresentativeHeadquarters, getRepresentativeHeadquarter, updateRepresentativeHeadquarter, deleteRepresentativeHeadquarter } from "@/controllers/relation/curriculum/representativeHeadquarter.controller";
-import { createSupplierHeadquarter, getSupplierHeadquarters, getSupplierHeadquarter, updateSupplierHeadquarter, deleteSupplierHeadquarter } from "@/controllers/relation/curriculum/supplierHeadquarter.controller";
-import { createManufacturerHeadquarter, getManufacturerHeadquarters, getManufacturerHeadquarter, updateManufacturerHeadquarter, deleteManufacturerHeadquarter } from "@/controllers/relation/curriculum/manufacturerHeadquarter.controller";
+import { createSupplierHeadquarter, getSupplierHeadquarters, getSupplierHeadquarter, updateSupplierHeadquarter, deleteSupplierHeadquarter } from "@/controllers/relation/supplierHeadquarter.controller";
+import { createManufacturerHeadquarter, getManufacturerHeadquarters, getManufacturerHeadquarter, updateManufacturerHeadquarter, deleteManufacturerHeadquarter } from "@/controllers/relation/manufacturerHeadquarter.controller";
+import { createRepresentativeHeadquarter, getRepresentativeHeadquarters, getRepresentativeHeadquarter, updateRepresentativeHeadquarter, deleteRepresentativeHeadquarter } from "@/controllers/relation/representativeHeadquarter.controller";
 
 const router = Router();
 

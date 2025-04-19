@@ -9,15 +9,14 @@ import healthRoutes from "@/routes/auth/health.routes"
 import notificationRoutes from "@/routes/auth/notification.routes"
 
 //form routes
-import solicitRoutes from "@/routes/form/solicit/solicit.routes"
-import activityRoutes from "@/routes/form/activity/activity.routes"
+import solicitRoutes from "@/routes/form/solicit.routes"
+import activityRoutes from "@/routes/form/activity.routes"
+import maintenanceRoutes from "@/routes/form/maintenance.routes"
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
 import stakeholderRoutes from "@/routes/form/curriculum/stakeholder.routes"
-import maintenanceRoutes from "@/routes/form/maintenance/maintenance.routes"
 
 //relation routes
 import curriculumRelationRoutes from "@/routes/relation/curriculum.routes"
-import maintenanceRelationRoutes from "@/routes/relation/maintenance.routes"
 
 //location routes
 import countryRoutes from "@/routes/location/country.routes"
@@ -47,7 +46,6 @@ app.use('/api/form/cv', curriculumRelationRoutes);
 
 //form maintenance routes
 app.use('/api/form', maintenanceRoutes);
-app.use('/api/form/maintenance', maintenanceRelationRoutes);
 /*--------------------------------------------------location routes--------------------------------------------------*/
 //location routes
 app.use('/api/location', countryRoutes);

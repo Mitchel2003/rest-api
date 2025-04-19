@@ -17,7 +17,8 @@ const userSchema: Schema<User> = new Schema({
   //access (role)
   role: { index: true, type: String, required: true, enum: ['client', 'company', 'engineer', 'admin'] }, // Index by role
   permissions: { default: [], type: [String], required: false },
-  inactive: { type: Boolean, default: false, required: false }
+  inactive: { type: Boolean, default: false, required: false },
+  metadata: { default: {}, type: Object, required: false }
 }, configSchema)
 
 export default mongoose.model('user', userSchema);

@@ -1,45 +1,56 @@
 /** Este módulo proporciona funciones para crear, leer, actualizar y eliminar offices */
 import { officeService } from "@/services/mongodb/location/office.service";
+import { accessFactory } from "@/services/mongodb/auth/access.service";
+import { ExtendsRequest, send } from "@/interfaces/api.interface";
+import { Office } from "@/types/location/office.type";
 import { handlerResponse } from "@/errors/handler";
-import { send } from "@/interfaces/api.interface";
-import ErrorAPI from "@/errors";
+import ErrorAPI, { Forbidden } from "@/errors";
+import { User } from "@/types/user/user.type";
 
 import { Request, Response } from "express"
 
 /**
  * Obtiene un consultorio específico por su ID.
- * @param {Request} req - Objeto de solicitud Express. Se espera que contenga el ID del consultorio en params.id.
+ * Utiliza un patrón Strategy para aplicar la lógica de acceso según el rol del usuario.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación.
+ * @param {Response} res - Objeto de respuesta Express, envía el consultorio encontrado o un mensaje de error.
  * @returns {Promise<void>} - Envía el consultorio encontrado o un mensaje de error.
  */
-export const getOffice = async ({ params }: Request, res: Response): Promise<void> => {
+export const getOffice = async ({ params, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const office = await officeService.findById(params.id);
+    const accessService = accessFactory<Office>(officeService, 'office').create(user);
+    const office = await accessService.getOne(user, params.id);
     if (!office.success) throw new ErrorAPI(office.error);
     send(res, 200, office.data);
   } catch (e) { handlerResponse(res, e, "obtener el consultorio") }
 }
 
 /**
- * Obtiene todos las consultorios.
- * @param {Request} req - Objeto de solicitud Express. Se espera un opcional query para la consulta.
- * @returns {Promise<void>} - Envía un objeto con los consultorios.
+ * Obtiene los consultorios basado en el contexto del usuario.
+ * Utiliza un patrón Strategy para aplicar la lógica de filtrado según el rol del usuario.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación
+ * @param {Response} res - Objeto de respuesta Express, envía los consultorios filtrados o un mensaje de error.
+ * @returns {Promise<void>} - Envía un objeto con los consultorios filtrados
  */
-export const getOffices = async ({ body }: Request, res: Response): Promise<void> => {
+export const getOffices = async ({ query, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const offices = await officeService.find(body.query, body.populate);
+    const accessService = accessFactory<Office>(officeService, 'office').create(user);
+    const offices = await accessService.getAll(user, query);
     if (!offices.success) throw new ErrorAPI(offices.error);
     send(res, 200, offices.data);
   } catch (e) { handlerResponse(res, e, "obtener los consultorios") }
 }
 
 /**
- * Crear un nuevo consultorio
- * @param {Request} req - Objeto de solicitud Express. Se espera que contenga los datos del consultorio en el body. 
- * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
+ * Crea un nuevo consultorio.
+ * Todos los usuarios autenticados pueden crear consultorios.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación
+ * @param {Response} res - Objeto de respuesta Express
+ * @returns {Promise<void>} - Envía el consultorio creado o un mensaje de error
  */
-export const createOffice = async (req: Request, res: Response): Promise<void> => {
+export const createOffice = async ({ body }: Request, res: Response): Promise<void> => {
   try {
-    const office = await officeService.create(req.body);
+    const office = await officeService.create(body);
     if (!office.success) throw new ErrorAPI(office.error);
     send(res, 201, office.data);
   } catch (e) { handlerResponse(res, e, "crear el consultorio") }
@@ -47,11 +58,16 @@ export const createOffice = async (req: Request, res: Response): Promise<void> =
 
 /**
  * Actualiza un consultorio existente.
- * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del consultorio en params.id y los datos actualizados en el body.
- * @returns {Promise<void>} - Envía el consultorio actualizado o un mensaje de error.
+ * Verifica los permisos del usuario antes de realizar la actualización.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación
+ * @param {Response} res - Objeto de respuesta Express, envía el consultorio actualizado o un mensaje de error
+ * @returns {Promise<void>} - Envía el consultorio actualizado o un mensaje de error
  */
-export const updateOffice = async ({ params, body }: Request, res: Response): Promise<void> => {
+export const updateOffice = async ({ params, body, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
+    const accessService = accessFactory<Office>(officeService, 'office').create(user);
+    const canUpdate = await accessService.canUpdate(user, params.id);
+    if (!canUpdate) throw new Forbidden({ message: "No tienes permisos para actualizar este consultorio" });
     const office = await officeService.update(params.id, body);
     if (!office.success) throw new ErrorAPI(office.error);
     send(res, 200, office.data);
@@ -60,13 +76,18 @@ export const updateOffice = async ({ params, body }: Request, res: Response): Pr
 
 /**
  * Elimina un consultorio existente.
- * @param {Request} req - Objeto de solicitud Express. Debe contener el ID del consultorio a eliminar en params.id.
- * @returns {Promise<void>} - Envía un mensaje de confirmación o error.
+ * Verifica los permisos del usuario antes de realizar la eliminación.
+ * @param {ExtendsRequest} req - Objeto de solicitud Express con información de autenticación
+ * @param {Response} res - Objeto de respuesta Express
+ * @returns {Promise<void>} - Envía un mensaje de confirmación o error
  */
-export const deleteOffice = async ({ params }: Request, res: Response): Promise<void> => {
+export const deleteOffice = async ({ params, user = {} as User }: ExtendsRequest, res: Response): Promise<void> => {
   try {
-    const office = await officeService.delete(params.id);
-    if (!office.success) throw new ErrorAPI(office.error);
-    send(res, 200, office.data);
+    const accessService = accessFactory<Office>(officeService, 'office').create(user);
+    const canDelete = await accessService.canDelete(user, params.id);
+    if (!canDelete) throw new Forbidden({ message: "No tienes permisos para eliminar este consultorio" });
+    const result = await officeService.delete(params.id);
+    if (!result.success) throw new ErrorAPI(result.error);
+    send(res, 200, { message: "Consultorio eliminado correctamente" });
   } catch (e) { handlerResponse(res, e, "eliminar el consultorio") }
 }

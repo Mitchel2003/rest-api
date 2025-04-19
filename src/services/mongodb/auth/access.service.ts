@@ -1,5 +1,4 @@
 import { IAccessService, IResourceService, BaseAccess, AccessStrategyFactory } from '@/services/mongodb/mongodb.service';
-import { userService } from '@/services/mongodb/user/user.service';
 import { Result, success } from '@/interfaces/api.interface';
 import ErrorAPI, { Forbidden, NotFound } from '@/errors';
 import { User } from '@/types/user/user.type';
@@ -127,9 +126,8 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
-    if (this.resourceName === 'user' && query?.role) {//to allow get specific users by their role
-      const hasPermissions = query.role === 'company' ? undefined : { permissions: { $in: [user._id] } }
-      const result = await this.resourceService.find({ role: query.role, ...hasPermissions })
+    if (this.resourceName === 'user' && query?.role) {//to allow get users
+      const result = await this.resourceService.find({ role: query.role })
       if (!result.success) throw new ErrorAPI(result.error)
       return success(result.data)
     }
@@ -147,6 +145,8 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    */
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
     if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user try with his own uid (get_by_uid)
+    //in case that user want to get another user; remember that company can access to credentials to user role client or engineer, as appropriate
+    if (this.resourceName === 'user') { const res = await this.resourceService.findById(resourceId); if (!res.success) throw new NotFound({ message: 'user' }); return success(res.data as T) }
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
     const clientIds: string[] = this.getUserPermissions(user) //get clients ids (permissions) assigned to this user
     const isOwner = await this.resourceService.isOwnership(clientIds, resourceId) //check ownership to this resource context
@@ -180,9 +180,7 @@ export class EngineerAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
-    const company = await userService.findById(user.permissions?.[0] || '')
-    if (!company.success || !company.data) throw new NotFound({ message: 'proveedor de servicios' })
-    const clientIds: string[] = this.getUserPermissions(company.data) //get clients ids (permissions)
+    const clientIds: string[] = this.getUserPermissions(user) //get clients ids (permissions)
     if (!clientIds.length) throw new NotFound({ message: 'No tienes clientes asignados para supervisar' })
     const result = await this.resourceService.findByUsers({ userIds: clientIds, query: query || {} })
     if (!result.success) throw new ErrorAPI(result.error)
@@ -197,8 +195,8 @@ export class EngineerAccess<T, IdType = string> extends BaseAccess<T, IdType> {
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
     if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user try with his own uid (get_by_uid)
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
-    const companyIds: string[] = this.getUserPermissions(user) //get companies ids (permissions) assigned to this user
-    const isOwner = await this.resourceService.isOwnership(companyIds, resourceId) //check ownership to this resource context
+    const clientIds: string[] = this.getUserPermissions(user) //get clients ids (permissions) assigned to this user
+    const isOwner = await this.resourceService.isOwnership(clientIds, resourceId) //check ownership to this resource context
     if (!isOwner.success || !isOwner.data) throw new Forbidden({ message: `No tienes permiso para acceder a este ${this.resourceName}` })
     const result = await this.resourceService.findById(resourceId) //the access is allowed
     if (!result.success || !result.data) throw new NotFound({ message: this.resourceName })

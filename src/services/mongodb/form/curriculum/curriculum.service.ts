@@ -9,7 +9,7 @@ import { Curriculum } from "@/types/form/curriculum/curriculum.type";
 
 class CurriculumService extends MongoDB<Curriculum> implements IResourceService<Curriculum> {
   private static instance: CurriculumService;
-  private readonly defaultPopulate: PopulateOptions[] = [{// Populate with all the details
+  private readonly defaultPopulate: PopulateOptions[] = [{
     path: 'office',
     select: 'name headquarter',
     populate: {
@@ -29,7 +29,7 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
       }, {
         path: 'user',
         select: `
-          _id uid email phone username role
+          _id uid email phone username role metadata
           nit invima profesionalLicense permissions`,
       }]
     }
@@ -162,9 +162,6 @@ const ownershipPipeline = (curriculumId: Types.ObjectId): PipelineStage[] => [
   } as PipelineStage,
   { $unwind: '$userData' } as PipelineStage,
   { //like as select
-    $project: {
-      _id: 1,
-      id: '$userData._id',
-    }
+    $project: { _id: 1, id: '$userData._id' }
   } as PipelineStage
 ]

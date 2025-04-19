@@ -67,5 +67,7 @@ const byUsersPipeline = (userObjectIds: Types.ObjectId[], query: object = {}): P
  */
 const ownershipPipeline = (userId: Types.ObjectId): PipelineStage[] => [
   { $match: { _id: userId } } as PipelineStage,
-  { $project: { _id: 1, id: '$_id' } } as PipelineStage
+  { //like as select
+    $project: { _id: 1, permissions: 1, id: '$userData._id' }
+  } as PipelineStage
 ]

@@ -11,6 +11,7 @@ import notificationRoutes from "@/routes/auth/notification.routes"
 //form routes
 import solicitRoutes from "@/routes/form/solicit.routes"
 import activityRoutes from "@/routes/form/activity.routes"
+import scheduleRoutes from "@/routes/form/schedule.routes"
 import maintenanceRoutes from "@/routes/form/maintenance.routes"
 import curriculumRoutes from "@/routes/form/curriculum/curriculum.routes"
 import stakeholderRoutes from "@/routes/form/curriculum/stakeholder.routes"
@@ -40,6 +41,7 @@ app.use('/api/auth/notifications', notificationRoutes);
 //form curriculum routes
 app.use('/api/form', solicitRoutes);
 app.use('/api/form', activityRoutes);
+app.use('/api/form', scheduleRoutes);
 app.use('/api/form', curriculumRoutes);
 app.use('/api/form/cv', stakeholderRoutes);
 app.use('/api/form/cv', curriculumRelationRoutes);

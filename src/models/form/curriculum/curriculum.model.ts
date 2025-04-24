@@ -11,6 +11,7 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
   modelEquip: { type: String, required: true },
   healthRecord: { type: String, required: true },
   photoUrl: { type: String, required: false },
+  metadata: { type: Object, required: false, default: {} },
 
   //standard technical
   characteristics: { type: String, required: true },

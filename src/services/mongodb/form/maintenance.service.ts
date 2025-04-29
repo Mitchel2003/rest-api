@@ -80,7 +80,9 @@ class MaintenanceService extends MongoDB<Maintenance> implements IResourceServic
    * @returns {Promise<Result<Maintenance[]>>} Resultado con los mantenimientos encontrados
    */
   async findByUsers(options: Options & { userIds: string[] }): Promise<Result<Maintenance[]>> {
-    return super.findByUsers({ ...options, populate: this.defaultPopulate }, byUsersPipeline)
+    const { query, ...rest } = options //destructuring options to separate query from rest options
+    const buildQuery = query?.curriculum ? { ...query, curriculum: new Types.ObjectId(query.curriculum as string) } : query
+    return super.findByUsers({ ...rest, query: buildQuery, populate: this.defaultPopulate }, byUsersPipeline)
   }
   /** Busca un mantenimiento por su id en la base de datos */
   async findById(id: string): Promise<Result<Maintenance | null>> {

@@ -12,7 +12,7 @@ export const userSchema = z.object({
   username: z
     .string({ required_error: "El nombre es requerido" })
     .min(5, { message: "Nombre demasiado corto" })
-    .max(50, { message: "Nombre demasiado largo" }),
+    .max(75, { message: "Nombre demasiado largo" }),
   phone: z
     .string({ required_error: "El teléfono es requerido" })
     .min(6, { message: "El teléfono es demasiado corto" })

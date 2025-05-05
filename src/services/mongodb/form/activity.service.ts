@@ -38,7 +38,7 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
               }
             }
           }, {
-            path: 'user',
+            path: 'client',
             select: `
             _id uid email phone username role
             nit invima profesionalLicense permissions`,
@@ -62,7 +62,7 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
       }]
     }]
   }, {
-    path: 'engineer',
+    path: 'collaborator',
     select: 'username phone'
   }]
 
@@ -155,13 +155,13 @@ const byUsersPipeline = (userObjectIds: Types.ObjectId[], query: object = {}): P
   {
     $lookup: {
       from: 'users',
-      localField: 'headquarterData.user',
+      localField: 'headquarterData.client',
       foreignField: '_id',
-      as: 'userData'
+      as: 'clientData'
     }
   } as PipelineStage,
-  { $unwind: '$userData' } as PipelineStage,
-  { $match: { 'userData._id': { $in: userObjectIds } } } as PipelineStage,
+  { $unwind: '$clientData' } as PipelineStage,
+  { $match: { 'clientData._id': { $in: userObjectIds } } } as PipelineStage,
   { $project: { _id: 1 } } as PipelineStage//Allow specify the fields to include on the result
 ]
 /**
@@ -210,13 +210,13 @@ const ownershipPipeline = (activityId: Types.ObjectId): PipelineStage[] => [
   {
     $lookup: {
       from: 'users',
-      localField: 'headquarterData.user',
+      localField: 'headquarterData.client',
       foreignField: '_id',
-      as: 'userData'
+      as: 'clientData'
     }
   } as PipelineStage,
-  { $unwind: '$userData' } as PipelineStage,
+  { $unwind: '$clientData' } as PipelineStage,
   { //like as select
-    $project: { _id: 1, id: '$userData._id' }
+    $project: { _id: 1, id: '$clientData._id' }
   } as PipelineStage
 ]

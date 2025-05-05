@@ -5,7 +5,7 @@ const activitySchema = z.object({
     .string().datetime(),
 
   //references
-  engineer: z
+  collaborator: z
     .string({ required_error: "El ID del colaborador es requerido" }),
   solicit: z
     .string({ required_error: "El ID de la solicitud es requerido" }),

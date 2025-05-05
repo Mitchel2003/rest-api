@@ -14,7 +14,7 @@ const activitySchema: Schema<Activity> = new Schema({
   },
 
   //relationship
-  engineer: {
+  collaborator: {
     type: Schema.Types.ObjectId,
     ref: 'user',
     required: true

@@ -16,7 +16,7 @@ const headquarterSchema: Schema<Headquarter> = new Schema({
     required: true,
     ref: 'city'
   },
-  user: {//user represents the client
+  client: {//user represents the client
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'user'

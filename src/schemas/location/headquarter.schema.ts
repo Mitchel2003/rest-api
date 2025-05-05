@@ -11,7 +11,7 @@ const headquarterSchema = z.object({
     .max(50, { message: "Dirección de sede no puede exceder los 50 caracteres" }),
   city: z
     .string({ required_error: "Ciudad de sede requerida" }),
-  user: z
+  client: z
     .string({ required_error: "Cliente de sede requerido (User)" })
 })
 

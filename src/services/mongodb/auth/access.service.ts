@@ -43,11 +43,11 @@ class AccessFactory<T, IdType = string> extends AccessStrategyFactory<T, IAccess
           'permissions'
         )
         break;
-      case 'engineer':
-        access = new EngineerAccess<T, string>(
+      case 'collaborator':
+        access = new CollaboratorAccess<T, string>(
           this.resourceService as unknown as IResourceService<T, string>,
           this.defaultResourceName,
-          'permissions'
+          'belongsTo'
         )
         break;
       case 'client':
@@ -145,7 +145,7 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    */
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
     if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user try with his own uid (get_by_uid)
-    //in case that user want to get another user; remember that company can access to credentials to user role client or engineer, as appropriate
+    //in case that user want to get another user; remember that company can access to credentials to user role client or collaborator, as appropriate
     if (this.resourceName === 'user') { const res = await this.resourceService.findById(resourceId); if (!res.success) throw new NotFound({ message: 'user' }); return success(res.data as T) }
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
     const clientIds: string[] = this.getUserPermissions(user) //get clients ids (permissions) assigned to this user
@@ -162,20 +162,20 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
 }
 /*---------------------------------------------------------------------------------------------------------*/
 
-/*--------------------------------------------------Engineer access--------------------------------------------------*/
+/*--------------------------------------------------Collaborator access--------------------------------------------------*/
 /**
- * Estrategia de acceso para ingenieros
+ * Estrategia de acceso para colaboradores
  * Implementación genérica que puede ser utilizada con cualquier recurso
  */
-export class EngineerAccess<T, IdType = string> extends BaseAccess<T, IdType> {
+export class CollaboratorAccess<T, IdType = string> extends BaseAccess<T, IdType> {
   constructor(
     resourceService: IResourceService<T, IdType>,
     resourceName: string,
-    _permissionsKey: string = 'permissions'
+    _belongsKey: string = 'belongsTo'
   ) { super(resourceService, resourceName) }
   /**
-   * Obtiene todos los recursos accesibles para el ingeniero
-   * @param user Usuario con acceso de ingeniero
+   * Obtiene todos los recursos accesibles para el colaborador
+   * @param user Usuario con acceso de colaborador
    * @param query Consulta para filtrar los recursos
    * @returns Resultado con los recursos o un error
    */
@@ -187,8 +187,8 @@ export class EngineerAccess<T, IdType = string> extends BaseAccess<T, IdType> {
     return success(result.data)
   }
   /**
-   * Obtiene un recurso específico accesible para el ingeniero
-   * @param user Usuario con acceso de ingeniero
+   * Obtiene un recurso específico accesible para el colaborador
+   * @param user Usuario con acceso de colaborador
    * @param resourceId ID del recurso a obtener
    * @returns Resultado con el recurso o un error
    */
@@ -202,9 +202,9 @@ export class EngineerAccess<T, IdType = string> extends BaseAccess<T, IdType> {
     if (!result.success || !result.data) throw new NotFound({ message: this.resourceName })
     return success(result.data)
   }
-  /** Verifica si el ingeniero puede actualizar un recurso */
+  /** Verifica si el colaborador puede actualizar un recurso */
   async canUpdate(_user: User, _resourceId: IdType): Promise<boolean> { return true }
-  /** Verifica si el ingeniero puede eliminar un recurso */
+  /** Verifica si el colaborador puede eliminar un recurso */
   async canDelete(_user: User, _resourceId: IdType): Promise<boolean> { return true }
 }
 /*---------------------------------------------------------------------------------------------------------*/

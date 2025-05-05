@@ -29,7 +29,7 @@ class AccessoryService extends MongoDB<Accessory> {
             }
           }
         }, {
-          path: 'user',
+          path: 'client',
           select: `
             _id uid email phone username role
             nit invima profesionalLicense permissions`,

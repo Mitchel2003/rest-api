@@ -1,7 +1,9 @@
 import { Document } from 'mongoose';
 
-export type ClassificationProps = 'biomédico' | 'red de frio' | 'equipo computo'
-export type RoleProps = 'admin' | 'company' | 'collaborator' | 'client'
+export const classificationValues = ['biomédico', 'red de frio', 'equipo computo'] as const;
+export const roleValues = ['admin', 'company', 'collaborator', 'client'] as const;
+export type ClassificationProps = typeof classificationValues[number]
+export type RoleProps = typeof roleValues[number]
 export interface User extends Document {
   //to auth-firebase (password is handled by firebase)
   _id: string
@@ -17,11 +19,11 @@ export interface User extends Document {
   profesionalLicense?: string
   //access (role)
   role: RoleProps
+  position: string
   inactive: boolean
-  belongsTo?: string
-  permissions?: string[] //to access
-  type?: 'contractor' | 'independent'
-  classification?: ClassificationProps
+  belongsTo?: User
+  permissions?: string[] //access
+  classification?: ClassificationProps[]
   metadata: Record<string, any> //to files
   createdAt?: Date
   updatedAt?: Date
@@ -30,34 +32,29 @@ export interface User extends Document {
 /**
  * values obligatories
  * _id (🟢)  * username (🟢)  * inactive (🟢)
- * uid (🟢)  * phone (🟢)     * role (🟢)
- * email (🟢)
+ * uid (🟢)  * phone (🟢)     * position (🟢)
+ * role (🟢)
 
  * --------------------------------------------------------------------------------------------------------- *
- * client:                                company:                                                  collaborator:                         admin:
- *  nit (🟢)                        <---   nit (🟢)                                          <---   nit (🔴)                       <---   nit (🔴)
- *  invima (🔴)                     <---   invima (🟢)                                       <---   invima (🔴)                    <---   invima (🔴)
- *  profesionalLicense (🔴)         <---   profesionalLicense (🟢)                           <---   profesionalLicense (🔴)        <---   profesionalLicense (🔴)
+ * client:                                company:                                                  collaborator:
+ *  nit (🟢)                        <---   nit (🟢)                                          <---   nit (🔴)
+ *  invima (🔴)                     <---   invima (🟢)                                       <---   invima (🔴)
+ *  profesionalLicense (🔴)         <---   profesionalLicense (🟢)                           <---   profesionalLicense (🔴)
  *  
- *  type (🔴)                       <---   type (🟢)                                         <---   type (🔴)                      <---   type (🔴)
- *  belongsTo (🔴)                  <---   belongsTo (🔴)                                    <---   belongsTo (🟢)                 <---   belongsTo (🔴)
- *  permissions (🔴)                <---   permissions (🟢)                                  <---   permissions (🟢) (select)      <---   permissions (�)
- *  classification (🔴)             <---   classification (🟢)                               <---   classification (🟢) (select)   <---   classification (🔴)
- *  metadata: {logo: string} (🟢)   <---   metadata {logo: string, signature: string} (🟢)   <---   metadata {logo: string} (🟢)   <---   metadata {logo: string} (🟢)
+ *  belongsTo (🔴)                  <---   belongsTo (�)                                     <---   belongsTo (🟢)
+ *  permissions (🔴)                <---   permissions (🟢)                                  <---   permissions (🟢) (select)
+ *  classification (🔴)             <---   classification (🟢)                               <---   classification (🟢) (select)
+ *  metadata: {logo: string} (🟢)   <---   metadata {logo: string, signature: string} (🟢)   <---   metadata: {logo: string} (🔴)
  * 
+ * Admins have all permissions; dont have none (🔴)
  * --------------------------------------------------------------------------------------------------------- *
  * (�) = optional (nullable)
  * (select) = selected value
  * (🔴) = not applied
  * (🟢) = applied
  * 
- * admin => permissions (�)
- * Determine when an admin have permissions
- * if permissions is empty, the admin have all permissions (#)
- * if permissions is not empty, the admin have only the permissions specified
- * 
- * Important remember that when permissions contains permissions [clientIds],
- * indicate that can access to the clients specified, acting as a admin of client (IPS)
- * 
- * ===> this is designed specifically when the client its a IPS <===
+ * company - belongsTo (�) =>
+ * this field is used to assign a subcompany to a company parent
+ * if(belongsTo) then company is a subcompany
+ * else company is a company parent (main)
  */

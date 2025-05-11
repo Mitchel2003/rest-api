@@ -26,8 +26,9 @@ class OfficeService extends MongoDB<Office> implements IResourceService<Office> 
     }, {
       path: 'client',
       select: `
-        _id uid email phone username role
-        nit invima profesionalLicense permissions`,
+        _id uid email phone username role position
+        nit invima profesionalLicense permissions
+        belongsTo classification metadata`,
     }]
   }
 

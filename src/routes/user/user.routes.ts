@@ -7,8 +7,8 @@ import { Router } from "express"
 const router = Router()
 
 router.post('/user', authRequired, validateSchema(userSchema), createUser)
+router.get('/users', getUsers) //authRequired temporally disabled
 router.get('/user/:id', authRequired, getUser)
-router.get('/users', authRequired, getUsers)
 router.put('/user/:id', authRequired, updateUser)
 router.delete('/user/:id', authRequired, deleteUser)
 

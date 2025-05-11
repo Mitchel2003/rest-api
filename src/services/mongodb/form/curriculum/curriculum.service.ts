@@ -29,8 +29,9 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
       }, {
         path: 'client',
         select: `
-          _id uid email phone username role metadata
-          nit invima profesionalLicense permissions`,
+          _id uid email phone username role position
+          nit invima profesionalLicense permissions
+          belongsTo classification metadata`,
       }]
     }
   }, {

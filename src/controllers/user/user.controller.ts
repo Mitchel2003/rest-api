@@ -49,13 +49,16 @@ export const getUsers = async ({ query, user = {} as User }: ExtendsRequest, res
  * @param {Request} req - Objeto de solicitud Express con los datos del usuario a registrar.
  * @param {Response} res - Objeto de respuesta Express, envía el usuario creado o un mensaje de error.
  * @constant {string} dataStr - Cadena de texto que contiene los datos del usuario.
- * @example dataStr = "username;role;permissions;phone;nit;invima;profesionalLicense"
  * @returns {Promise<void>} - Envía el usuario creado o un mensaje de error.
  */
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { username, email, password, role, phone, nit, invima, profesionalLicense, permissions } = req.body;
-    const dataStr = `${username};${role};${permissions ? JSON.stringify(permissions) : '[]'};${phone ?? ''};${nit ?? ''};${invima ?? ''};${profesionalLicense ?? ''}`;
+    const { username, email, password, role, phone, position, permissions, nit, invima, profesionalLicense, belongsTo, classification } = req.body;
+    const dataStr =
+      `${username};${role};${phone ?? ''};${position ?? ''};` +
+      `${permissions ? JSON.stringify(permissions) : '[]'};` +
+      `${nit ?? ''};${invima ?? ''};${profesionalLicense ?? ''};` +
+      `${belongsTo ?? ''};${classification ? JSON.stringify(classification) : '[]'}`;
     const userCredentials = { email, password, displayName: dataStr };
     const auth = await firebaseAdmin.createAccount(userCredentials);
     if (!auth.success) throw new ErrorAPI(auth.error) //check result
@@ -109,17 +112,18 @@ export const deleteUser = async ({ params }: ExtendsRequest, res: Response): Pro
  * Nos permite construir las credenciales del usuario (mongoDB).
  * @param {any} auth - El usuario de firebase, representa la autenticación.
  * @argument displayName - Es un string que contiene el rol, permisos e información del usuario.
- * @example auth.displayName = "username;role;permissions;phone;nit;invima;profesionalLicense"
  * @returns {User} - Retorna las credenciales del usuario en el formato standar (model mongoDB)
  */
 const credentials = (auth: admin.auth.UserRecord): User => {
-  const [username, role, permissionsData, phone, nit, invima, profesionalLicense] = auth.displayName?.split(';') || [];
+  const [username, role, phone, position, permissionsData, nit, invima, profesionalLicense, belongsTo, classificationData] = auth.displayName?.split(';') || []
+  const classification: string[] = classificationData ? JSON.parse(classificationData) : []
   const permissions: string[] = permissionsData ? JSON.parse(permissionsData) : []
   return {
     email: auth.email, username,
     nit, invima, profesionalLicense,
-    role, phone, permissions,
-    inactive: false,
+    role, phone, position, permissions,
+    belongsTo: belongsTo || undefined,
+    classification, inactive: false,
     uid: auth.uid,
-  } as User;
+  } as unknown as User;
 }

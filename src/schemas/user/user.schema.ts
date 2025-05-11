@@ -1,3 +1,4 @@
+import { classificationValues, roleValues } from "@/types/user/user.type"
 import { z } from "zod"
 
 export const userSchema = z.object({
@@ -29,21 +30,23 @@ export const userSchema = z.object({
     .optional(),
   //access control, with role and permissions, and metadata for files associated
   role: z
-    .enum(['admin', 'company', 'collaborator', 'client'], { required_error: "El rol es requerido" }),
+    .enum(roleValues, { required_error: "El rol es requerido" }),
+  position: z
+    .string({ required_error: "El cargo es requerido" })
+    .min(2, { message: "El cargo es demasiado corto" })
+    .max(25, { message: "El cargo es demasiado largo" }),
   permissions: z
     .array(z.string())
     .optional(),
   metadata: z
     .object({})
     .optional(),
-  //company and collaborator (handle behavior)
+  //handle references associated
   belongsTo: z
     .string()
-    .optional(),
-  type: z
-    .enum(['contractor', 'independent'], { required_error: "El tipo es requerido" })
-    .optional(),
+    .optional()
+    .nullable(),
   classification: z
-    .enum(['biomédico', 'red de frio', 'equipo computo'], { required_error: "La clasificación es requerida" })
+    .enum(classificationValues, { required_error: "La clasificación es requerida" })
     .optional()
 })

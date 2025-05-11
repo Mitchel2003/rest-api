@@ -58,7 +58,11 @@ class AccessFactory<T, IdType = string> extends AccessStrategyFactory<T, IAccess
         )
         break;
       default:
-        throw new Error(`Rol de usuario no soportado: ${user.role}`);
+        access = new PublicAccess<T, string>(
+          this.resourceService as unknown as IResourceService<T, string>,
+          this.defaultResourceName
+        )
+        break;
     }
     return access;
   }
@@ -126,12 +130,13 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
-    if (this.resourceName === 'user' && query?.role) {//to allow get users
-      const result = await this.resourceService.find({ role: query.role })
+    //associated company and collaborators, remember self-references
+    if (this.resourceName === 'user' && query?.role !== 'client') {
+      const result = await this.resourceService.find(query)
       if (!result.success) throw new ErrorAPI(result.error)
-      return success(result.data)
-    }
-    const clientIds: string[] = this.getUserPermissions(user)
+      return success(result.data) //the access is allowed
+    } //continue searching for any other resources, like documents etc.
+    const clientIds: string[] = this.getUserPermissions(user) //get clientIds (permissions)
     if (!clientIds?.length) throw new Forbidden({ message: 'No tienes clientes asignados' })
     const result = await this.resourceService.findByUsers({ userIds: clientIds, query: query || {} })
     if (!result.success) throw new ErrorAPI(result.error)
@@ -145,9 +150,18 @@ export class CompanyAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    */
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
     if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user try with his own uid (get_by_uid)
-    //in case that user want to get another user; remember that company can access to credentials to user role client or collaborator, as appropriate
-    if (this.resourceName === 'user') { const res = await this.resourceService.findById(resourceId); if (!res.success) throw new NotFound({ message: 'user' }); return success(res.data as T) }
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
+    if (this.resourceName === 'user') { //in case that user want to get another user; remember that company can access to users associated
+      const result = await this.resourceService.findById(resourceId)
+      if (!result.success) throw new NotFound({ message: 'user' })
+      const userFound: User = result.data as User; //user founded
+      const clientIds: string[] = this.getUserPermissions(user)
+      const isClient = clientIds.includes(userFound._id.toString())
+      const isCompany = userFound._id.toString() === user._id.toString()
+      const isCollaborator = userFound.belongsTo?._id.toString() === user._id.toString()
+      if (!isClient && !isCompany && !isCollaborator) throw new Forbidden({ message: `Usuario inaccesible` })
+      return success(userFound as T) //the access is allowed (userFound)
+    } //continue searching for any other resources, like documents etc.
     const clientIds: string[] = this.getUserPermissions(user) //get clients ids (permissions) assigned to this user
     const isOwner = await this.resourceService.isOwnership(clientIds, resourceId) //check ownership to this resource context
     if (!isOwner.success || !isOwner.data) throw new Forbidden({ message: `No tienes permiso para acceder a este ${this.resourceName}` })
@@ -227,11 +241,12 @@ export class ClientAccess<T, IdType = string> extends BaseAccess<T, IdType> {
    * @returns Resultado con los recursos o un error
    */
   async getAll(user: User, query?: any): Promise<Result<T[]>> {
-    if (this.resourceName === 'user' && query && query.role === 'company') {//to allow get company assigned
-      const result = await this.resourceService.find({ role: 'company', permissions: { $in: [user._id] } })
-      if (!result.success) throw new ErrorAPI(result.error);
-      return success(result.data)
-    }
+    if (this.resourceName === 'user' && query?.role === 'company') { //associated
+      const searchQuery = { role: 'company', permissions: { $in: [user._id] } }
+      const result = await this.resourceService.find(searchQuery)
+      if (!result.success) throw new ErrorAPI(result.error)
+      return success(result.data) //the access is allowed
+    } //continue searching for any other resources, like documents etc.
     const result = await this.resourceService.findByUsers({ userIds: [user._id], query: query || {} })
     if (!result.success) throw new ErrorAPI(result.error)
     return success(result.data)
@@ -245,7 +260,7 @@ export class ClientAccess<T, IdType = string> extends BaseAccess<T, IdType> {
   async getOne(user: User, resourceId: IdType): Promise<Result<T>> {
     if (this.resourceName === 'user' && user.uid === resourceId) return success(user as T) //in case that user try with his own uid (get_by_uid)
     if (typeof resourceId !== 'string' || !this.isValidId(resourceId)) throw new NotFound({ message: `ID de ${this.resourceName} inválido` })
-    const isOwner = await this.resourceService.isOwnership([user._id], resourceId) //check ownership to this resource context
+    const isOwner = await this.resourceService.isOwnership([user._id], resourceId) //check ownership to this resource context (clients)
     if (!isOwner.success || !isOwner.data) throw new Forbidden({ message: `No tienes permiso para acceder a este ${this.resourceName}` })
     const result = await this.resourceService.findById(resourceId) //the access is allowed
     if (!result.success || !result.data) throw new NotFound({ message: this.resourceName })
@@ -258,5 +273,44 @@ export class ClientAccess<T, IdType = string> extends BaseAccess<T, IdType> {
     return false
   }
   /** Verifica si el cliente puede eliminar un recurso */
+  async canDelete(_user: User, _resourceId: IdType): Promise<boolean> { return false }
+}
+/*---------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------Public access--------------------------------------------------*/
+/**
+ * Estrategia de acceso para recursos publicos
+ * Implementación genérica que puede ser utilizada con cualquier recurso
+ */
+export class PublicAccess<T, IdType = string> extends BaseAccess<T, IdType> {
+  constructor(
+    resourceService: IResourceService<T, IdType>,
+    resourceName: string,
+  ) { super(resourceService, resourceName) }
+  /**
+   * Obtiene todos los recursos accesibles para el publico
+   * @param user Usuario con acceso de cliente
+   * @param query Consulta para filtrar los recursos
+   * @returns Resultado con los recursos o un error
+   */
+  async getAll(_user: User, query?: any): Promise<Result<T[]>> {
+    const result = await this.resourceService.find(query || {})
+    if (!result.success) throw new ErrorAPI(result.error)
+    return success(result.data)
+  }
+  /**
+   * Obtiene un recurso específico accesible para el publico
+   * @param user Usuario con acceso de cliente
+   * @param resourceId ID del recurso a obtener
+   * @returns Resultado con el recurso o un error
+   */
+  async getOne(_user: User, resourceId: IdType): Promise<Result<T>> {
+    const result = await this.resourceService.findById(resourceId) //the access is allowed
+    if (!result.success || !result.data) throw new NotFound({ message: this.resourceName })
+    return success(result.data)
+  }
+  /** Verifica si el publico puede actualizar un recurso */
+  async canUpdate(_user: User, _resourceId: IdType): Promise<boolean> { return false }
+  /** Verifica si el publico puede eliminar un recurso */
   async canDelete(_user: User, _resourceId: IdType): Promise<boolean> { return false }
 }

@@ -1,4 +1,4 @@
-import { User } from "@/types/user/user.type";
+import { User, roleValues, classificationValues } from "@/types/user/user.type";
 import mongoose, { Schema } from "mongoose";
 import configSchema from "@/utils/schema";
 
@@ -15,14 +15,14 @@ const userSchema: Schema<User> = new Schema({
   invima: { type: String, required: false, trim: true },
   profesionalLicense: { type: String, required: false, trim: true },
   //access control, with role and permissions, and metadata for files associated
-  role: { index: true, type: String, required: true, enum: ['admin', 'company', 'collaborator', 'client'] },
+  role: { index: true, type: String, required: true, enum: roleValues },
   permissions: { default: [], type: [String], required: false },
   inactive: { type: Boolean, default: false, required: false },
   metadata: { default: {}, type: Object, required: false },
-  //company and collaborator (handle behavior)
-  belongsTo: { type: String, required: false },
-  type: { type: String, required: false, enum: ['contractor', 'independent'] },
-  classification: { type: String, required: false, enum: ['biomédico', 'red de frio', 'equipo computo'] }
+  position: { type: String, required: true },
+  //handle references associated
+  belongsTo: { type: Schema.Types.ObjectId, ref: 'user', required: false, default: null },
+  classification: { default: [], type: [String], required: false, enum: classificationValues }
 }, configSchema)
 
 export default mongoose.model('user', userSchema);

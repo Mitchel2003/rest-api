@@ -15,7 +15,7 @@ const router = Router()
 //curriculum routes (form/cv)
 router.post('/cv', authRequired, validateSchema(curriculumSchema), createCurriculum)
 router.get('/cvs', authRequired, getCurriculums)
-router.get('/cv/:id', authRequired, getCurriculum)
+router.get('/cv/:id', getCurriculum) //allow public
 router.put('/cv/:id', authRequired, updateCurriculum)
 router.delete('/cv/:id', authRequired, deleteCurriculum)
 

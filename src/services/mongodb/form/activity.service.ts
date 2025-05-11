@@ -40,8 +40,9 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
           }, {
             path: 'client',
             select: `
-            _id uid email phone username role
-            nit invima profesionalLicense permissions`,
+            _id uid email phone username role position
+            nit invima profesionalLicense permissions
+            belongsTo classification metadata`,
           }]
         }
       }, {

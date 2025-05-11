@@ -1,14 +1,22 @@
 import MongoDB, { IResourceService } from "@/services/mongodb/mongodb.service";
 import { Doc, Query, Options, Populate } from "@/types/repository.type";
+import { Types, PipelineStage, PopulateOptions } from "mongoose";
 import Repository from "@/repositories/mongodb.repository";
 import { Result } from "@/interfaces/api.interface";
-import { Types, PipelineStage } from "mongoose";
 
 import userModel from '@/models/user/user.model';
 import { User } from '@/types/user/user.type';
 
 class UserService extends MongoDB<User> implements IResourceService<User> {
   private static instance: UserService
+  private readonly defaultPopulate: PopulateOptions = {
+    path: 'belongsTo',
+    select: `
+      _id uid email phone username role position
+      nit invima profesionalLicense permissions
+      belongsTo classification metadata`,
+  }
+
   private constructor() { super(Repository.create(userModel)) }
 
   public static getInstance(): UserService {
@@ -30,19 +38,19 @@ class UserService extends MongoDB<User> implements IResourceService<User> {
    * @returns {Promise<Result<User[]>>} Resultado con los usuarios encontrados
    */
   async findByUsers(options: Options & { userIds: string[] }): Promise<Result<User[]>> {
-    return super.findByUsers(options, byUsersPipeline)
+    return super.findByUsers({ ...options, populate: this.defaultPopulate }, byUsersPipeline)
   }
   /** Busca un usuario por su id en la base de datos */
   async findById(id: string): Promise<Result<User | null>> {
-    return super.findById(id)
+    return super.findById(id, this.defaultPopulate)
   }
   /** Busca usuarios por query en la base de datos */
   async find(query?: Query, populate?: Populate): Promise<Result<User[]>> {
-    return super.find(query, populate)
+    return super.find(query, populate || this.defaultPopulate)
   }
   /** Actualiza un usuario por su id en la base de datos */
   async update(id: string, data: Partial<Doc<User>>): Promise<Result<User | null>> {
-    return super.update(id, data)
+    return super.update(id, data, this.defaultPopulate)
   }
 }
 
@@ -68,6 +76,6 @@ const byUsersPipeline = (userObjectIds: Types.ObjectId[], query: object = {}): P
 const ownershipPipeline = (userId: Types.ObjectId): PipelineStage[] => [
   { $match: { _id: userId } } as PipelineStage,
   { //like as select
-    $project: { _id: 1, permissions: 1, id: '$userData._id' }
+    $project: { _id: 1, id: '$userData._id' }
   } as PipelineStage
 ]

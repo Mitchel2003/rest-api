@@ -48,3 +48,10 @@ export interface Curriculum extends Document {
   supplier: Schema.Types.ObjectId,
   manufacturer: Schema.Types.ObjectId,
 }
+
+/**
+ * Metadata (�):
+ * 
+ * Contains data files like manuals, certificates, etc; this is them arquitecture:
+ * { files: string[] => pdfs urls }
+ */

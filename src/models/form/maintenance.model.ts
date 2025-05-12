@@ -27,6 +27,11 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
     type: String,
     requerid: true
   },
+  metadata: {
+    default: {},
+    type: Object,
+    required: false
+  },
 
   //relationship
   curriculum: {

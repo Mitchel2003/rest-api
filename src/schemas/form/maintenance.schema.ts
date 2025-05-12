@@ -14,6 +14,8 @@ export const maintenanceSchema = z.object({
     .string({ required_error: "El estado del equipo es requerido" }),
   observations: z
     .string({ required_error: "Las observaciones son requeridas" }),
+  metadata: z
+    .object({}).optional().nullable(),
 
   //references
   curriculum: z

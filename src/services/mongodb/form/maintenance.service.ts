@@ -9,7 +9,7 @@ import { Maintenance } from "form/maintenance.type";
 
 class MaintenanceService extends MongoDB<Maintenance> implements IResourceService<Maintenance> {
   private static instance: MaintenanceService;
-  private readonly defaultPopulate: PopulateOptions = {
+  private readonly defaultPopulate: PopulateOptions[] = [{
     path: 'curriculum',
     select: `
     name brand serie service modelEquip healthRecord
@@ -58,7 +58,13 @@ class MaintenanceService extends MongoDB<Maintenance> implements IResourceServic
       path: 'technicalCharacteristics',
       select: 'voltage amperage power frequency capacity pressure speed humidity temperature weight'
     }]
-  }
+  }, {
+    path: 'createdBy',
+    select: `
+      _id uid email phone username role position
+      nit invima profesionalLicense permissions
+      belongsTo classification metadata`,
+  }]
 
   private constructor() { super(Repository.create(maintenanceModel)) }
 

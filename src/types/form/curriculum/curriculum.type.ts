@@ -47,6 +47,7 @@ export interface Curriculum extends Document {
   representative: Schema.Types.ObjectId,
   supplier: Schema.Types.ObjectId,
   manufacturer: Schema.Types.ObjectId,
+  createdBy: Schema.Types.ObjectId,
 }
 
 /**
@@ -54,4 +55,13 @@ export interface Curriculum extends Document {
  * 
  * Contains data files like manuals, certificates, etc; this is them arquitecture:
  * { files: string[] => pdfs urls }
+ * 
+ * createdBy (�):
+ * 
+ * createdBy can be user role "company" or "collaborator"
+ * 
+ * Reference to the user who created the curriculum;
+ * Its especialy useful to know references like logo, signature, or license
+ * that corresponds to the user associated to the creation of the curriculum,
+ * this way we can autocomplete the form with the information required
  */

@@ -20,4 +20,6 @@ export const maintenanceSchema = z.object({
   //references
   curriculum: z
     .string({ required_error: "El ID del curriculum es requerido" }),
+  createdBy: z
+    .string({ required_error: "El ID del usuario creador es requerido" }),
 });

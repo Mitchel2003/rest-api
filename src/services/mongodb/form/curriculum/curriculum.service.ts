@@ -46,6 +46,12 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
   }, {
     path: 'manufacturer',
     select: 'name phone country',
+  }, {
+    path: 'createdBy',
+    select: `
+      _id uid email phone username role position
+      nit invima profesionalLicense permissions
+      belongsTo classification metadata`,
   }]
 
   private constructor() { super(Repository.create(curriculumModel)) }

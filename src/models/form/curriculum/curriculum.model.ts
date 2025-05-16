@@ -68,6 +68,11 @@ const curriculumSchema: Schema<Curriculum> = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'manufacturer',
     required: true
+  },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
   }
 }, configSchema);
 

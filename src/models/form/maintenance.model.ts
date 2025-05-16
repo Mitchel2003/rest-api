@@ -38,6 +38,11 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'curriculum',
     required: true
+  },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
   }
 }, configSchema);
 

@@ -79,7 +79,9 @@ const curriculumSchema = z.object({
   supplier: z
     .string({ required_error: "Proveedor es requerido" }),
   manufacturer: z
-    .string({ required_error: "Fabricante es requerido" })
+    .string({ required_error: "Fabricante es requerido" }),
+  createdBy: z
+    .string({ required_error: "El ID del usuario creador es requerido" }),
 })
 
 export default curriculumSchema

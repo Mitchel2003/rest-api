@@ -57,6 +57,12 @@ class SolicitService extends MongoDB<Solicit> implements IResourceService<Solici
     }, {
       path: 'technicalCharacteristics',
       select: 'voltage amperage power frequency capacity pressure speed humidity temperature weight'
+    }, {
+      path: 'createdBy',
+      select: `
+        _id uid email phone username role position
+        nit invima profesionalLicense permissions
+        belongsTo classification metadata`,
     }]
   }
 

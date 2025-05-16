@@ -13,6 +13,8 @@ const scheduleSchema = z.object({
   //references
   client: z
     .string({ required_error: "El ID del cliente es requerido" }),
+  createdBy: z
+    .string({ required_error: "El ID del creador es requerido" }),
 })
 
 export default scheduleSchema

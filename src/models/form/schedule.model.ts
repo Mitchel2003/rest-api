@@ -24,6 +24,11 @@ const scheduleSchema: Schema<Schedule> = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'user',
     required: true
+  },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
   }
 }, configSchema);
 

@@ -7,6 +7,7 @@ export interface Schedule extends Document {
   url: string,
 
   client: Schema.Types.ObjectId,
+  createdBy?: Schema.Types.ObjectId,
   createdAt?: Date,
   updatedAt?: Date
 }

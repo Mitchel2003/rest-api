@@ -91,6 +91,11 @@ class MongoDBRepository<T> implements Repository<T> {
     return await req.exec() as Doc<T> | null;
   }
 
+  /** Permite actualizar registros por query */
+  async updateMany(query: Query, update: any): Promise<boolean> {
+    return await this.model.updateMany(query, update).exec() !== null
+  }
+
   /** Permite eliminar un registro por su id */
   async delete(id: string): Promise<boolean> {
     return await this.model.findByIdAndDelete(id).exec() !== null

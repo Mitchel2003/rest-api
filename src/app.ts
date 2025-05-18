@@ -54,6 +54,7 @@ app.use('/api/location', countryRoutes);
 app.use('/api/location', stateRoutes);
 app.use('/api/location', cityRoutes);
 app.use('/api/location', officeRoutes);
+app.use('/api/location', signatureRoutes);
 app.use('/api/location', headquarterRoutes);
 /*---------------------------------------------------------------------------------------------------------*/
 export default app;

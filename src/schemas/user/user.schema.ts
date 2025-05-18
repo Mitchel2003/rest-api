@@ -47,6 +47,6 @@ export const userSchema = z.object({
     .optional()
     .nullable(),
   classification: z
-    .enum(classificationValues, { required_error: "La clasificación es requerida" })
+    .array(z.enum(classificationValues))
     .optional()
 })

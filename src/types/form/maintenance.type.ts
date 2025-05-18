@@ -10,6 +10,8 @@ export interface Maintenance extends Document {
   metadata?: Record<string, any>,
   createdBy: Schema.Types.ObjectId,
   curriculum: Schema.Types.ObjectId,
+  signature?: Schema.Types.ObjectId,
+  signedAt?: Date,
   createdAt?: Date,
   updatedAt?: Date
 }

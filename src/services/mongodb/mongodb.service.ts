@@ -39,6 +39,10 @@ abstract class MongoDB<T> {
   async update(id: string, data: Partial<Doc<T>>, populate?: Populate): Promise<Result<T | null>> {
     return handler(async () => await this.repository.update(id, data, populate), "actualizar");
   }
+  /** Actualiza documentos por su query en la base de datos */
+  async updateMany(query: Query, update: any): Promise<Result<boolean>> {
+    return handler(async () => await this.repository.updateMany(query, update), "actualizar varios");
+  }
   /** Elimina un documento por su id en la base de datos */
   async delete(id: string): Promise<Result<boolean>> {
     return handler(async () => await this.repository.delete(id), "eliminar");

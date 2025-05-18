@@ -1,4 +1,4 @@
-import { User, roleValues, classificationValues } from "@/types/user/user.type";
+import { User, roleValues } from "@/types/user/user.type";
 import mongoose, { Schema } from "mongoose";
 import configSchema from "@/utils/schema";
 
@@ -21,8 +21,8 @@ const userSchema: Schema<User> = new Schema({
   metadata: { default: {}, type: Object, required: false },
   position: { type: String, required: true },
   //handle references associated
-  belongsTo: { type: Schema.Types.ObjectId, ref: 'user', required: false, default: null },
-  classification: { default: [], type: [String], required: false, enum: classificationValues }
+  classification: { default: [], type: [String], required: false },
+  belongsTo: { type: Schema.Types.ObjectId, ref: 'user', required: false, default: null }
 }, configSchema)
 
 export default mongoose.model('user', userSchema);

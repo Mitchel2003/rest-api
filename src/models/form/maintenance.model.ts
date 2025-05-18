@@ -4,6 +4,10 @@ import mongoose, { Schema } from "mongoose";
 
 const maintenanceSchema: Schema<Maintenance> = new Schema({
   //timestandard
+  signedAt: {
+    type: Date,
+    required: false
+  },
   dateNextMaintenance: {
     type: String,
     requerid: true
@@ -43,6 +47,11 @@ const maintenanceSchema: Schema<Maintenance> = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'user',
     required: true
+  },
+  signature: {
+    type: Schema.Types.ObjectId,
+    ref: 'signature',
+    required: false
   }
 }, configSchema);
 

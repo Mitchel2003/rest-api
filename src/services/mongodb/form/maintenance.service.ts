@@ -64,6 +64,9 @@ class MaintenanceService extends MongoDB<Maintenance> implements IResourceServic
       _id uid email phone username role position
       nit invima profesionalLicense permissions
       belongsTo classification metadata`,
+  }, {
+    path: 'signature',
+    select: 'url active headquarter',
   }]
 
   private constructor() { super(Repository.create(maintenanceModel)) }

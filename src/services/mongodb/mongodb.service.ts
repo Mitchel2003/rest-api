@@ -11,10 +11,6 @@ import { User } from "@/types/user/user.type"
  */
 abstract class MongoDB<T> {
   protected constructor(protected readonly repository: Repository<T>) { }
-  /** Crea un nuevo documento en la base de datos */
-  async create(data: T): Promise<Result<T>> {
-    return handler(async () => await this.repository.create(data), "crear");
-  }
   /** Busca todos los documentos en la base de datos */
   async find(query?: Query, populate?: Populate): Promise<Result<T[]>> {
     return handler(async () => await this.repository.find(query, populate), "buscar todos");
@@ -35,6 +31,10 @@ abstract class MongoDB<T> {
   async verifyOwnership(contextIds: string[], pipeline: PipelineStage[]): Promise<Result<boolean>> {
     return handler(async () => await this.repository.verifyOwnership(contextIds, pipeline), "verificar propiedad");
   }
+  /** Crea un nuevo documento en la base de datos */
+  async create(data: T, populate?: Populate): Promise<Result<T>> {
+    return handler(async () => await this.repository.create(data, populate), "crear");
+  }
   /** Actualiza un documento por su id en la base de datos */
   async update(id: string, data: Partial<Doc<T>>, populate?: Populate): Promise<Result<T | null>> {
     return handler(async () => await this.repository.update(id, data, populate), "actualizar");
@@ -44,8 +44,8 @@ abstract class MongoDB<T> {
     return handler(async () => await this.repository.updateMany(query, update), "actualizar varios");
   }
   /** Elimina un documento por su id en la base de datos */
-  async delete(id: string): Promise<Result<boolean>> {
-    return handler(async () => await this.repository.delete(id), "eliminar");
+  async delete(id: string, populate?: Populate): Promise<Result<T | null>> {
+    return handler(async () => await this.repository.delete(id, populate), "eliminar");
   }
 }
 

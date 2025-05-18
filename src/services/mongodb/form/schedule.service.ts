@@ -54,9 +54,17 @@ class ScheduleService extends MongoDB<Schedule> implements IResourceService<Sche
   async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<Schedule[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea un nuevo cronograma en la base de datos */
+  async create(data: Schedule): Promise<Result<Schedule>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza un cronograma por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Schedule>>): Promise<Result<Schedule | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un cronograma por su id en la base de datos */
+  async delete(id: string): Promise<Result<Schedule | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

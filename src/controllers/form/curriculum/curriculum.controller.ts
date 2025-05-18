@@ -88,6 +88,6 @@ export const deleteCurriculum = async ({ params, user = {} as User }: ExtendsReq
     if (!canDelete) throw new Forbidden({ message: "No tienes permisos para eliminar este curriculum" });
     const result = await cvService.delete(params.id);
     if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, { message: "Curriculum eliminado correctamente" });
+    send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "eliminar el curriculum") }
 }

@@ -1,14 +1,15 @@
-import { Doc, Query, Populate } from "@/types/repository.type";
 import Repository from "@/repositories/mongodb.repository";
 import MongoDB from "@/services/mongodb/mongodb.service";
+import { Doc, Query } from "@/types/repository.type";
 import { Result } from "@/interfaces/api.interface";
+import { PopulateOptions } from "mongoose";
 
 import supplierHeadquarterModel from "@/models/relation/supplierHeadquarter.model";
 import { SupplierHeadquarter } from "relation/supplierHeadquarter.type";
 
 class SupplierHeadquarterService extends MongoDB<SupplierHeadquarter> {
   private static instance: SupplierHeadquarterService;
-  private readonly defaultPopulate: Populate = {
+  private readonly defaultPopulate: PopulateOptions = {
     path: 'supplier',
     select: 'name phone city'
   }
@@ -21,16 +22,25 @@ class SupplierHeadquarterService extends MongoDB<SupplierHeadquarter> {
     if (!SupplierHeadquarterService.instance) SupplierHeadquarterService.instance = new SupplierHeadquarterService();
     return SupplierHeadquarterService.instance;
   }
-
-  // Overwrite the methods to apply the populate that corresponds to this service "supplierHeadquarter"
-  async find(query?: Query, populate?: Populate): Promise<Result<SupplierHeadquarter[]>> {
-    return super.find(query, populate || this.defaultPopulate);
-  }
+  /** Busca un proveedor-sede por su id en la base de datos */
   async findById(id: string): Promise<Result<SupplierHeadquarter | null>> {
-    return super.findById(id, this.defaultPopulate);
+    return super.findById(id, this.defaultPopulate)
   }
+  /** Busca proveedores-sedes por query en la base de datos */
+  async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<SupplierHeadquarter[]>> {
+    return super.find(query, populate || this.defaultPopulate)
+  }
+  /** Crea un nuevo proveedor-sede en la base de datos */
+  async create(data: SupplierHeadquarter): Promise<Result<SupplierHeadquarter>> {
+    return super.create(data, this.defaultPopulate)
+  }
+  /** Actualiza un proveedor-sede por su id en la base de datos */
   async update(id: string, data: Partial<Doc<SupplierHeadquarter>>): Promise<Result<SupplierHeadquarter | null>> {
-    return super.update(id, data, this.defaultPopulate);
+    return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un proveedor-sede por su id en la base de datos */
+  async delete(id: string): Promise<Result<SupplierHeadquarter | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

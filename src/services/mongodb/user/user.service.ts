@@ -48,9 +48,17 @@ class UserService extends MongoDB<User> implements IResourceService<User> {
   async find(query?: Query, populate?: Populate): Promise<Result<User[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea un nuevo usuario en la base de datos */
+  async create(data: User): Promise<Result<User>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza un usuario por su id en la base de datos */
   async update(id: string, data: Partial<Doc<User>>): Promise<Result<User | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un usuario por su id en la base de datos */
+  async delete(id: string): Promise<Result<User | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

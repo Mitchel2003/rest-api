@@ -88,6 +88,6 @@ export const deleteOffice = async ({ params, user = {} as User }: ExtendsRequest
     if (!canDelete) throw new Forbidden({ message: "No tienes permisos para eliminar este consultorio" });
     const result = await officeService.delete(params.id);
     if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, { message: "Consultorio eliminado correctamente" });
+    send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "eliminar el consultorio") }
 }

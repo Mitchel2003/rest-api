@@ -10,7 +10,12 @@ class AccessoryService extends MongoDB<Accessory> {
   private static instance: AccessoryService;
   private readonly defaultPopulate: Populate = {
     path: 'curriculum',
-    select: 'name brand serie service modelEquip healthRecord office',
+    select: `
+    _id name brand serie service modelEquip healthRecord
+    characteristics recommendationsManufacturer
+    datePurchase dateInstallation dateOperation acquisition warranty price
+    equipClassification typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
+    employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
     populate: {
       path: 'office',
       select: 'name headquarter',
@@ -47,16 +52,25 @@ class AccessoryService extends MongoDB<Accessory> {
     if (!AccessoryService.instance) AccessoryService.instance = new AccessoryService();
     return AccessoryService.instance;
   }
-
-  // Overwrite the methods to apply the populate that corresponds to this service "accessory"
-  async find(query?: Query, populate?: Populate): Promise<Result<Accessory[]>> {
-    return super.find(query, populate || this.defaultPopulate);
-  }
+  /** Busca un accesorio por su id en la base de datos */
   async findById(id: string): Promise<Result<Accessory | null>> {
     return super.findById(id, this.defaultPopulate);
   }
+  /** Busca accesorios por query en la base de datos */
+  async find(query?: Query, populate?: Populate): Promise<Result<Accessory[]>> {
+    return super.find(query, populate || this.defaultPopulate);
+  }
+  /** Crea un nuevo accesorio en la base de datos */
+  async create(data: Accessory): Promise<Result<Accessory>> {
+    return super.create(data, this.defaultPopulate)
+  }
+  /** Actualiza un accesorio por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Accessory>>): Promise<Result<Accessory | null>> {
-    return super.update(id, data, this.defaultPopulate);
+    return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un accesorio por su id en la base de datos */
+  async delete(id: string): Promise<Result<Accessory | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

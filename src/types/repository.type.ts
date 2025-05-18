@@ -10,7 +10,7 @@ export type Doc<T> = T & Document<Types.ObjectId>
 export type Query = Record<string, unknown>
 
 export interface Repository<T> {
-  create(data: T): Promise<Doc<T>>
+  create(data: T, populate?: Populate): Promise<Doc<T>>
   find(query?: Query, populate?: Populate): Promise<Doc<T>[]>
   findById(id: string, populate?: Populate): Promise<Doc<T> | null>
   findOne(query: Query, populate?: Populate): Promise<Doc<T> | null>
@@ -18,7 +18,7 @@ export interface Repository<T> {
   verifyOwnership(contextIds: string[], pipeline: PipelineStage[]): Promise<boolean>
   update(id: string, data: Partial<Doc<T>>, populate?: Populate): Promise<Doc<T> | null>
   updateMany(query: Query, update: any): Promise<boolean>
-  delete(id: string): Promise<boolean>
+  delete(id: string, populate?: Populate): Promise<Doc<T> | null>
 }
 /*---------------------------------------------------------------------------------------------------------*/
 

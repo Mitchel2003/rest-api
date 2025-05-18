@@ -15,7 +15,7 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
     populate: [{
       path: 'curriculum',
       select: `
-      name brand serie service modelEquip healthRecord
+      _id name brand serie service modelEquip healthRecord
       characteristics recommendationsManufacturer
       datePurchase dateInstallation dateOperation acquisition warranty price
       equipClassification typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
@@ -40,9 +40,9 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
           }, {
             path: 'client',
             select: `
-            _id uid email phone username role position
-            nit invima profesionalLicense permissions
-            belongsTo classification metadata`,
+              _id uid email phone username role position
+              nit invima profesionalLicense permissions
+              belongsTo classification metadata`,
           }]
         }
       }, {
@@ -70,7 +70,10 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
     }]
   }, {
     path: 'collaborator',
-    select: 'username phone'
+    select: `
+      _id uid email phone username role position
+      nit invima profesionalLicense permissions
+      belongsTo classification metadata`,
   }]
 
   private constructor() { super(Repository.create(activityModel)) }
@@ -104,9 +107,17 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
   async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<Activity[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea una nueva actividad en la base de datos */
+  async create(data: Activity): Promise<Result<Activity>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza una actividad por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Activity>>): Promise<Result<Activity | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina una actividad por su id en la base de datos */
+  async delete(id: string): Promise<Result<Activity | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

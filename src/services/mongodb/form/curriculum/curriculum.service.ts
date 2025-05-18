@@ -85,9 +85,17 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
   async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<Curriculum[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea un nuevo currículum en la base de datos */
+  async create(data: Curriculum): Promise<Result<Curriculum>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza un currículum por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Curriculum>>): Promise<Result<Curriculum | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un currículum por su id en la base de datos */
+  async delete(id: string): Promise<Result<Curriculum | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

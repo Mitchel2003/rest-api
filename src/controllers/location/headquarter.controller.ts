@@ -88,6 +88,6 @@ export const deleteHeadquarter = async ({ params, user = {} as User }: ExtendsRe
     if (!canDelete) throw new Forbidden({ message: "No tienes permisos para eliminar esta sede" });
     const result = await headquarterService.delete(params.id);
     if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, { message: "Sede eliminada correctamente" });
+    send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "eliminar la sede") }
 }

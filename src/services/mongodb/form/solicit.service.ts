@@ -12,7 +12,7 @@ class SolicitService extends MongoDB<Solicit> implements IResourceService<Solici
   private readonly defaultPopulate: PopulateOptions = {
     path: 'curriculum',
     select: `
-    name brand serie service modelEquip healthRecord
+    _id name brand serie service modelEquip healthRecord
     characteristics recommendationsManufacturer
     datePurchase dateInstallation dateOperation acquisition warranty price
     equipClassification typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
@@ -97,9 +97,17 @@ class SolicitService extends MongoDB<Solicit> implements IResourceService<Solici
   async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<Solicit[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea una nueva solicitud en la base de datos */
+  async create(data: Solicit): Promise<Result<Solicit>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza una solicitud por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Solicit>>): Promise<Result<Solicit | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina una solicitud por su id en la base de datos */
+  async delete(id: string): Promise<Result<Solicit | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

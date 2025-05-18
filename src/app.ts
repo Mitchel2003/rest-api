@@ -24,6 +24,7 @@ import countryRoutes from "@/routes/location/country.routes"
 import stateRoutes from "@/routes/location/state.routes"
 import cityRoutes from "@/routes/location/city.routes"
 import officeRoutes from "@/routes/location/office.routes"
+import signatureRoutes from "@/routes/location/signature.routes"
 import headquarterRoutes from "@/routes/location/headquarter.routes"
 
 //config express

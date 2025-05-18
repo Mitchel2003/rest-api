@@ -21,16 +21,25 @@ class StateService extends MongoDB<State> {
     if (!StateService.instance) StateService.instance = new StateService()
     return StateService.instance;
   }
-
-  // Overwrite the methods to apply the populate that corresponds to this service "state"
-  async find(query?: Query, populate?: Populate): Promise<Result<State[]>> {
-    return super.find(query, populate || this.defaultPopulate);
-  }
+  /** Busca un departamento por su id en la base de datos */
   async findById(id: string): Promise<Result<State | null>> {
     return super.findById(id, this.defaultPopulate);
   }
+  /** Busca departamentos por query en la base de datos */
+  async find(query?: Query, populate?: Populate): Promise<Result<State[]>> {
+    return super.find(query, populate || this.defaultPopulate);
+  }
+  /** Crea un nuevo departamento en la base de datos */
+  async create(data: State): Promise<Result<State>> {
+    return super.create(data, this.defaultPopulate)
+  }
+  /** Actualiza un departamento por su id en la base de datos */
   async update(id: string, data: Partial<Doc<State>>): Promise<Result<State | null>> {
-    return super.update(id, data, this.defaultPopulate);
+    return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un departamento por su id en la base de datos */
+  async delete(id: string): Promise<Result<State | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

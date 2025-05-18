@@ -59,9 +59,17 @@ class HeadquarterService extends MongoDB<Headquarter> implements IResourceServic
   async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<Headquarter[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea una nueva sede en la base de datos */
+  async create(data: Headquarter): Promise<Result<Headquarter>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza una sede por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Headquarter>>): Promise<Result<Headquarter | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina una sede por su id en la base de datos */
+  async delete(id: string): Promise<Result<Headquarter | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

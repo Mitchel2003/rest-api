@@ -102,7 +102,7 @@ export const deleteUser = async ({ params }: ExtendsRequest, res: Response): Pro
     if (!auth.success) throw new ErrorAPI(auth.error);
     const result = await userService.delete(_id);
     if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, undefined);
+    send(res, 200, result.data);
   } catch (e: unknown) { handlerResponse(res, e, "eliminar el usuario") }
 }
 /*---------------------------------------------------------------------------------------------------------*/

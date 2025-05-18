@@ -88,6 +88,6 @@ export const deleteSchedule = async ({ params, user = {} as User }: ExtendsReque
     if (!canDelete) throw new Forbidden({ message: "No tienes permisos para eliminar este cronograma" });
     const result = await scheduleService.delete(params.id);
     if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, { message: "Cronograma eliminado correctamente" });
+    send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "eliminar el cronograma") }
 }

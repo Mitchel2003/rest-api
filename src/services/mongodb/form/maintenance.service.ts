@@ -12,7 +12,7 @@ class MaintenanceService extends MongoDB<Maintenance> implements IResourceServic
   private readonly defaultPopulate: PopulateOptions[] = [{
     path: 'curriculum',
     select: `
-    name brand serie service modelEquip healthRecord
+    _id name brand serie service modelEquip healthRecord
     characteristics recommendationsManufacturer
     datePurchase dateInstallation dateOperation acquisition warranty price
     equipClassification typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
@@ -99,9 +99,17 @@ class MaintenanceService extends MongoDB<Maintenance> implements IResourceServic
   async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<Maintenance[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea un nuevo mantenimiento en la base de datos */
+  async create(data: Maintenance): Promise<Result<Maintenance>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza un mantenimiento por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Maintenance>>): Promise<Result<Maintenance | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un mantenimiento por su id en la base de datos */
+  async delete(id: string): Promise<Result<Maintenance | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

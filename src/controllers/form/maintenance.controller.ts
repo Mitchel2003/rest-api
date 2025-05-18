@@ -88,6 +88,6 @@ export const deleteMaintenance = async ({ params, user = {} as User }: ExtendsRe
     if (!canDelete) throw new Forbidden({ message: "No tienes permisos para eliminar este mantenimiento" });
     const result = await mtService.delete(params.id);
     if (!result.success) throw new ErrorAPI(result.error);
-    send(res, 200, { message: "Mantenimiento eliminado correctamente" });
+    send(res, 200, result.data);
   } catch (e) { handlerResponse(res, e, "eliminar el mantenimiento") }
 }

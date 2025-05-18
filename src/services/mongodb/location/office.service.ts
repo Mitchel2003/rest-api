@@ -63,9 +63,17 @@ class OfficeService extends MongoDB<Office> implements IResourceService<Office> 
   async find(query?: Query, populate?: PopulateOptions | (string | PopulateOptions)[]): Promise<Result<Office[]>> {
     return super.find(query, populate || this.defaultPopulate)
   }
+  /** Crea un nuevo consultorio en la base de datos */
+  async create(data: Office): Promise<Result<Office>> {
+    return super.create(data, this.defaultPopulate)
+  }
   /** Actualiza un consultorio por su id en la base de datos */
   async update(id: string, data: Partial<Doc<Office>>): Promise<Result<Office | null>> {
     return super.update(id, data, this.defaultPopulate)
+  }
+  /** Elimina un consultorio por su id en la base de datos */
+  async delete(id: string): Promise<Result<Office | null>> {
+    return super.delete(id, this.defaultPopulate)
   }
 }
 

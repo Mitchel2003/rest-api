@@ -14,7 +14,7 @@ class ScheduleService extends MongoDB<Schedule> implements IResourceService<Sche
     select: `
       _id uid email phone username role position
       nit invima profesionalLicense permissions
-      belongsTo classification metadata`,
+      belongsTo classification metadata inventory`,
   }, {
     path: 'createdBy',
     select: `

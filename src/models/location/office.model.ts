@@ -3,6 +3,12 @@ import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const officeSchema: Schema<Office> = new Schema({
+  inventory: {
+    type: String,
+    required: false,
+    unique: true,
+    maxlength: 3
+  },
   name: {
     type: String,
     required: true

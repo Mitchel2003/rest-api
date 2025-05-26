@@ -14,7 +14,7 @@ class UserService extends MongoDB<User> implements IResourceService<User> {
     select: `
       _id uid email phone username role position
       nit invima profesionalLicense permissions
-      belongsTo classification metadata`,
+      belongsTo classification metadata inventory`,
   }
 
   private constructor() { super(Repository.create(userModel)) }

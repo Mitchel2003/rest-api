@@ -5,6 +5,7 @@ export interface Headquarter extends Document {
   address: string,
   city: Schema.Types.ObjectId,
   client: Schema.Types.ObjectId,
+  inventory?: string,
   createdAt?: Date,
   updatedAt?: Date
 }

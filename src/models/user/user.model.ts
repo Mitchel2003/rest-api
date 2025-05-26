@@ -22,7 +22,8 @@ const userSchema: Schema<User> = new Schema({
   position: { type: String, required: true },
   //handle references associated
   classification: { default: [], type: [String], required: false },
-  belongsTo: { type: Schema.Types.ObjectId, ref: 'user', required: false, default: null }
+  belongsTo: { type: Schema.Types.ObjectId, ref: 'user', required: false, default: null },
+  inventory: { type: String, required: false, unique: true, maxlength: 2, sparse: true }
 }, configSchema)
 
 export default mongoose.model('user', userSchema);

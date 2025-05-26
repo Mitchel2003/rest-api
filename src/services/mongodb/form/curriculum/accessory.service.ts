@@ -12,16 +12,16 @@ class AccessoryService extends MongoDB<Accessory> {
     path: 'curriculum',
     select: `
     _id name brand serie service modelEquip healthRecord
-    characteristics recommendationsManufacturer
+    characteristics recommendationsManufacturer inventory
     datePurchase dateInstallation dateOperation acquisition warranty price
     equipClassification typeClassification useClassification biomedicalClassification riskClassification technologyPredominant powerSupply
     employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
     populate: {
       path: 'office',
-      select: 'name headquarter',
+      select: 'name headquarter inventory',
       populate: {
         path: 'headquarter',
-        select: 'name address city client',
+        select: 'name address city client inventory',
         populate: [{
           path: 'city',
           select: 'name state',
@@ -38,7 +38,7 @@ class AccessoryService extends MongoDB<Accessory> {
           select: `
             _id uid email phone username role position
             nit invima profesionalLicense permissions
-            belongsTo classification metadata`,
+            belongsTo classification metadata inventory`,
         }]
       }
     }

@@ -25,6 +25,7 @@ export interface User extends Document {
   permissions?: string[] //access
   classification?: ClassificationProps[]
   metadata: Record<string, any> //to files
+  inventory?: string
   createdAt?: Date
   updatedAt?: Date
 }

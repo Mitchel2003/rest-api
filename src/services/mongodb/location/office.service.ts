@@ -11,7 +11,7 @@ class OfficeService extends MongoDB<Office> implements IResourceService<Office> 
   private static instance: OfficeService;
   private readonly defaultPopulate: PopulateOptions = {
     path: 'headquarter',
-    select: 'name address city client',
+    select: 'name address city client inventory',
     populate: [{
       path: 'city',
       select: 'name state',
@@ -28,7 +28,7 @@ class OfficeService extends MongoDB<Office> implements IResourceService<Office> 
       select: `
         _id uid email phone username role position
         nit invima profesionalLicense permissions
-        belongsTo classification metadata`,
+        belongsTo classification metadata inventory`,
     }]
   }
 

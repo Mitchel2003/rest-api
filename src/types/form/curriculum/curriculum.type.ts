@@ -1,6 +1,9 @@
 import { Document, Schema } from "mongoose";
 
 export interface Curriculum extends Document {
+  //inventory code
+  inventory?: string,
+
   //standard
   name: string,
   brand: string,

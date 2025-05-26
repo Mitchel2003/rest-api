@@ -5,6 +5,7 @@ export interface Office extends Document {
   group: string,
   services: string[],
   headquarter: Schema.Types.ObjectId,
+  inventory?: string,
   createdAt?: Date,
   updatedAt?: Date
 }

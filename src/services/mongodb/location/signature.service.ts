@@ -12,7 +12,7 @@ class SignatureService extends MongoDB<Signature> implements IResourceService<Si
   private static instance: SignatureService;
   private readonly defaultPopulate: PopulateOptions = {
     path: 'headquarter',
-    select: 'name address city client',
+    select: 'name address city client inventory',
     populate: [{
       path: 'city',
       select: 'name state',
@@ -29,7 +29,7 @@ class SignatureService extends MongoDB<Signature> implements IResourceService<Si
       select: `
         _id uid email phone username role position
         nit invima profesionalLicense permissions
-        belongsTo classification metadata`,
+        belongsTo classification metadata inventory`,
     }]
   }
 

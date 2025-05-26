@@ -11,10 +11,10 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
   private static instance: CurriculumService;
   private readonly defaultPopulate: PopulateOptions[] = [{
     path: 'office',
-    select: 'name headquarter',
+    select: 'name headquarter inventory',
     populate: {
       path: 'headquarter',
-      select: 'name address city client',
+      select: 'name address city client inventory',
       populate: [{
         path: 'city',
         select: 'name state',
@@ -31,7 +31,7 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
         select: `
           _id uid email phone username role position
           nit invima profesionalLicense permissions
-          belongsTo classification metadata`,
+          belongsTo classification metadata inventory`,
       }]
     }
   }, {

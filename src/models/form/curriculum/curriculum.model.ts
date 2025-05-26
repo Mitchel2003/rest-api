@@ -1,4 +1,7 @@
 import { Curriculum } from "@/types/form/curriculum/curriculum.type";
+import Headquarter from "@/models/location/headquarter.model";
+import Office from "@/models/location/office.model";
+import Client from "@/models/user/user.model";
 import mongoose, { Schema } from "mongoose";
 import configSchema from "@/utils/schema";
 
@@ -87,16 +90,13 @@ curriculumSchema.pre('save', async function (next) {
   try {
     if (this.isModified('inventory')) return next()
     if (!this.office) return next(new Error('Office required'))
-    const Headquarter = mongoose.model('headquarter');
-    const Office = mongoose.model('office');
-    const Client = mongoose.model('client');
 
     //get office, headquarter and client
-    const office = await Office.findById(this.office);
+    const office: any = await Office.findById(this.office);
     if (!office) return next(new Error('Office not found'))
-    const headquarter = await Headquarter.findById(office.headquarter);
+    const headquarter: any = await Headquarter.findById(office.headquarter);
     if (!headquarter) return next(new Error('Headquarter not found'))
-    const client = await Client.findById(headquarter.client);
+    const client: any = await Client.findById(headquarter.client);
     if (!client) return next(new Error('Client not found'))
 
     //get code (or generate if not exists)

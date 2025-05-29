@@ -52,7 +52,7 @@ abstract class MongoDB<T> {
 export default MongoDB
 /*---------------------------------------------------------------------------------------------------------*/
 
-/*--------------------------------------------------tools--------------------------------------------------*/
+/*--------------------------------------------------Access strategy--------------------------------------------------*/
 /**
  * Interfaz genérica para servicios de recursos
  * Define las operaciones básicas que cualquier servicio de recurso debe implementar
@@ -127,4 +127,59 @@ export abstract class AccessStrategyFactory<T, S extends IAccessService<T>> {
   }
   /** Limpia todas las instancias almacenadas */
   public static clearInstances(): void { this.instances.clear() }
+}
+/*---------------------------------------------------------------------------------------------------------*/
+
+/*--------------------------------------------------Pipeline factory--------------------------------------------------*/
+/**
+ * Factory para crear pipelines de agregación optimizados para consultas de mantenimientos
+ * Implementa el patrón Factory Method para crear diferentes tipos de pipelines
+ */
+interface PipelineFactoryOptions {
+  base: (query?: object) => PipelineStage[]
+  userIds: Types.ObjectId[]
+  type: 'one' | 'many'
+  query: object
+}
+
+export class PipelineFactory {
+  /**
+   * Crea un pipeline de agregación según las opciones proporcionadas
+   * @param options Opciones para la creación del pipeline
+   * @returns Pipeline de agregación optimizado para MongoDB
+   */
+  static create(options: PipelineFactoryOptions): PipelineStage[] {
+    const { type, query, userIds } = options //destructuring
+    const basePipeline = options.base(query)
+    switch (type) {
+      case 'one': return this.byOnePipeline(basePipeline, userIds[0])
+      case 'many': return this.byManyPipeline(basePipeline, userIds)
+    }
+  }
+  /**
+   * Crea un pipeline especializado para filtrar por un cliente específico
+   * @param basePipeline Pipeline base con relaciones entre entidades
+   * @param clientId ID del cliente para filtrar (solo ID)
+   * @returns Pipeline completo para filtrar por cliente
+   */
+  private static byOnePipeline(basePipeline: PipelineStage[], clientId: Types.ObjectId): PipelineStage[] {
+    return [
+      ...basePipeline,
+      { $match: { 'clientData._id': clientId } } as PipelineStage,
+      { $sort: { createdAt: -1 } } as PipelineStage
+    ]
+  }
+  /**
+   * Crea un pipeline especializado para filtrar por múltiples usuarios
+   * @param basePipeline Pipeline base con relaciones entre entidades
+   * @param userIds IDs de usuarios para filtrar (solo IDs)
+   * @returns Pipeline completo para filtrar por usuarios
+   */
+  private static byManyPipeline(basePipeline: PipelineStage[], userIds: Types.ObjectId[]): PipelineStage[] {
+    return [
+      ...basePipeline,
+      { $match: { 'clientData._id': { $in: userIds } } } as PipelineStage,
+      { $project: { _id: 1 } } as PipelineStage //consultas (solo IDs)
+    ]
+  }
 }

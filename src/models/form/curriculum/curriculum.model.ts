@@ -121,7 +121,7 @@ export default mongoose.model('curriculum', curriculumSchema)
  * @returns {Promise<string>} new client code
  */
 async function getClientInventory(clientId: mongoose.Types.ObjectId | string): Promise<string> {
-  const Client = mongoose.model('client');
+  const Client = mongoose.model('user');
   const client = await Client.findById(clientId);
   if (!client.inventory) {
     //count existing clients and generate next code (Base-36 encoding)

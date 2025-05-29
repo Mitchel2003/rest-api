@@ -19,7 +19,7 @@ class SolicitService extends MongoDB<Solicit> implements IResourceService<Solici
     employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
     populate: [{
       path: 'office',
-      select: 'name headquarter inventory',
+      select: 'name group services headquarter inventory',
       populate: {
         path: 'headquarter',
         select: 'name address city client inventory',

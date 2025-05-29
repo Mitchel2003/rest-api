@@ -22,7 +22,7 @@ class ActivityService extends MongoDB<Activity> implements IResourceService<Acti
       employmentMaintenance frequencyMaintenance typeMaintenance manualsMaintenance`,
       populate: [{
         path: 'office',
-        select: 'name headquarter inventory',
+        select: 'name group services headquarter inventory',
         populate: {
           path: 'headquarter',
           select: 'name address city client inventory',

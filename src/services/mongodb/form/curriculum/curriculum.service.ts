@@ -1,4 +1,4 @@
-import MongoDB, { IResourceService } from "@/services/mongodb/mongodb.service";
+import MongoDB, { IResourceService, PipelineFactory } from "@/services/mongodb/mongodb.service";
 import { Types, PipelineStage, PopulateOptions } from "mongoose";
 import { Doc, Query, Options } from "@/types/repository.type";
 import Repository from "@/repositories/mongodb.repository";
@@ -11,7 +11,7 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
   private static instance: CurriculumService;
   private readonly defaultPopulate: PopulateOptions[] = [{
     path: 'office',
-    select: 'name headquarter inventory',
+    select: 'name group services headquarter inventory',
     populate: {
       path: 'headquarter',
       select: 'name address city client inventory',
@@ -74,8 +74,16 @@ class CurriculumService extends MongoDB<Curriculum> implements IResourceService<
    * @param options Opciones de búsqueda con array de IDs de usuarios
    * @returns {Promise<Result<Curriculum[]>>} Resultado con los currículums encontrados
    */
-  async findByUsers(options: Options & { userIds: string[] }): Promise<Result<Curriculum[]>> {
-    return super.findByUsers({ ...options, populate: this.defaultPopulate }, byUsersPipeline)
+  async findByUsers({ query = {}, ...rest }: Options & { userIds: string[] }): Promise<Result<Curriculum[]>> {
+    let buildQuery = { ...query } //clone query to avoid inmutability issues and modify
+    let clientId: Types.ObjectId //if has client on query, means we need a specific information
+    const type = query?.client ? 'one' : 'many' //determine type query, helps to build the pipeline
+    if (query?.curriculum) { buildQuery.curriculum = new Types.ObjectId(query.curriculum as string) }
+    if (query?.client) { delete buildQuery.client; clientId = new Types.ObjectId(query.client as string) }
+    return super.findByUsers(
+      { ...rest, query: buildQuery, populate: this.defaultPopulate },
+      (objectIds, queryObj) => PipelineFactory.create({ type, query: queryObj, userIds: type === 'many' ? objectIds : [clientId], base: basePipeline })
+    )
   }
   /** Busca un currículum por su id en la base de datos */
   async findById(id: string): Promise<Result<Curriculum | null>> {
@@ -104,13 +112,11 @@ export const curriculumService = CurriculumService.getInstance()
 
 /*--------------------------------------------------tools--------------------------------------------------*/
 /**
- * Pipeline by users
- * Filters users by multiple users
- * @param {Types.ObjectId[]} userObjectIds - Array of user IDs
+ * Pipeline base to get all data associated
  * @param {object} query - Additional query
  * @returns {PipelineStage[]} MongoDB aggregation pipeline
  */
-const byUsersPipeline = (userObjectIds: Types.ObjectId[], query: object = {}): PipelineStage[] => [
+const basePipeline = (query: object = {}): PipelineStage[] => [
   { $match: { ...query } } as PipelineStage,
   {
     $lookup: {
@@ -138,9 +144,7 @@ const byUsersPipeline = (userObjectIds: Types.ObjectId[], query: object = {}): P
       as: 'clientData'
     }
   } as PipelineStage,
-  { $unwind: '$clientData' } as PipelineStage,
-  { $match: { 'clientData._id': { $in: userObjectIds } } } as PipelineStage,
-  { $project: { _id: 1 } } as PipelineStage//Allow specify the fields to include on the result
+  { $unwind: '$clientData' } as PipelineStage
 ]
 /**
  * Crea un pipeline para obtener la relación entre un currículum y su cliente/proveedor

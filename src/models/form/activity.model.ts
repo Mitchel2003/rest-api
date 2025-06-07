@@ -3,9 +3,8 @@ import configSchema from "@/utils/schema";
 import mongoose, { Schema } from "mongoose";
 
 const activitySchema: Schema<Activity> = new Schema({
-  lastResumedAt: { type: Date, default: null, required: false },
-  isActive: { type: Boolean, default: false, required: false },
-  timeSpent: { type: Number, default: null, required: false },
+  timeHours: { type: { start: String, end: String }, required: true },
+  description: { type: String, required: true },
   dateAssignment: {
     type: Date,
     required: true
@@ -15,6 +14,11 @@ const activitySchema: Schema<Activity> = new Schema({
     required: false,
     default: 'pendiente'
   },
+
+  //state active
+  timeSpent: { type: Number, default: null, required: false },
+  isActive: { type: Boolean, default: false, required: false },
+  lastResumedAt: { type: Date, default: null, required: false },
 
   //relationship
   collaborator: {

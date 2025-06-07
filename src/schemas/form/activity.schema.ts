@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 const activitySchema = z.object({
+  timeHours: z
+    .object({ start: z.string(), end: z.string() }),
+  description: z
+    .string({ required_error: "La descripción es requerida" }),
   dateAssignment: z
     .string().datetime(),
 

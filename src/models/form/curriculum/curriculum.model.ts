@@ -111,6 +111,9 @@ curriculumSchema.pre('save', async function (next) {
   } catch (error) { next(error instanceof Error ? error : new Error(String(error))) }
 })
 
+//---------------------------------- counter model ----------------------------------
+const curriculumCounterSchema = new Schema({ _id: Schema.Types.ObjectId, seq: { type: Number, default: 0 } }, { collection: 'curriculum_counters', versionKey: false });
+const CurriculumCounter = mongoose.models.curriculum_counter || mongoose.model('curriculum_counter', curriculumCounterSchema);
 export default mongoose.model('curriculum', curriculumSchema)
 /*---------------------------------------------------------------------------------------------------------*/
 
@@ -175,8 +178,7 @@ async function getOfficeInventory(officeId: mongoose.Types.ObjectId | string): P
  * @returns {Promise<string>} new curriculum code
  */
 async function getCurriculumInventory(officeId: Schema.Types.ObjectId): Promise<string> {
-  const Curriculum = mongoose.model('curriculum');
-  //count existing equipments and generate next code (Base-36 encoding)
-  const count = await Curriculum.countDocuments({ office: officeId });
-  return (count + 1).toString().padStart(4, '0');
+  // atomic increment per office, avoids race conditions completely and handles soft-deleted records
+  const counter = await CurriculumCounter.findOneAndUpdate({ _id: officeId }, { $inc: { seq: 1 } }, { new: true, upsert: true });
+  return counter.seq.toString().padStart(4, '0');
 }
